@@ -65,9 +65,17 @@ def compute_kpis(df: pd.DataFrame) -> pd.DataFrame:
     d["net_burn"] = (-d["net_income"]).clip(lower=0)
     d["runway_months"] = (d["cash"].clip(lower=0) / d["net_burn"]).where(d["net_burn"] > 0)
     d["rev_per_head"] = (d["revenue"] / d["headcount"]).where(d["headcount"] > 0)
-    g = d.groupby("company")["revenue"]
-    d["mom_growth"] = g.pct_change(1)
-    d["yoy_growth"] = g.pct_change(12)
+    # Growth compares to the actual prior month and the same month last year by calendar,
+    # not by row position, so a missing month never shifts the comparison.
+    p = pd.PeriodIndex(d["month"], freq="M")
+    d["_prev_m"] = (p - 1).strftime("%Y-%m")
+    d["_prev_y"] = (p - 12).strftime("%Y-%m")
+    rev = d[["company", "month", "revenue"]]
+    d = d.merge(rev.rename(columns={"month": "_prev_m", "revenue": "_rev_m"}), on=["company", "_prev_m"], how="left")
+    d = d.merge(rev.rename(columns={"month": "_prev_y", "revenue": "_rev_y"}), on=["company", "_prev_y"], how="left")
+    d["mom_growth"] = (d["revenue"] / d["_rev_m"] - 1).where(d["_rev_m"] > 0)
+    d["yoy_growth"] = (d["revenue"] / d["_rev_y"] - 1).where(d["_rev_y"] > 0)
+    d = d.drop(columns=["_prev_m", "_prev_y", "_rev_m", "_rev_y"])
     d["runway_status"] = d["runway_months"].apply(runway_status)
     return d
 

@@ -290,7 +290,8 @@ def _debt(ws, a: LBOAssumptions, A: dict, O: dict) -> dict:
     _label(ws, r, "Total debt", bold=True); D["total_debt"] = r; r += 1
     _label(ws, r, "Total interest", bold=True); D["total_interest"] = r; r += 1
     _label(ws, r, "Net debt", bold=True); D["net_debt"] = r; r += 1
-    _label(ws, r, "Net debt / EBITDA"); D["leverage"] = r
+    _label(ws, r, "Net debt / EBITDA"); D["leverage"] = r; r += 1
+    _label(ws, r, "Cash below minimum?", bold=True); D["shortfall"] = r
 
     names = [t.name for t in a.tranches]
     for y in range(n + 1):
@@ -339,6 +340,7 @@ def _debt(ws, a: LBOAssumptions, A: dict, O: dict) -> dict:
         _f(ws, D["total_interest"], col, f"={int_sum}", MONEY, bold=True)
         _f(ws, D["net_debt"], col, f"={c}{D['total_debt']}-{c}{D['cash_end']}", MONEY, bold=True)
         _f(ws, D["leverage"], col, f"={c}{D['net_debt']}/Operating!{c}{O['ebitda']}", X)
+        _f(ws, D["shortfall"], col, f'=IF({c}{D["cash_end"]}<{A["min_cash"]}-0.001,"SHORTFALL","")', bold=True)
     return D
 
 
@@ -353,7 +355,7 @@ def _returns(ws, a: LBOAssumptions, A: dict, O: dict, D: dict) -> None:
         ("Exit enterprise value", "=C3*C4", MONEY),
         ("Less: exit debt", f"=Debt!{xc}{D['total_debt']}", MONEY),
         ("Plus: exit cash", f"=Debt!{xc}{D['cash_end']}", MONEY),
-        ("Exit equity value", "=C5-C6+C7", MONEY),
+        ("Exit equity value", "=MAX(0,C5-C6+C7)", MONEY),
         ("Sponsor equity invested", f"={A['sponsor_equity']}", MONEY),
         ("MOIC", "=C8/C9", X),
     ]

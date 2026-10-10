@@ -48,12 +48,22 @@ def test_threshold_either_rule_flags():
 def test_rollups_tie_to_detail():
     a, b = _mini()
     d = compute_variance(a, b, Thresholds())
-    by_dept = rollup(d, ["department"])
-    assert by_dept["variance_amt"].sum() == d["variance_amt"].sum()
+    by_dept = rollup(d, ["department"]).set_index("department")
+    # Rollup is on contribution: Sales has revenue 110 and expense 60 -> 50 actual, 50 budget
+    assert by_dept.loc["Sales", "actual"] == 110 - 60 and by_dept.loc["Sales", "budget"] == 100 - 50
+    assert by_dept.loc["Sales", "variance_amt"] == 0 and by_dept.loc["Sales", "fav_unfav"] == "-"
+    assert by_dept["variance_amt"].sum() == d["favorable_amt"].sum()
     s = pnl_summary(d)
     net = s.set_index("line")
     assert net.loc["Net", "actual"] == 110 - 160
     assert net.loc["Net", "variance_amt"] == (110 - 100) - (160 - 150)
+
+
+def test_blank_amount_is_rejected_not_zeroed():
+    a, b = _mini()
+    a.loc[0, "amount"] = float("nan")
+    with pytest.raises(ValueError, match="row 2"):
+        validate_ledger(a, "actuals")
 
 
 def test_validation_rejects_bad_rows_with_row_numbers():

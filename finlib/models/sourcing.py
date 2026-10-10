@@ -9,12 +9,16 @@ from dataclasses import dataclass, field
 from finlib.providers.formd import FormD
 
 FUND_INDUSTRY = {"pooled investment fund"}
+# Strong signals: a name with one of these is a vehicle, not an operating company.
 FUND_NAME_PATTERNS = [
-    r"\bL\.?P\.?$", r"\bFund\b", r"\bCapital Partners\b", r"\bInvestors\b", r"\bHoldings\b",
-    r"\bSPV\b", r"\bOpportunit(y|ies)\b", r"\bVentures?\b\s*(I|II|III|IV|V|VI)?$", r"\bPortfolio\b",
-    r"\bTrust\b", r"\bREIT\b", r"\bFeeder\b", r"\bMaster\b", r"\bCo-?Invest",
+    r"\bL\.?P\.?$", r"\bFund\b", r"\bCapital Partners\b", r"\bSPV\b", r"\bFeeder\b",
+    r"\bCo-?Invest", r"\bREIT\b", r"\bOpportunit(y|ies) (Fund|Partners|LP)\b",
+    r"\b(Fund|Partners|Ventures|Capital) (I|II|III|IV|V|VI|VII|VIII|IX|X)\b",
 ]
+# Weak signals: only count when the entity is an LP or a Trust (Holdings Inc is usually a real company).
+WEAK_NAME_PATTERNS = [r"\bInvestors\b", r"\bHoldings\b", r"\bPortfolio\b", r"\bTrust\b", r"\bMaster\b"]
 FUND_RE = re.compile("|".join(FUND_NAME_PATTERNS), re.IGNORECASE)
+WEAK_RE = re.compile("|".join(WEAK_NAME_PATTERNS), re.IGNORECASE)
 
 
 @dataclass
@@ -32,9 +36,10 @@ class ScoringConfig:
 def is_fund(f: FormD) -> bool:
     if f.industry_group.strip().lower() in FUND_INDUSTRY:
         return True
-    if f.entity_type.lower() in ("limited partnership",) and FUND_RE.search(f.issuer):
+    if FUND_RE.search(f.issuer):
         return True
-    return bool(FUND_RE.search(f.issuer)) and f.industry_group.strip().lower() in ("", "other")
+    vehicle_entity = f.entity_type.lower() in ("limited partnership", "trust")
+    return vehicle_entity and bool(WEAK_RE.search(f.issuer))
 
 
 def keep(f: FormD, cfg: ScoringConfig) -> tuple[bool, str]:
@@ -59,7 +64,8 @@ def score(f: FormD, cfg: ScoringConfig, first_time: bool) -> tuple[float, dict]:
     parts["investors"] = w["investors"] * min(1.0, inv / 25)
     parts["first_time"] = w["first_time"] if first_time else 0.0
     parts["state"] = w["state"] if f.state.upper() in {s.upper() for s in cfg.target_states} else 0.0
-    parts["industry"] = w["industry"] if f.industry_group in cfg.target_industries else 0.0
+    targets = {i.strip().lower() for i in cfg.target_industries}
+    parts["industry"] = w["industry"] if f.industry_group.strip().lower() in targets else 0.0
     return round(sum(parts.values()), 1), parts
 
 
@@ -87,7 +93,8 @@ def digest_markdown(rows: list[dict], day: str, top_n: int, cfg: ScoringConfig) 
     for i, r in enumerate(kept, start=1):
         sold = f"${r['total_sold']:,.0f}" if r["total_sold"] else "-"
         off = f"${r['total_offering']:,.0f}" if r["total_offering"] else "indefinite"
-        lines.append(f"| {i} | {r['score']:.0f} | {r['issuer']} | {r['state']} | {r['industry_group']} | {sold} | {off} | "
+        issuer = r["issuer"].replace("|", "\\|")
+        lines.append(f"| {i} | {r['score']:.0f} | {issuer} | {r['state']} | {r['industry_group']} | {sold} | {off} | "
                      f"{r['investors'] if r['investors'] is not None else '-'} | {'yes' if r['first_time'] else ''} | "
                      f"[{r['accession']}]({r['url']}) |")
     if not kept:

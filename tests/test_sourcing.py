@@ -87,9 +87,20 @@ def test_db_dedupes_across_runs_and_marks_first_time(tmp_path):
     _, s2 = run_day(DAY, CFG, db, tmp_path)
     assert s1["new"] == s1["filings"] > 0
     assert s2["new"] == 0 and s2["db_total"] == s1["db_total"]
-    # Second run sees every CIK as already known, so no first-time bonus
+    # Re-running the same day must NOT strip the first-time bonus: only filings dated
+    # before the day count as "seen". Scores are identical across the two runs.
     store = SourcingDB(db)
-    assert all(r[0] == 0 for r in store.db.execute("SELECT first_time FROM filings WHERE kept=1"))
+    assert all(r[0] == 1 for r in store.db.execute("SELECT first_time FROM filings WHERE kept=1"))
+    d1 = (tmp_path / "digest_2026-10-09.md").read_text()
+    _, _ = run_day(DAY, CFG, db, tmp_path)
+    assert (tmp_path / "digest_2026-10-09.md").read_text() == d1
+
+
+def test_holdings_inc_is_not_a_fund_but_feeder_lp_is():
+    assert not is_fund(_fd(issuer="Pelican Fintech Holdings Inc", industry_group="Other", entity_type="Corporation"))
+    assert is_fund(_fd(issuer="Cedar Hollow Feeder Fund LP", industry_group="", entity_type="Limited Partnership"))
+    assert is_fund(_fd(issuer="Summit Coast Investors LLC", industry_group="Other", entity_type="Limited Partnership"))
+    assert not is_fund(_fd(issuer="Summit Coast Investors LLC", industry_group="Other", entity_type="Limited Liability Company"))
 
 
 def test_digest_file_written(tmp_path):

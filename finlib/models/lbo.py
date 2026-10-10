@@ -109,8 +109,13 @@ class LBOResult:
     exit_equity: float
     sponsor_equity: float
     moic: float
-    irr: float
+    irr: float  # NaN when the equity is wiped out (no positive cash flow)
     equity_cashflows: list[float] = field(default_factory=list)
+    cash_shortfall_years: list[int] = field(default_factory=list)  # years where cash < min_cash
+
+    @property
+    def irr_defined(self) -> bool:
+        return self.irr == self.irr  # not NaN
 
 
 def irr(cashflows: list[float]) -> float:
@@ -120,6 +125,13 @@ def irr(cashflows: list[float]) -> float:
         raise ValueError("IRR needs at least one negative and one positive cash flow")
     npv = lambda r: float(np.sum(cf / (1 + r) ** np.arange(len(cf))))
     return brentq(npv, -0.99, 10.0, maxiter=500)
+
+
+def irr_or_nan(cashflows: list[float]) -> float:
+    try:
+        return irr(cashflows)
+    except ValueError:
+        return float("nan")
 
 
 def run_lbo(a: LBOAssumptions, scenario: str | None = None) -> LBOResult:
@@ -185,16 +197,18 @@ def run_lbo(a: LBOAssumptions, scenario: str | None = None) -> LBOResult:
     exit_ev = s.exit_multiple * ebitda[n]
     exit_debt = sum(end[k][n] for k in names)
     exit_net_debt = exit_debt - cash[n]
-    exit_equity = exit_ev - exit_net_debt
+    exit_equity = max(0.0, exit_ev - exit_net_debt)  # equity cannot go below zero (limited liability)
     eq0 = a.sponsor_equity
     flows = [-eq0] + [0.0] * (n - 1) + [exit_equity]
+    shortfall = [y for y in range(1, n + 1) if cash[y] < a.min_cash - 1e-6]
     return LBOResult(
         years=years, revenue=revenue, ebitda=ebitda, da=da, ebit=ebit, interest=interest,
         taxes=taxes, capex=capex, delta_nwc=delta_nwc, fcf_pre_debt=fcf_pre_debt,
         cash_available_for_debt=cash_avail, tranche_begin=begin, tranche_mandatory=mand,
         tranche_sweep=sweep, tranche_end=end, tranche_interest=intr, cash_balance=cash,
         exit_ev=exit_ev, exit_net_debt=exit_net_debt, exit_equity=exit_equity,
-        sponsor_equity=eq0, moic=exit_equity / eq0, irr=irr(flows), equity_cashflows=flows,
+        sponsor_equity=eq0, moic=exit_equity / eq0, irr=irr_or_nan(flows), equity_cashflows=flows,
+        cash_shortfall_years=shortfall,
     )
 
 
@@ -208,8 +222,5 @@ def sensitivity(a: LBOAssumptions, entry_multiples: list[float], exit_multiples:
             b = a.model_copy(deep=True)
             b.entry_multiple = em
             b.scenarios[sc].exit_multiple = xm
-            try:
-                grid[i, j] = run_lbo(b, sc).irr
-            except ValueError:
-                pass
+            grid[i, j] = run_lbo(b, sc).irr  # NaN where the equity is wiped out
     return grid

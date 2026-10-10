@@ -39,7 +39,7 @@ def run_day(day: date, config: Path, db_path: Path, out_dir: Path) -> tuple[Path
     cfg, top_n = load_config(config)
     db = SourcingDB(db_path)
     filings = FormDProvider().filings_for(day)
-    rows = rank(filings, cfg, db.seen_ciks())
+    rows = rank(filings, cfg, db.seen_ciks(before=day.isoformat()))
     new = db.upsert(rows)
     md = digest_markdown(rows, day.isoformat(), top_n, cfg)
     out_dir.mkdir(parents=True, exist_ok=True)

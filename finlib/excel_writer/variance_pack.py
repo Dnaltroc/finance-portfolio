@@ -80,12 +80,13 @@ def write_variance_workbook(
     for j in range(1, 7):
         ws.cell(row=last, column=j).border = TOP_BORDER
     _fu_colors(ws, 6, 5, last)
-    ws.cell(row=last + 2, column=1, value="By department").font = SUMMARY_FONT
+    ws.cell(row=last + 2, column=1, value="By department (contribution: revenue minus expense)").font = SUMMARY_FONT
     d = by_dept[["department", "actual", "budget", "variance_amt", "variance_pct", "fav_unfav"]].rename(
-        columns={"department": "Department", "actual": "Actual", "budget": "Budget",
+        columns={"department": "Department", "actual": "Actual contribution", "budget": "Budget contribution",
                  "variance_amt": "Variance $", "variance_pct": "Variance %", "fav_unfav": "F/U"})
     start = last + 3
-    last2 = _frame(ws, d, start, {"Actual": MONEY, "Budget": MONEY, "Variance $": MONEY, "Variance %": PCT_FMT})
+    last2 = _frame(ws, d, start, {"Actual contribution": MONEY, "Budget contribution": MONEY,
+                                  "Variance $": MONEY, "Variance %": PCT_FMT})
     _fu_colors(ws, 6, start + 1, last2)
     autosize(ws)
 

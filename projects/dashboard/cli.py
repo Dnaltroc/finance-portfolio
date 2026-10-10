@@ -49,9 +49,12 @@ def save_sqlite(kpis_csv: Path, db: Path) -> None:
 
 
 def build_page(kpis_csv: Path, title: str, out: Path) -> Path:
+    import html as html_mod
+
     payload = build_payload(kpis_csv, title)
-    html = (HERE / "template.html").read_text().replace("__DATA__", json.dumps(payload))
-    html = html.replace("<title>Gulf Coast Portfolio KPIs</title>", f"<title>{title}</title>")
+    data = json.dumps(payload).replace("</", "<\\/")  # never let a value close the script tag
+    html = (HERE / "template.html").read_text().replace("__DATA__", data)
+    html = html.replace("<title>Gulf Coast Portfolio KPIs</title>", f"<title>{html_mod.escape(title)}</title>")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
     return out

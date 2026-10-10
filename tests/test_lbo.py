@@ -65,6 +65,28 @@ def test_sensitivity_monotonic():
     assert (np.diff(g, axis=0) < 0).all()   # higher entry multiple -> lower IRR
 
 
+def test_overlevered_deal_flags_shortfall_and_wiped_equity():
+    a = load_deal(DEAL)
+    b = a.model_copy(deep=True)
+    b.tranches[0].ebitda_multiple = 7.0
+    b.tranches[0].rate = 0.14
+    b.tranches[0].amort_pct = 0.10
+    r = run_lbo(b, "Downside")
+    assert r.cash_shortfall_years, "cash should fall below minimum somewhere"
+    assert r.exit_equity == 0.0 and r.moic == 0.0 and not r.irr_defined
+    assert not np.isnan(run_lbo(a).irr)
+
+
+def test_sweep_stops_at_zero_balance():
+    a = load_deal(DEAL)
+    b = a.model_copy(deep=True)
+    b.tranches[0].ebitda_multiple = 0.3  # tiny TLB, fully repaid by the sweep early
+    r = run_lbo(b)
+    tlb = r.tranche_end["Term Loan B"]
+    assert (tlb >= -1e-9).all() and tlb[-1] == 0.0
+    assert (r.cash_balance[1:] >= b.min_cash - 1e-9).all()  # excess sits in cash once debt is gone
+
+
 def test_scenario_validation():
     raw = {"entry_revenue": 100, "entry_ebitda": 20, "entry_multiple": 8, "tranches": [],
            "scenarios": {"Base": {"revenue_growth": [0.05, 0.05], "ebitda_margin": [0.2], "exit_multiple": 8}}}

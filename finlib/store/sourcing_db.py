@@ -31,7 +31,10 @@ class SourcingDB:
         self.db = sqlite3.connect(path)
         self.db.executescript(SCHEMA)
 
-    def seen_ciks(self) -> set[str]:
+    def seen_ciks(self, before: str | None = None) -> set[str]:
+        """CIKs with a filing dated strictly before `before` (so re-running a day is stable)."""
+        if before:
+            return {r[0] for r in self.db.execute("SELECT DISTINCT cik FROM filings WHERE filing_date < ?", (before,))}
         return {r[0] for r in self.db.execute("SELECT DISTINCT cik FROM filings")}
 
     def upsert(self, rows: list[dict]) -> int:
@@ -40,8 +43,10 @@ class SourcingDB:
         new = 0
         for r in rows:
             vals = [json.dumps(r[c]) if c == "score_parts" else r[c] for c in COLS]
+            updates = ", ".join(f"{c}=excluded.{c}" for c in COLS if c != "accession")
             self.db.execute(
-                f"INSERT OR REPLACE INTO filings ({', '.join(COLS)}) VALUES ({', '.join('?' * len(COLS))})", vals
+                f"INSERT INTO filings ({', '.join(COLS)}) VALUES ({', '.join('?' * len(COLS))}) "
+                f"ON CONFLICT(accession) DO UPDATE SET {updates}", vals
             )
             new += r["accession"] not in existing
         self.db.commit()

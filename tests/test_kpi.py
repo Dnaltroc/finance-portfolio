@@ -47,6 +47,15 @@ def test_negative_cash_is_zero_runway():
     assert k.loc[("A", "2026-09"), "runway_status"] == "critical"
 
 
+def test_yoy_uses_calendar_month_not_row_position():
+    months = pd.period_range("2025-01", periods=14, freq="M").strftime("%Y-%m").tolist()
+    rows = [dict(company="A", month=m, revenue=100 + i, cogs=10, opex=10, cash=1000, headcount=5)
+            for i, m in enumerate(months) if m != "2025-06"]  # one missing month
+    k = compute_kpis(validate_kpis(pd.DataFrame(rows))).set_index("month")
+    assert abs(k.loc["2026-02", "yoy_growth"] - (113 / 101 - 1)) < 1e-9   # Feb vs Feb, not shifted
+    assert pd.isna(k.loc["2025-07", "mom_growth"])                         # June is missing, so no MoM
+
+
 def test_validation_messages():
     bad = _two_months()
     bad.loc[0, "month"] = "Aug-26"

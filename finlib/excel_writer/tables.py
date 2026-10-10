@@ -110,7 +110,8 @@ def _comps_sheet(ws, rows: list[CompsRow], peerset: str) -> None:
 
 
 def _inputs_sheet(ws, fundamentals: list[Fundamentals], quotes: list[Quote]) -> None:
-    ws["A1"] = "Raw inputs pulled by the tool. Blue = hardcoded from source. Edit here and re-link if needed."
+    ws["A1"] = ("Raw inputs pulled by the tool, in dollars and shares. Blue = hardcoded from source. "
+                "The Comps sheet holds computed values; change inputs here and re-run the CLI to refresh.")
     ws["A1"].font = BODY_FONT
     headers = ["Ticker", "Concept", "Basis", "Value", "Source"]
     for j, h in enumerate(headers, start=1):
@@ -140,7 +141,7 @@ def _input_row(ws, r, ticker, concept, basis, value, source):
     ws.cell(row=r, column=3, value=basis).font = BODY_FONT
     c = ws.cell(row=r, column=4, value=value)
     c.font = INPUT_FONT
-    c.number_format = "#,##0.00"
+    c.number_format = "#,##0.00" if concept == "price" else "#,##0"
     ws.cell(row=r, column=5, value=source).font = BODY_FONT
 
 

@@ -23,7 +23,7 @@ class LedgerRow(BaseModel):
     department: str
     account: str
     account_type: str
-    amount: float
+    amount: float = Field(allow_inf_nan=False)
 
     @field_validator("account_type")
     @classmethod
@@ -92,12 +92,23 @@ def compute_variance(actuals: pd.DataFrame, budget: pd.DataFrame, th: Thresholds
 
 
 def rollup(detail: pd.DataFrame, by: list[str]) -> pd.DataFrame:
-    g = detail.groupby(by, as_index=False)[["actual", "budget", "variance_amt", "favorable_amt"]].sum()
+    """Roll up on signed CONTRIBUTION (revenue minus expense), not raw dollars.
+
+    Summing revenue and expense dollars into one "actual" column is meaningless for a
+    department that has both. Contribution makes actual, budget and variance all point
+    the same way, and variance equals favorable_amt by construction.
+    """
+    d = detail.copy()
+    sign = d["account_type"].isin(REVENUE_TYPES).map({True: 1.0, False: -1.0})
+    d["actual"] = d["actual"] * sign
+    d["budget"] = d["budget"] * sign
+    g = d.groupby(by, as_index=False)[["actual", "budget", "favorable_amt"]].sum()
+    g["variance_amt"] = g["favorable_amt"]
     g["variance_pct"] = g.apply(
         lambda r: (r["variance_amt"] / abs(r["budget"])) if r["budget"] != 0 else None, axis=1
     )
     g["fav_unfav"] = g["favorable_amt"].apply(lambda x: "F" if x > 0 else ("U" if x < 0 else "-"))
-    return g
+    return g[by + ["actual", "budget", "variance_amt", "favorable_amt", "variance_pct", "fav_unfav"]]
 
 
 def pnl_summary(detail: pd.DataFrame) -> pd.DataFrame:
@@ -111,9 +122,12 @@ def pnl_summary(detail: pd.DataFrame) -> pd.DataFrame:
         "budget": [rev["budget"].sum(), exp["budget"].sum(), rev["budget"].sum() - exp["budget"].sum()],
     })
     out["variance_amt"] = out["actual"] - out["budget"]
-    out["variance_pct"] = out.apply(
-        lambda r: r["variance_amt"] / abs(r["budget"]) if r["budget"] != 0 else None, axis=1
-    )
+    # Net % is NM when the budgeted net is zero or negative: a % of a loss misleads.
+    out["variance_pct"] = [
+        out.loc[0, "variance_amt"] / abs(out.loc[0, "budget"]) if out.loc[0, "budget"] != 0 else None,
+        out.loc[1, "variance_amt"] / abs(out.loc[1, "budget"]) if out.loc[1, "budget"] != 0 else None,
+        out.loc[2, "variance_amt"] / out.loc[2, "budget"] if out.loc[2, "budget"] > 0 else None,
+    ]
     out["favorable_amt"] = [out.loc[0, "variance_amt"], -out.loc[1, "variance_amt"], out.loc[2, "variance_amt"]]
     out["fav_unfav"] = out["favorable_amt"].apply(lambda x: "F" if x > 0 else ("U" if x < 0 else "-"))
     return out
