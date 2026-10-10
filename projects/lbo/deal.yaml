@@ -1,0 +1,38 @@
+# Sample deal. $ in millions. Edit and re-run: python -m projects.lbo run --deal projects/lbo/deal.yaml
+deal_name: Gulf Coast Services Co
+entry_revenue: 400.0
+entry_ebitda: 80.0
+entry_multiple: 9.0
+fees_pct_ev: 0.02
+min_cash: 10.0
+tax_rate: 0.25
+da_pct_revenue: 0.03
+capex_pct_revenue: 0.03
+nwc_pct_revenue: 0.10
+active_scenario: Base
+
+tranches:
+  - name: Term Loan B
+    ebitda_multiple: 4.0
+    rate: 0.085
+    amort_pct: 0.01
+    sweep: true
+  - name: Senior Notes
+    ebitda_multiple: 1.5
+    rate: 0.10
+    amort_pct: 0.0
+    sweep: false
+
+scenarios:
+  Base:
+    revenue_growth: [0.06, 0.06, 0.05, 0.05, 0.04]
+    ebitda_margin:  [0.205, 0.21, 0.215, 0.22, 0.22]
+    exit_multiple: 9.0
+  Upside:
+    revenue_growth: [0.09, 0.09, 0.08, 0.07, 0.06]
+    ebitda_margin:  [0.21, 0.22, 0.23, 0.235, 0.24]
+    exit_multiple: 10.0
+  Downside:
+    revenue_growth: [0.02, 0.01, 0.02, 0.02, 0.02]
+    ebitda_margin:  [0.195, 0.19, 0.19, 0.19, 0.19]
+    exit_multiple: 7.5

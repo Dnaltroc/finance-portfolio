@@ -19,3 +19,6 @@ demo-comps:
 
 demo-variance:
 	python -m projects.variance demo --period 2026-09
+
+demo-lbo:
+	python -m projects.lbo run --deal projects/lbo/deal.yaml && python -m projects.lbo summary
