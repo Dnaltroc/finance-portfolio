@@ -1,0 +1,13 @@
+# Scoring and filter rules for the Form D sourcing digest.
+target_states: [LA, TX, FL]
+target_industries: [Technology, Other Technology, Business Services]
+min_amount_sold: 250000
+include_amendments: false
+amount_log_ceiling: 50000000   # a raise at or above this gets the full amount score
+weights:
+  amount: 45       # log-scaled amount sold
+  investors: 15    # investor count, full at 25+
+  first_time: 15   # CIK never seen in our database
+  state: 15        # issuer in a target state
+  industry: 10     # issuer in a target industry
+top_n: 25

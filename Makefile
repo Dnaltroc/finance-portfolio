@@ -22,3 +22,6 @@ demo-variance:
 
 demo-lbo:
 	python -m projects.lbo run --deal projects/lbo/deal.yaml && python -m projects.lbo summary
+
+demo-sourcing:
+	FINLIB_OFFLINE=1 python -m projects.sourcing run --day 2026-10-09

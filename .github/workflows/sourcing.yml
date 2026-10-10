@@ -1,0 +1,46 @@
+name: Form D sourcing digest
+
+on:
+  schedule:
+    - cron: "17 12 * * 1-5"   # 12:17 UTC weekdays (after EDGAR's daily index for the prior day is complete)
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev]"
+      - run: FINLIB_OFFLINE=1 pytest -q tests/test_sourcing.py
+
+  digest:
+    needs: tests
+    runs-on: ubuntu-latest
+    # Live run only when the identity secret exists; otherwise a dry run on the fixture day.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e .
+      - name: Restore database
+        uses: actions/cache@v4
+        with:
+          path: sourcing.sqlite
+          key: sourcing-db-${{ github.run_id }}
+          restore-keys: sourcing-db-
+      - name: Run digest
+        env:
+          SEC_IDENTITY: ${{ secrets.SEC_IDENTITY }}
+          FINLIB_OFFLINE: ${{ secrets.SEC_IDENTITY == '' && '1' || '0' }}
+        run: |
+          if [ "$FINLIB_OFFLINE" = "1" ]; then
+            python -m projects.sourcing run --day 2026-10-09
+          else
+            python -m projects.sourcing run
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: digest
+          path: output/digest_*.md

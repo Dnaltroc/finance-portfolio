@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<edgarSubmission xmlns="http://www.sec.gov/edgar/formd">
+  <schemaVersion>X0708</schemaVersion><submissionType>D</submissionType>
+  <primaryIssuer><cik>0001900018</cik><entityName>Riverbend Agritech Inc</entityName>
+    <issuerAddress><street1>100 Main St</street1><city>Somewhere</city><stateOrCountry>AR</stateOrCountry><zipCode>00000</zipCode></issuerAddress>
+    <jurisdictionOfInc>DE</jurisdictionOfInc><entityType>Corporation</entityType><yearOfInc><withinFiveYears>true</withinFiveYears><value>2023</value></yearOfInc></primaryIssuer>
+  <offeringData>
+    <industryGroup><industryGroupType>Agriculture</industryGroupType></industryGroup>
+    <issuerSize><revenueRange>Decline to Disclose</revenueRange></issuerSize>
+    <federalExemptionsExclusions><item>06b</item></federalExemptionsExclusions>
+    <typeOfFiling><newOrAmendment><isAmendment>false</isAmendment></newOrAmendment><dateOfFirstSale><value>2026-10-01</value></dateOfFirstSale></typeOfFiling>
+    <durationOfOffering><moreThanOneYear>false</moreThanOneYear></durationOfOffering>
+    <typesOfSecuritiesOffered><isEquityType>true</isEquityType><isDebtType>false</isDebtType></typesOfSecuritiesOffered>
+    <minimumInvestmentAccepted>0</minimumInvestmentAccepted>
+    <offeringSalesAmounts><totalOfferingAmount>8000000</totalOfferingAmount><totalAmountSold>8000000</totalAmountSold><totalRemaining>0</totalRemaining></offeringSalesAmounts>
+    <investors><hasNonAccreditedInvestors>false</hasNonAccreditedInvestors><totalNumberAlreadyInvested>6</totalNumberAlreadyInvested></investors>
+  </offeringData>
+</edgarSubmission>

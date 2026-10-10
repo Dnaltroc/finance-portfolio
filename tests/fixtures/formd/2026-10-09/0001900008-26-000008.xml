@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<edgarSubmission xmlns="http://www.sec.gov/edgar/formd">
+  <schemaVersion>X0708</schemaVersion><submissionType>D</submissionType>
+  <primaryIssuer><cik>0001900008</cik><entityName>Harborview Biologics Inc</entityName>
+    <issuerAddress><street1>100 Main St</street1><city>Somewhere</city><stateOrCountry>MA</stateOrCountry><zipCode>00000</zipCode></issuerAddress>
+    <jurisdictionOfInc>DE</jurisdictionOfInc><entityType>Corporation</entityType><yearOfInc><withinFiveYears>false</withinFiveYears><value>2018</value></yearOfInc></primaryIssuer>
+  <offeringData>
+    <industryGroup><industryGroupType>Biotechnology</industryGroupType></industryGroup>
+    <issuerSize><revenueRange>Decline to Disclose</revenueRange></issuerSize>
+    <federalExemptionsExclusions><item>06b</item></federalExemptionsExclusions>
+    <typeOfFiling><newOrAmendment><isAmendment>false</isAmendment></newOrAmendment><dateOfFirstSale><value>2026-10-01</value></dateOfFirstSale></typeOfFiling>
+    <durationOfOffering><moreThanOneYear>false</moreThanOneYear></durationOfOffering>
+    <typesOfSecuritiesOffered><isEquityType>true</isEquityType><isDebtType>false</isDebtType></typesOfSecuritiesOffered>
+    <minimumInvestmentAccepted>0</minimumInvestmentAccepted>
+    <offeringSalesAmounts><totalOfferingAmount>Indefinite</totalOfferingAmount><totalAmountSold>40000000</totalAmountSold><totalRemaining>Indefinite</totalRemaining></offeringSalesAmounts>
+    <investors><hasNonAccreditedInvestors>false</hasNonAccreditedInvestors><totalNumberAlreadyInvested>12</totalNumberAlreadyInvested></investors>
+  </offeringData>
+</edgarSubmission>
