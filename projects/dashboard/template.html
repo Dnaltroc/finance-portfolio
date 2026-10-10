@@ -1,0 +1,231 @@
+<title>Gulf Coast Portfolio KPIs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: summary tiles, then a small-multiples grid, then the sortable table, then one company in detail. */
+:root {
+  --bg: #f7f8f9; --surface: #ffffff; --line: #dfe3e8; --ink: #121417; --ink-2: #566069; --ink-3: #8a939c;
+  --accent: #2a78d6; --accent-soft: rgba(42,120,214,.12);
+  --good: #0ca30c; --warning: #c98500; --critical: #d03b3b;
+  --good-bg: rgba(12,163,12,.12); --warning-bg: rgba(250,178,25,.18); --critical-bg: rgba(208,59,59,.12);
+  --grid: #e9ecef; --font: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15171a; --surface: #1d2024; --line: #2f343a; --ink: #f0f2f4; --ink-2: #b4bcc4; --ink-3: #7d868f;
+  --accent: #3987e5; --accent-soft: rgba(57,135,229,.18); --grid: #272b30;
+  --good: #3fc43f; --warning: #e0a52e; --critical: #ef6b6b; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #15171a; --surface: #1d2024; --line: #2f343a; --ink: #f0f2f4; --ink-2: #b4bcc4; --ink-3: #7d868f;
+  --accent: #3987e5; --accent-soft: rgba(57,135,229,.18); --grid: #272b30;
+  --good: #3fc43f; --warning: #e0a52e; --critical: #ef6b6b; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45;
+  padding-block: 0 48px; padding-inline: 16px; }
+main { max-width: 1180px; margin: 0 auto; display: grid; gap: 28px; }
+header { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 5;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; padding-block: 18px 12px; border-bottom: 1px solid var(--line); }
+h1 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+.muted { color: var(--ink-2); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.tile .eyebrow { margin-bottom: 6px; }
+.tile .v { font-family: var(--mono); font-size: 24px; font-weight: 500; letter-spacing: -.02em; line-height: 1.1; }
+.tile .d { margin-top: 6px; font-size: 12px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+.up { color: var(--good); } .down { color: var(--critical); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 4px; min-width: 0; cursor: pointer; }
+.panel:hover, .panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.panel .t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.panel .t b { font-weight: 600; }
+.panel .t span { font-size: 12px; }
+.plot { width: 100%; height: 120px; }
+.plot-lg { width: 100%; height: 260px; }
+
+.pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.good { color: var(--good); background: var(--good-bg); }
+.pill.warning { color: var(--warning); background: var(--warning-bg); }
+.pill.critical { color: var(--critical); background: var(--critical-bg); }
+
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; cursor: pointer; user-select: none; }
+th[aria-sort="descending"]::after { content: " ▾"; } th[aria-sort="ascending"]::after { content: " ▴"; }
+tbody tr:hover { background: var(--accent-soft); }
+tbody tr { cursor: pointer; }
+tr:last-child td { border-bottom: 0; }
+
+.detail { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 16px; }
+.detail .top { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
+select { font: inherit; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.fact .eyebrow { margin-bottom: 2px; } .fact .v { font-family: var(--mono); font-size: 16px; }
+footer { font-size: 12px; color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main>
+  <header>
+    <h1 id="title">Portfolio KPIs</h1>
+    <span class="muted" id="asof"></span>
+    <span class="muted" style="margin-left:auto">Sample data, synthetic. 8 companies, 24 months.</span>
+  </header>
+
+  <section>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <h2>Monthly revenue by company <span class="muted" style="font-weight:400">(click a panel for detail)</span></h2>
+    <div class="grid" id="multiples"></div>
+  </section>
+
+  <section>
+    <h2>Latest month</h2>
+    <div class="tablewrap"><table id="tbl">
+      <thead><tr>
+        <th data-k="company">Company</th><th data-k="revenue">Revenue</th><th data-k="yoy_growth">YoY</th>
+        <th data-k="gross_margin">Gross margin</th><th data-k="net_burn">Net burn</th>
+        <th data-k="runway_months">Runway</th><th data-k="headcount">Headcount</th><th data-k="rev_per_head">Rev / head</th>
+      </tr></thead><tbody></tbody>
+    </table></div>
+  </section>
+
+  <section class="detail" id="detail">
+    <div class="top">
+      <label for="pick" class="eyebrow">Company</label>
+      <select id="pick"></select>
+      <span id="pickpill"></span>
+    </div>
+    <div class="facts" id="facts"></div>
+    <div class="two">
+      <div><div class="eyebrow">Revenue and gross profit, $ per month</div><div class="plot-lg" id="p-rev"></div></div>
+      <div><div class="eyebrow">Cash balance and monthly net burn, $</div><div class="plot-lg" id="p-cash"></div></div>
+    </div>
+  </section>
+
+  <footer>Runway = cash ÷ monthly net burn; companies with positive net income show as profitable. Status: critical under 6 months, warning 6 to 12, good 12 or more. Built by projects/dashboard in finance-portfolio.</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly.min.js"></script>
+<script>
+const DATA = __DATA__;
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const fmt$ = v => v == null ? "–" : (Math.abs(v) >= 1e6 ? "$" + (v/1e6).toFixed(2) + "M" : "$" + Math.round(v/1e3) + "k");
+const fmt$full = v => v == null ? "–" : "$" + Math.round(v).toLocaleString();
+const pct = v => v == null ? "–" : (v*100).toFixed(1) + "%";
+const sgn = v => v == null ? "" : v >= 0 ? "up" : "down";
+const months = v => v == null ? "Profitable" : v.toFixed(1) + " mo";
+const status = s => `<span class="pill ${s.runway_status}">${s.runway_status === "good" && s.runway_months == null ? "profitable" : s.runway_status}</span>`;
+
+function tiles() {
+  const t = DATA.totals;
+  const items = [
+    ["Portfolio revenue, " + t.month, fmt$(t.revenue), `<span class="${sgn(t.revenue_yoy)}">${t.revenue_yoy >= 0 ? "▲" : "▼"} ${pct(Math.abs(t.revenue_yoy))}</span> YoY`],
+    ["Blended gross margin", pct(t.gross_margin), "revenue-weighted"],
+    ["Net burn, this month", fmt$(t.net_burn), "across burning companies"],
+    ["Cash on hand", fmt$(t.cash), `${t.headcount} total headcount`],
+    ["Needs attention", `${t.critical + t.warning} <span style="font-size:14px;color:var(--ink-2)">of ${t.companies}</span>`,
+      `<span class="pill critical">${t.critical} critical</span> <span class="pill warning">${t.warning} warning</span>`],
+  ];
+  document.getElementById("tiles").innerHTML = items.map(([k, v, d]) =>
+    `<div class="tile"><div class="eyebrow">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+  document.getElementById("asof").textContent = "through " + t.month;
+}
+
+const base = () => ({
+  paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
+  font: { family: css("--font"), size: 11, color: css("--ink-2") },
+  margin: { l: 44, r: 8, t: 6, b: 24 }, showlegend: false, hovermode: "x unified",
+  xaxis: { showgrid: false, tickfont: { size: 10 }, linecolor: css("--line") },
+  yaxis: { gridcolor: css("--grid"), zeroline: false, tickprefix: "$", tickformat: "~s", tickfont: { size: 10 } },
+});
+const cfg = { displayModeBar: false, responsive: true };
+
+function multiples() {
+  const el = document.getElementById("multiples");
+  el.innerHTML = DATA.companies.map(c => {
+    const s = DATA.snapshot[c];
+    return `<div class="panel" tabindex="0" data-c="${c}"><div class="t"><b>${c}</b><span class="num ${sgn(s.yoy_growth)}">${s.yoy_growth >= 0 ? "▲" : "▼"} ${pct(Math.abs(s.yoy_growth))} YoY</span></div><div class="plot" id="m-${c.replace(/\W/g,"")}"></div></div>`;
+  }).join("");
+  DATA.companies.forEach(c => {
+    const d = DATA.series[c];
+    const last = d.month.length - 1;
+    Plotly.newPlot("m-" + c.replace(/\W/g, ""), [
+      { x: d.month, y: d.revenue, type: "scatter", mode: "lines", line: { color: css("--accent"), width: 2 }, fill: "tozeroy", fillcolor: css("--accent-soft"), hovertemplate: "%{x}<br>%{y:$,.0f}<extra></extra>" },
+      { x: [d.month[last]], y: [d.revenue[last]], type: "scatter", mode: "markers", marker: { color: css("--accent"), size: 8, line: { color: css("--surface"), width: 2 } }, hoverinfo: "skip" },
+    ], { ...base(), margin: { l: 40, r: 6, t: 4, b: 20 }, xaxis: { ...base().xaxis, nticks: 4 }, yaxis: { ...base().yaxis, nticks: 3 } }, cfg);
+  });
+  el.querySelectorAll(".panel").forEach(p => {
+    p.addEventListener("click", () => pick(p.dataset.c));
+    p.addEventListener("keydown", e => { if (e.key === "Enter") pick(p.dataset.c); });
+  });
+}
+
+let sortKey = "revenue", sortDir = -1;
+function table() {
+  const rows = DATA.companies.map(c => ({ company: c, ...DATA.snapshot[c] }));
+  rows.sort((a, b) => {
+    const x = a[sortKey], y = b[sortKey];
+    if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+    return (x > y ? 1 : x < y ? -1 : 0) * sortDir;
+  });
+  document.querySelector("#tbl tbody").innerHTML = rows.map(r => `<tr data-c="${r.company}">
+    <td><b>${r.company}</b></td><td class="num">${fmt$full(r.revenue)}</td>
+    <td class="num ${sgn(r.yoy_growth)}">${pct(r.yoy_growth)}</td><td class="num">${pct(r.gross_margin)}</td>
+    <td class="num">${r.net_burn > 0 ? fmt$full(r.net_burn) : "–"}</td>
+    <td>${status(r)} <span class="num muted">${r.runway_months == null ? "" : r.runway_months.toFixed(1) + " mo"}</span></td>
+    <td class="num">${r.headcount}</td><td class="num">${fmt$full(r.rev_per_head)}</td></tr>`).join("");
+  document.querySelectorAll("#tbl th").forEach(th => th.setAttribute("aria-sort", th.dataset.k === sortKey ? (sortDir < 0 ? "descending" : "ascending") : "none"));
+  document.querySelectorAll("#tbl tbody tr").forEach(tr => tr.addEventListener("click", () => pick(tr.dataset.c)));
+}
+document.querySelectorAll("#tbl th").forEach(th => th.addEventListener("click", () => {
+  if (sortKey === th.dataset.k) sortDir *= -1; else { sortKey = th.dataset.k; sortDir = th.dataset.k === "company" ? 1 : -1; }
+  table();
+}));
+
+function pick(c) {
+  const sel = document.getElementById("pick");
+  sel.value = c;
+  const s = DATA.snapshot[c], d = DATA.series[c];
+  document.getElementById("pickpill").innerHTML = status(s);
+  document.getElementById("facts").innerHTML = [
+    ["Revenue, " + s.month, fmt$full(s.revenue)], ["YoY growth", pct(s.yoy_growth)], ["3-month growth", pct(s.t3m_growth)],
+    ["Gross margin", pct(s.gross_margin)], ["Net burn", s.net_burn > 0 ? fmt$full(s.net_burn) : "profitable"],
+    ["Runway", months(s.runway_months)], ["Cash", fmt$full(s.cash)], ["Headcount", s.headcount],
+  ].map(([k, v]) => `<div class="fact"><div class="eyebrow">${k}</div><div class="v">${v}</div></div>`).join("");
+  const b = base();
+  Plotly.react("p-rev", [
+    { name: "Revenue", x: d.month, y: d.revenue, type: "bar", marker: { color: css("--accent") }, hovertemplate: "Revenue %{y:$,.0f}<extra></extra>" },
+    { name: "Gross profit", x: d.month, y: d.gross_profit, type: "scatter", mode: "lines", line: { color: "#eb6834", width: 2 }, hovertemplate: "Gross profit %{y:$,.0f}<extra></extra>" },
+  ], { ...b, showlegend: true, legend: { orientation: "h", y: 1.12, x: 0 }, bargap: .35 }, cfg);
+  Plotly.react("p-cash", [
+    { name: "Cash", x: d.month, y: d.cash, type: "scatter", mode: "lines", line: { color: "#1baf7a", width: 2 }, fill: "tozeroy", fillcolor: "rgba(27,175,122,.12)", hovertemplate: "Cash %{y:$,.0f}<extra></extra>" },
+    { name: "Net burn", x: d.month, y: d.net_burn, type: "bar", marker: { color: "#e34948" }, hovertemplate: "Net burn %{y:$,.0f}<extra></extra>" },
+  ], { ...b, showlegend: true, legend: { orientation: "h", y: 1.12, x: 0 }, bargap: .35 }, cfg);
+  try { localStorage.setItem("kpi-pick", c); } catch (e) {}
+  document.getElementById("detail").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function init() {
+  document.getElementById("title").textContent = DATA.title;
+  tiles(); multiples(); table();
+  const sel = document.getElementById("pick");
+  sel.innerHTML = DATA.companies.map(c => `<option>${c}</option>`).join("");
+  sel.addEventListener("change", () => pick(sel.value));
+  let first = DATA.companies.find(c => DATA.snapshot[c].runway_status === "critical") || DATA.companies[0];
+  try { const saved = localStorage.getItem("kpi-pick"); if (saved && DATA.series[saved]) first = saved; } catch (e) {}
+  pick(first);
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { multiples(); pick(sel.value); });
+}
+init();
+</script>

@@ -25,3 +25,6 @@ demo-lbo:
 
 demo-sourcing:
 	FINLIB_OFFLINE=1 python -m projects.sourcing run --day 2026-10-09
+
+demo-dashboard:
+	python -m projects.dashboard build
