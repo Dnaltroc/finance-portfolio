@@ -1,0 +1,8 @@
+.env
+.finlib_cache.sqlite
+output/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
