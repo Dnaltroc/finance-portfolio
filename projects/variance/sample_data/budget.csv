@@ -1,0 +1,37 @@
+period,department,account,account_type,amount
+2026-08,Sales,Product revenue,revenue,1800000
+2026-08,Sales,Services revenue,revenue,420000
+2026-08,Sales,Salaries,expense,310000
+2026-08,Sales,Commissions,expense,140000
+2026-08,Sales,Travel,expense,38000
+2026-08,Marketing,Salaries,expense,180000
+2026-08,Marketing,Paid media,expense,230000
+2026-08,Marketing,Events,expense,45000
+2026-08,Marketing,Software,expense,22000
+2026-08,Engineering,Salaries,expense,760000
+2026-08,Engineering,Cloud hosting,expense,165000
+2026-08,Engineering,Contractors,expense,90000
+2026-08,Engineering,Software,expense,41000
+2026-08,G&A,Interest income,revenue,12000
+2026-08,G&A,Salaries,expense,240000
+2026-08,G&A,Rent,expense,95000
+2026-08,G&A,Legal,expense,30000
+2026-08,G&A,Insurance,expense,18000
+2026-09,Sales,Product revenue,revenue,1800000
+2026-09,Sales,Services revenue,revenue,420000
+2026-09,Sales,Salaries,expense,310000
+2026-09,Sales,Commissions,expense,140000
+2026-09,Sales,Travel,expense,38000
+2026-09,Marketing,Salaries,expense,180000
+2026-09,Marketing,Paid media,expense,230000
+2026-09,Marketing,Events,expense,45000
+2026-09,Marketing,Software,expense,22000
+2026-09,Engineering,Salaries,expense,760000
+2026-09,Engineering,Cloud hosting,expense,165000
+2026-09,Engineering,Contractors,expense,90000
+2026-09,Engineering,Software,expense,41000
+2026-09,G&A,Interest income,revenue,12000
+2026-09,G&A,Salaries,expense,240000
+2026-09,G&A,Rent,expense,95000
+2026-09,G&A,Legal,expense,30000
+2026-09,G&A,Insurance,expense,18000

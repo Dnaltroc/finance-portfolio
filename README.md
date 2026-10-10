@@ -5,7 +5,7 @@ Five finance automation projects built on one shared library. Each project ends 
 | # | Project | Status | Run |
 | --- | --- | --- | --- |
 | 1 | [Comps Builder](projects/comps/README.md) — SEC XBRL + market data → Excel comps table | **Working** | `make demo-comps` |
-| 2 | Variance Report Generator — actuals vs budget → Excel pack + commentary | Planned | `make run-variance` |
+| 2 | [Variance Report Generator](projects/variance/README.md) — actuals vs budget → Excel pack + commentary | **Working** | `make demo-variance` |
 | 3 | LBO Returns Engine — Python LBO → live-formula Excel with scenarios | Planned | `make run-lbo` |
 | 4 | Deal Sourcing Pipeline — daily SEC Form D → scored digest | Planned | `make run-sourcing` |
 | 5 | Portfolio KPI Dashboard — monthly KPIs → hosted page | Planned | `make run-dashboard` |

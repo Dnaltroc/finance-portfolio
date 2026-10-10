@@ -16,3 +16,6 @@ run-comps:
 # Offline demo on fixtures, no keys needed
 demo-comps:
 	FINLIB_OFFLINE=1 python -m projects.comps run --tickers AAPL,MSFT,GOOGL --peerset demo
+
+demo-variance:
+	python -m projects.variance demo --period 2026-09

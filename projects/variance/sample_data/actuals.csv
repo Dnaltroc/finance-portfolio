@@ -1,0 +1,37 @@
+period,department,account,account_type,amount
+2026-08,Sales,Product revenue,revenue,1774631.92
+2026-08,Sales,Services revenue,revenue,469508.81
+2026-08,Sales,Salaries,expense,313743.17
+2026-08,Sales,Commissions,expense,135211.29
+2026-08,Sales,Travel,expense,38109.08
+2026-08,Marketing,Salaries,expense,178065.92
+2026-08,Marketing,Paid media,expense,221867.18
+2026-08,Marketing,Events,expense,45026.77
+2026-08,Marketing,Software,expense,21185.99
+2026-08,Engineering,Salaries,expense,755965.66
+2026-08,Engineering,Cloud hosting,expense,159322.09
+2026-08,Engineering,Contractors,expense,87053.13
+2026-08,Engineering,Software,expense,40752.42
+2026-08,G&A,Interest income,revenue,12313.78
+2026-08,G&A,Salaries,expense,232777.0
+2026-08,G&A,Rent,expense,92896.62
+2026-08,G&A,Legal,expense,30305.84
+2026-08,G&A,Insurance,expense,18644.7
+2026-09,Sales,Product revenue,revenue,1684325.63
+2026-09,Sales,Services revenue,revenue,416528.46
+2026-09,Sales,Salaries,expense,321811.13
+2026-09,Sales,Commissions,expense,134921.73
+2026-09,Sales,Travel,expense,39089.74
+2026-09,Marketing,Salaries,expense,176970.37
+2026-09,Marketing,Paid media,expense,286021.5
+2026-09,Marketing,Events,expense,43624.05
+2026-09,Marketing,Software,expense,21662.93
+2026-09,Engineering,Salaries,expense,779220.48
+2026-09,Engineering,Cloud hosting,expense,160785.59
+2026-09,Engineering,Contractors,expense,49823.14
+2026-09,Engineering,Software,expense,41455.64
+2026-09,G&A,Interest income,revenue,11877.5
+2026-09,G&A,Salaries,expense,240916.69
+2026-09,G&A,Rent,expense,91677.2
+2026-09,G&A,Legal,expense,69463.3
+2026-09,G&A,Insurance,expense,17576.58

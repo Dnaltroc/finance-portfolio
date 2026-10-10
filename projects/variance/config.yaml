@@ -1,0 +1,5 @@
+# Flag a line when EITHER rule trips.
+thresholds:
+  abs_amount: 25000     # dollars
+  pct: 0.10             # 10%
+  top_n: 15             # rows on the Flags sheet and in the commentary
