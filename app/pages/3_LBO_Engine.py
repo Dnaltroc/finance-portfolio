@@ -13,10 +13,10 @@ from finlib.excel_writer.lbo_workbook import write_lbo_workbook
 from finlib.models.lbo import LBOAssumptions, run_lbo, sensitivity
 from projects.lbo.cli import HERE
 
-ui.page_setup("LBO Engine",
-              "A sponsor-style leveraged buyout: change the deal on the left and watch the debt pay down "
-              "and the returns move. Exports a workbook where every computed cell is a live formula.",
-              ":material/account_balance:")
+ui.page_setup("Leveraged buyout returns",
+              "A sponsor-style LBO. Change the deal in the sidebar and watch the debt pay down and the returns "
+              "move; the export is a workbook where every computed cell is a live Excel formula.",
+              number="03", section="LBO engine")
 
 DEAL = yaml.safe_load((HERE / "deal.yaml").read_text())
 
@@ -92,23 +92,28 @@ r = run_lbo(a)
 years = r.years
 equity_ok = a.sponsor_equity > 0
 
-ui.sample_badge("Illustrative deal from `projects/lbo/deal.yaml`, $ in millions.")
+ui.sample_badge(f"Illustrative deal from `projects/lbo/deal.yaml`, {scenario} case, $ in millions.")
 
 # ---------------------------------------------------------------- returns tile ------
-st.subheader(f"Returns, {scenario} case")
-t = st.columns(5)
-t[0].metric(f"Entry EV ({a.entry_multiple:.1f}x EBITDA)", ui.fmt_musd(a.entry_ev))
-t[1].metric(f"Total debt ({a.total_debt / a.entry_ebitda:.1f}x EBITDA)", ui.fmt_musd(a.total_debt))
-t[2].metric("Sponsor equity", ui.fmt_musd(a.sponsor_equity))
+with st.container(horizontal=True):
+    st.metric("Entry EV", ui.fmt_musd(a.entry_ev), f"{a.entry_multiple:.1f}x EBITDA", delta_color="off",
+              delta_arrow="off", border=True, height="stretch")
+    st.metric("Total debt", ui.fmt_musd(a.total_debt), f"{a.total_debt / a.entry_ebitda:.1f}x EBITDA",
+              delta_color="off", delta_arrow="off", border=True, height="stretch")
+    st.metric("Sponsor equity", ui.fmt_musd(a.sponsor_equity), "cheque at close", delta_color="off",
+              delta_arrow="off", border=True, height="stretch")
+    if not equity_ok:
+        st.metric("MOIC", "n/a", border=True, height="stretch")
+        st.metric("IRR", "n/a", border=True, height="stretch")
+    else:
+        st.metric("MOIC", ui.fmt_x(r.moic, 2), f"exit equity {ui.fmt_musd(r.exit_equity)}", delta_color="off",
+                  delta_arrow="off", border=True, height="stretch")
+        st.metric("IRR", ui.fmt_pct(r.irr) if r.irr_defined else "n/a: equity wiped out",
+                  f"{a.hold_years}-year hold", delta_color="off", delta_arrow="off", border=True, height="stretch")
 if not equity_ok:
-    t[3].metric("MOIC", "n/a")
-    t[4].metric("IRR", "n/a")
     st.error("**n/a: debt exceeds the purchase price.** Debt is larger than EV + fees + minimum cash, so the "
              "sponsor puts in no equity and MOIC and IRR have no meaning. Lower leverage or raise the entry "
              "multiple.", icon=":material/block:")
-else:
-    t[3].metric("MOIC", ui.fmt_x(r.moic, 2), f"exit equity {ui.fmt_musd(r.exit_equity)}", delta_color="off", delta_arrow="off")
-    t[4].metric("IRR", ui.fmt_pct(r.irr) if r.irr_defined else "n/a: equity wiped out")
 if r.cash_shortfall_years:
     st.warning(f"Cash falls below the {ui.fmt_musd(a.min_cash)} minimum in year(s) "
                f"{', '.join(map(str, r.cash_shortfall_years))}. There is no revolver in this model, so the deal "
@@ -116,84 +121,89 @@ if r.cash_shortfall_years:
                icon=":material/warning:")
 
 # ---------------------------------------------------------------- sources & uses ----
-left, right = st.columns([1, 2])
+left, right = st.columns([1, 2], gap="large")
 with left:
-    st.markdown("**Sources** ($M)")
+    ui.exhibit(1, "Sources and uses at close")
     src = [(name, r.tranche_end[name][0]) for name in r.tranche_end] + [("Sponsor equity", a.sponsor_equity),
                                                                           ("Total sources", a.total_debt + a.sponsor_equity)]
-    st.dataframe(pd.DataFrame({"Source": [k for k, _ in src], "Amount": [ui.fmt_musd(v) for _, v in src]}),
+    st.dataframe(pd.DataFrame({"Sources": [k for k, _ in src], "$M": [ui.fmt_musd(v) for _, v in src]}),
                  hide_index=True, width="stretch")
-    st.markdown("**Uses** ($M)")
     use = [("Purchase enterprise value", a.entry_ev), ("Transaction fees", a.fees),
            ("Cash to balance sheet", a.min_cash), ("Total uses", a.entry_ev + a.fees + a.min_cash)]
-    st.dataframe(pd.DataFrame({"Use": [k for k, _ in use], "Amount": [ui.fmt_musd(v) for _, v in use]}),
+    st.dataframe(pd.DataFrame({"Uses": [k for k, _ in use], "$M": [ui.fmt_musd(v) for _, v in use]}),
                  hide_index=True, width="stretch")
 
 with right:
-    st.markdown("**Operating build** ($M; year 0 = entry)")
+    ui.exhibit(2, "Operating build and cash flow")
     lines = [("Revenue", r.revenue), ("EBITDA", r.ebitda), ("D&A", r.da), ("EBIT", r.ebit),
              ("Cash interest", r.interest), ("Taxes", r.taxes), ("Capex", r.capex), ("Change in NWC", r.delta_nwc),
              ("FCF before debt service", r.fcf_pre_debt), ("Cash available for sweep", r.cash_available_for_debt),
              ("Cash balance", r.cash_balance)]
-    op = pd.DataFrame({"": [k for k, _ in lines],
+    op = pd.DataFrame({"$M": [k for k, _ in lines],
                        **{f"Y{y}": [ui.fmt_musd(v[y]) for _, v in lines] for y in years}})
     st.dataframe(op, hide_index=True, width="stretch", height=(len(op) + 1) * 35 + 3,
-                 column_config={"": st.column_config.TextColumn(width="medium", pinned=True)})
+                 column_config={"$M": st.column_config.TextColumn(width="medium", pinned=True)})
+    ui.source("LBO engine. Year 0 = entry; interest on beginning balances; taxes floored at zero.")
 
 # ---------------------------------------------------------------- charts ------------
-c1, c2 = st.columns(2)
+c1, c2 = st.columns(2, gap="large")
 palette = ui.SERIES + ui.SERIES_EXTRA
 with c1:
+    ui.exhibit(3, "Debt outstanding by tranche, end of year")
     fig = go.Figure()
     for i, name in enumerate(r.tranche_end):
         fig.add_trace(go.Scatter(
             x=years, y=r.tranche_end[name], name=name, stackgroup="debt", mode="lines",
-            line=dict(width=2, color=palette[i % len(palette)]),
+            line=dict(width=1.5, color=palette[i % len(palette)]),
             hovertemplate=f"{name}<br>Year %{{x}}: $%{{y:,.1f}}M<extra></extra>",
         ))
-    fig.update_layout(title=dict(text="Debt outstanding by tranche, end of year", font_size=14))
     fig.update_xaxes(tickvals=years, ticktext=[f"Y{y}" for y in years])
     fig = ui.style(fig, y_title="$M", y_format=",.0f", legend=True)
     fig.update_layout(legend_traceorder="normal")
     ui.show(fig)
+    ui.source("debt schedule. Sweep tranches repaid senior-first after mandatory amortization.")
 
 with c2:
+    ui.exhibit(4, "Cash balance against the minimum")
     fig = go.Figure()
     for y in r.cash_shortfall_years:
-        fig.add_vrect(x0=y - 0.5, x1=y + 0.5, fillcolor=ui.CRITICAL, opacity=0.12, line_width=0)
+        fig.add_vrect(x0=y - 0.5, x1=y + 0.5, fillcolor=ui.CRITICAL, opacity=0.10, line_width=0)
     fig.add_trace(go.Scatter(x=years, y=r.cash_balance, mode="lines+markers", line=dict(color=ui.BLUE, width=2),
-                             marker=dict(size=8, line=dict(color="white", width=2)),
+                             marker=dict(size=8, color=ui.BLUE, line=dict(color=ui.PAPER, width=2)),
                              hovertemplate="Year %{x}<br>Cash $%{y:,.1f}M<extra></extra>"))
-    fig.add_hline(y=a.min_cash, line=dict(color=ui.INK_2, width=1.5, dash="dash"),
-                  annotation_text=f"Minimum cash {ui.fmt_musd(a.min_cash)}", annotation_position="bottom right")
-    title = "Cash balance" + (" (red band = below minimum)" if r.cash_shortfall_years else "")
-    fig.update_layout(title=dict(text=title, font_size=14))
+    fig.add_hline(y=a.min_cash, line=dict(color=ui.INK, width=1, dash="dot"),
+                  annotation_text=f"Minimum {ui.fmt_musd(a.min_cash)}", annotation_position="bottom right",
+                  annotation_font=dict(color=ui.INK_2, size=11))
     fig.update_xaxes(tickvals=years, ticktext=[f"Y{y}" for y in years])
     fig = ui.style(fig, y_title="$M", y_format=",.0f")
     fig.update_yaxes(rangemode="tozero")
     ui.show(fig)
+    ui.source("cash roll. " + ("Red bands mark years below the minimum." if r.cash_shortfall_years
+                               else "Cash holds at the minimum; everything above it sweeps to debt."))
 
 # ---------------------------------------------------------------- sensitivity -------
-st.subheader("IRR sensitivity: entry multiple vs exit multiple")
+ui.exhibit(5, f"IRR by entry and exit multiple, {scenario} case")
 entry_grid = [round(a.entry_multiple + d, 2) for d in (-2, -1, 0, 1, 2) if a.entry_multiple + d > 0]
 exit_grid = [round(exit_multiple + d, 2) for d in (-2, -1, 0, 1, 2) if exit_multiple + d > 0]
 grid = sensitivity(a, entry_grid, exit_grid, scenario)
 text = [[ui.fmt_pct(v) if v == v else "n/a" for v in row] for row in grid]
 fig = go.Figure(go.Heatmap(
     z=grid, x=[f"{x:.1f}x" for x in exit_grid], y=[f"{e:.1f}x" for e in entry_grid], text=text,
-    texttemplate="%{text}", textfont=dict(color=ui.INK, size=13),
+    texttemplate="%{text}", textfont=dict(color=ui.INK, size=13, family=ui.MONO),
     # light half of the blue ramp so dark text stays readable in every cell
-    colorscale=[[i / 3, c] for i, c in enumerate(ui.SEQ_BLUE[:4])],
-    xgap=2, ygap=2, colorbar=dict(title="IRR", tickformat=".0%"),
-    hovertemplate="Entry %{y}, exit %{x}<br>IRR %{text}<extra></extra>",
+    colorscale=[[i / 3, c] for i, c in enumerate(ui.SEQ_BLUE[:4])], showscale=False,
+    xgap=3, ygap=3, hovertemplate="Entry %{y}, exit %{x}<br>IRR %{text}<extra></extra>",
 ))
-fig.update_xaxes(title="Exit EV / EBITDA", side="top")
-fig.update_yaxes(title="Entry EV / EBITDA", autorange="reversed")
-ui.show(ui.style(fig, height=360))
-st.caption(f"{scenario} case, all other inputs as set. n/a = equity wiped out or no equity invested. "
-           "The center cell is the current deal.")
+if a.entry_multiple in entry_grid and exit_multiple in exit_grid:  # outline the current deal
+    i, j = entry_grid.index(a.entry_multiple), exit_grid.index(exit_multiple)
+    fig.add_shape(type="rect", x0=j - 0.5, x1=j + 0.5, y0=i - 0.5, y1=i + 0.5, line=dict(color=ui.INK, width=2))
+fig.update_xaxes(title="Exit EV / EBITDA", side="top", showline=False, ticks="")
+fig.update_yaxes(title="Entry EV / EBITDA", autorange="reversed", showgrid=False, zeroline=False)
+ui.show(ui.style(fig, height=330))
+ui.source("LBO engine, all other inputs as set. Outlined cell = current deal. n/a = equity wiped out or none invested.")
 
 # ---------------------------------------------------------------- download ----------
+st.space("small")
 data, name = ui.build_file(write_lbo_workbook, a, entry_grid=entry_grid, exit_grid=exit_grid)
 st.download_button("Download live-formula Excel model", data, file_name=name, mime=ui.XLSX_MIME,
                    icon=":material/download:", type="primary")

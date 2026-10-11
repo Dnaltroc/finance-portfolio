@@ -1,11 +1,13 @@
-"""Shared view helpers for the Streamlit app: formatting, mode switching, chart styling.
+"""Shared view helpers for the Streamlit app: page anatomy, formatting, mode switching, charts.
 
 Nothing here computes a financial figure. Every number shown comes from finlib or the
 project builders; this module only formats it, labels it, and packages downloads.
+Visual tokens mirror DESIGN.md and .streamlit/config.toml.
 """
 
 from __future__ import annotations
 
+import html
 import os
 import sys
 import tempfile
@@ -21,18 +23,40 @@ import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
 # ---------------------------------------------------------------- palette ------------
-# Reference data-viz palette: blue is the primary series; categorical slots 2-3 only
-# when a chart needs more than one series; status colors are reserved for state.
-BLUE = "#2a78d6"
-BLUE_SOFT = "rgba(42,120,214,0.12)"
-SERIES = ["#2a78d6", "#eb6834", "#1baf7a"]
-SERIES_EXTRA = ["#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]  # slots 4-8, in order
-GOOD, WARNING, CRITICAL = "#0ca30c", "#fab219", "#d03b3b"
-WARNING_TEXT = "#c98500"  # amber that clears contrast on white for text
-INK, INK_2, MUTED, GRID, AXIS = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
-SEQ_BLUE = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"]
+# Paper and ink, one blue. Series 2-3 only when a chart needs more than one series
+# (validated on the paper surface; see DESIGN.md). Status colors mean gain / loss only.
+PAPER, PAPER_2, RULE = "#FBFAF7", "#F3F1EB", "#E2DED4"
+INK, INK_2, MUTED = "#16181D", "#4B4F58", "#8A8D94"
+NAVY = "#1C3F73"
+BLUE = "#2A5EA8"
+BLUE_SOFT = "rgba(42,94,168,0.10)"
+SERIES = ["#2A5EA8", "#D4692C", "#1B9A78"]
+SERIES_EXTRA = ["#8A8D94", "#6B4E9B", "#9C6B1F", "#3C7A89", "#A23B56"]  # rarely needed
+GOOD, CRITICAL = "#1A7F4F", "#B42318"
+WARNING, WARNING_TEXT = "#F5B544", "#B54708"
+GRID, AXIS = RULE, "#CFCABD"
+SEQ_BLUE = ["#F1F4F9", "#DCE5F2", "#C3D3EA", "#A6BEE0", "#86A5D3", "#678CC5", "#4B74B5"]
+FONT = '"IBM Plex Sans", system-ui, sans-serif'
+MONO = '"IBM Plex Mono", ui-monospace, monospace'
 
 SAMPLE_LABEL = "Sample data (synthetic)"
+
+_CSS = f"""
+<style>
+.fp-eyebrow {{ font-family: {MONO}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: {MUTED}; margin: 0 0 -6px 0; }}
+.fp-eyebrow b {{ color: {NAVY}; font-weight: 500; }}
+.fp-dek {{ font-size: 17px; line-height: 1.5; color: {INK_2}; max-width: 62rem; margin: -4px 0 4px 0; }}
+.fp-exhibit {{ border-top: 1.5px solid {INK}; padding-top: 8px; margin-top: 6px; font-weight: 600;
+  font-size: 14px; color: {INK}; }}
+.fp-exhibit span {{ font-family: {MONO}; font-weight: 500; font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; color: {MUTED}; margin-right: 10px; }}
+.fp-rule {{ border: 0; border-top: 1px solid {RULE}; margin: 4px 0; }}
+.fp-num {{ font-family: {MONO}; font-size: 13px; color: {MUTED}; padding-top: 6px; }}
+[data-testid="stMetricValue"] {{ font-variant-numeric: tabular-nums; }}
+[data-testid="stMetricLabel"] p {{ font-size: 12px; color: {INK_2}; }}
+</style>
+"""
 
 
 # ---------------------------------------------------------------- formatting ---------
@@ -68,28 +92,52 @@ def fmt_pct(v: float | None, decimals: int = 1) -> str:
     return _paren(f"{abs(v):.{decimals}%}", v < 0)
 
 
-# ---------------------------------------------------------------- page chrome --------
-def page_setup(title: str, one_liner: str, icon: str = ":material/insights:") -> None:
-    st.set_page_config(page_title=f"{title} | finance-portfolio", page_icon=icon, layout="wide")
+# ---------------------------------------------------------------- page anatomy -------
+def page_setup(title: str, dek: str, number: str = "", section: str = "") -> None:
+    """Eyebrow, serif title and one-line dek: the masthead of every page."""
     load_secrets()
+    st.html(_CSS)
+    if number or section:
+        num = f"<b>{html.escape(number)}</b> · " if number else ""
+        st.html(f'<p class="fp-eyebrow">{num}{html.escape(section)}</p>')
     st.title(title)
-    st.caption(one_liner)
+    st.html(f'<p class="fp-dek">{html.escape(dek)}</p>')
+
+
+def provenance(sample: bool, note: str) -> None:
+    """One quiet line saying where the numbers on this page came from."""
+    badge = (f":gray-badge[:material/science: {SAMPLE_LABEL}]" if sample
+             else ":green-badge[:material/cloud_done: Live data]")
+    st.markdown(f"{badge}&nbsp; <small>{note}</small>", unsafe_allow_html=True)
 
 
 def sample_badge(note: str = "") -> None:
-    st.info(f"**{SAMPLE_LABEL}.** {note}".strip(), icon=":material/science:")
+    provenance(True, note)
 
 
 def live_badge(note: str) -> None:
-    st.success(f"**Live data.** {note}", icon=":material/cloud_done:")
+    provenance(False, note)
+
+
+def exhibit(n: int, title: str) -> None:
+    """Research-note exhibit label: a heavy rule, a mono number, a sentence-case title."""
+    st.html(f'<div class="fp-exhibit"><span>Exhibit {n}</span>{html.escape(title)}</div>')
+
+
+def source(text: str) -> None:
+    st.caption(f"Source: {text}")
+
+
+def rule() -> None:
+    st.html('<hr class="fp-rule">')
 
 
 def fu_pill(fu: str) -> str:
     """Markdown badge for a favorable / unfavorable judgment (status color + label)."""
     if fu == "F":
-        return ":green-badge[:material/check: Favorable]"
+        return ":green-badge[:material/arrow_upward: Favorable]"
     if fu == "U":
-        return ":red-badge[:material/close: Unfavorable]"
+        return ":red-badge[:material/arrow_downward: Unfavorable]"
     return ":gray-badge[On budget]"
 
 
@@ -169,21 +217,25 @@ XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 # ---------------------------------------------------------------- charts -------------
-def style(fig: go.Figure, height: int = 340, y_title: str | None = None,
+def style(fig: go.Figure, height: int = 320, y_title: str | None = None,
           y_format: str | None = None, legend: bool = False) -> go.Figure:
-    """House chart style: one y-axis, recessive grid, hover on, system sans."""
+    """House chart style: one y-axis, hairline grid, Plex Sans, no in-plot title (the page
+    carries the exhibit label), hover on."""
     fig.update_layout(
-        height=height, margin=dict(l=8, r=8, t=40, b=8),
+        height=height, margin=dict(l=4, r=12, t=12, b=4), title=None,
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family='system-ui, -apple-system, "Segoe UI", sans-serif', size=12, color=INK_2),
-        hoverlabel=dict(font_size=12), showlegend=legend,
-        legend=dict(orientation="h", yanchor="top", y=-0.18, x=0, title=None),
+        font=dict(family=FONT, size=12, color=INK_2),
+        hoverlabel=dict(font=dict(family=FONT, size=12), bgcolor="white", bordercolor=RULE),
+        showlegend=legend,
+        legend=dict(orientation="h", yanchor="top", y=-0.16, x=0, title=None, font=dict(size=12)),
     )
-    fig.update_xaxes(showgrid=False, linecolor=AXIS, ticks="")
-    fig.update_yaxes(gridcolor=GRID, zeroline=True, zerolinecolor=AXIS, title=y_title,
-                     tickformat=y_format)
+    fig.update_xaxes(showgrid=False, linecolor=AXIS, ticks="outside", tickcolor=AXIS, ticklen=3,
+                     tickfont=dict(color=MUTED), automargin=True, title_standoff=8, zeroline=False)
+    fig.update_yaxes(gridcolor=GRID, gridwidth=1, zeroline=True, zerolinecolor=AXIS, title=y_title,
+                     tickformat=y_format, tickfont=dict(color=MUTED), title_font=dict(color=MUTED, size=11),
+                     automargin=True, title_standoff=8)
     return fig
 
 
 def show(fig: go.Figure, key: str | None = None) -> None:
-    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False}, key=key)
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False}, key=key, theme=None)

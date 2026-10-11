@@ -1,12 +1,59 @@
+# Research-note theme. Tokens and rationale live in DESIGN.md.
+
 [theme]
 base = "light"
-primaryColor = "#2a78d6"
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f6f7f8"
-textColor = "#0b0b0b"
+primaryColor = "#1C3F73"
+backgroundColor = "#FBFAF7"
+secondaryBackgroundColor = "#F3F1EB"
+textColor = "#16181D"
+linkColor = "#1C3F73"
+linkUnderline = false
+borderColor = "#E2DED4"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "4px"
+buttonRadius = "4px"
+
+font = "'IBM Plex Sans':https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+headingFont = "Newsreader:https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap"
+codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"
+baseFontSize = 15
+headingFontSizes = ["40px", "26px", "20px", "16px", "14px", "12px"]
+headingFontWeights = [500, 500, 600, 600, 600, 600]
+codeFontSize = "0.86rem"
+codeTextColor = "#1C3F73"
+codeBackgroundColor = "#F3F1EB"
+metricValueFontSize = "1.9rem"
+metricValueFontWeight = 500
+
+dataframeBorderColor = "#E2DED4"
+dataframeHeaderBackgroundColor = "#F3F1EB"
+dataframeHeaderTextColor = "#4B4F58"
+
+blueColor = "#2A5EA8"
+greenColor = "#1A7F4F"
+redColor = "#B42318"
+orangeColor = "#B54708"
+yellowColor = "#B54708"
+grayColor = "#6B6F78"
+greenBackgroundColor = "#E3F1E9"
+redBackgroundColor = "#F8E4E1"
+orangeBackgroundColor = "#FBEBD7"
+grayBackgroundColor = "#ECEAE3"
+
+chartCategoricalColors = ["#2A5EA8", "#D4692C", "#1B9A78", "#8A8D94"]
+chartSequentialColors = ["#F1F4F9", "#DCE5F2", "#C3D3EA", "#A6BEE0", "#86A5D3", "#678CC5", "#4B74B5", "#2A5EA8", "#204B87", "#173867"]
+
+[theme.sidebar]
+backgroundColor = "#F3F1EB"
+secondaryBackgroundColor = "#FBFAF7"
+borderColor = "#E2DED4"
 
 [server]
 headless = true
 
 [browser]
 gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"

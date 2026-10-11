@@ -9,8 +9,8 @@ streamlit run app/Home.py
 
 ## Pages
 
-### Home
-Five cards, one per tool, with the resume line from each project README and a summary of how the numbers are verified.
+### Overview
+A masthead, one headline figure from each tool (computed live from the same builders), a numbered contents list with each project's resume line, and how the numbers are verified. Navigation sits across the top, and each page keeps its inputs in the sidebar.
 
 ![Home](../docs/screenshots/home.png)
 
@@ -52,6 +52,7 @@ Without it the Live toggle shows a warning and the page stays on labeled sample 
 
 ## Conventions
 
+- The visual system (research-note look: Newsreader, IBM Plex Sans and Mono, paper and ink, numbered exhibits with source lines) is defined in [DESIGN.md](../DESIGN.md) and `.streamlit/config.toml`.
 - `$M` with parentheses for negatives on comps and LBO. Whole dollars on variance and KPIs, matching their Excel packs.
 - Multiples as `12.3x` (MOIC `2.55x`), and `NM` wherever the engine returns `None`.
 - One y-axis per chart. Blue is the primary series. Red, amber and green mean status only, and always carry a label or icon.

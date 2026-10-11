@@ -41,3 +41,8 @@ Five finance tools on one shared library (`finlib/`). The engines in `finlib/mod
 | `projects/<name>/cli.py` | Typer CLI per tool; `README.md` per tool has the spec and resume line |
 | `app/` | Streamlit app: `Home.py`, `pages/`, `fp_ui.py` (formatting, mode switch, chart style). A view only; no math. |
 | `tests/fixtures/` | Offline data: comps JSON (illustrative), Form D day (synthetic), sample CSVs |
+
+## Design System
+Always read DESIGN.md before making any visual or UI decisions.
+All font choices, colors, spacing, and aesthetic direction are defined there.
+Do not deviate without explicit user approval.

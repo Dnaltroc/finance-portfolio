@@ -12,9 +12,10 @@ from finlib.models.ratios import summary_rows
 from finlib.providers.edgar import FIXTURE_DIR
 from projects.comps.cli import load_all
 
-ui.page_setup("Comps Builder",
-              "Ticker list in, comparable-company table out: EV/Revenue, EV/EBITDA, P/E, margins and "
-              "growth from SEC filings, with the source of every input.", ":material/table_chart:")
+ui.page_setup("Comparable companies",
+              "Tickers in, a comps table out: EV multiples, margins and growth built from what each company "
+              "tagged in its 10-K and 10-Q, with the source of every input one click away.",
+              number="01", section="Comps builder")
 
 FIXTURE_TICKERS = sorted(p.stem for p in FIXTURE_DIR.glob("*.json"))
 
@@ -60,22 +61,26 @@ with st.spinner("Pulling filings and prices..." if not offline else "Reading fix
 if offline:
     ui.sample_badge("Fixture financials are illustrative, not sourced from filings; prices are fixed.")
 else:
-    ui.live_badge("Fundamentals from SEC companyfacts (XBRL); price per the source column below.")
+    ui.live_badge("Fundamentals from SEC companyfacts (XBRL); price per the source column in Exhibit 4.")
 
 summary = {s["company"]: s for s in summary_rows(rows)}
 med = summary["Median"]
 
 # ---------------------------------------------------------------- headline ----------
-c = st.columns(4)
-c[0].metric("Median EV / EBITDA", ui.fmt_x(med["ev_ebitda"]))
-c[1].metric("Median EV / Revenue", ui.fmt_x(med["ev_revenue"]))
-c[2].metric("Median P / E", ui.fmt_x(med["pe"]))
-c[3].metric("Median EBITDA margin", ui.fmt_pct(med["ebitda_margin"]))
+with st.container(horizontal=True):
+    st.metric("Median EV / EBITDA", ui.fmt_x(med["ev_ebitda"]), f"mean {ui.fmt_x(summary['Mean']['ev_ebitda'])}",
+              delta_color="off", delta_arrow="off", border=True, height="stretch")
+    st.metric("Median EV / Revenue", ui.fmt_x(med["ev_revenue"]), f"mean {ui.fmt_x(summary['Mean']['ev_revenue'])}",
+              delta_color="off", delta_arrow="off", border=True, height="stretch")
+    st.metric("Median P / E", ui.fmt_x(med["pe"]), f"mean {ui.fmt_x(summary['Mean']['pe'])}",
+              delta_color="off", delta_arrow="off", border=True, height="stretch")
+    st.metric("Median EBITDA margin", ui.fmt_pct(med["ebitda_margin"]), f"mean {ui.fmt_pct(summary['Mean']['ebitda_margin'])}",
+              delta_color="off", delta_arrow="off", border=True, height="stretch")
+    st.metric("Peers", f"{len(rows)}", ", ".join(r.ticker for r in rows), delta_color="off",
+              delta_arrow="off", border=True, height="stretch")
 
 # ---------------------------------------------------------------- table -------------
-st.subheader("Comps table")
-st.caption("$ in millions except per-share. NM = not meaningful (zero or negative base); "
-           "NM values are excluded from the median and mean.")
+ui.exhibit(1, "Trading comparables, last twelve months")
 table = pd.DataFrame([{
     "Ticker": r.ticker, "Company": r.company, "Price": f"${r.price:,.2f}",
     "Mkt cap": ui.fmt_musd(r.market_cap_m, 0), "EV": ui.fmt_musd(r.ev_m, 0),
@@ -90,49 +95,54 @@ table = pd.DataFrame([{
     "Gross margin": ui.fmt_pct(s["gross_margin"]), "EBITDA margin": ui.fmt_pct(s["ebitda_margin"]),
     "Revenue growth": ui.fmt_pct(s["revenue_growth"]),
 } for label, s in summary.items()]).fillna("")
-st.dataframe(table, hide_index=True, width="stretch")
+st.dataframe(table, hide_index=True, width="stretch",
+             column_config={"Ticker": st.column_config.TextColumn(pinned=True),
+                            "Company": st.column_config.TextColumn(pinned=True)})
+ui.source("$ in millions except per share. NM = not meaningful (zero or negative base), excluded from the "
+          "median and mean. " + ("Bundled fixtures." if offline else "SEC companyfacts; prices per Exhibit 4."))
 
 # ---------------------------------------------------------------- charts ------------
-left, right = st.columns(2)
+left, right = st.columns(2, gap="large")
 with left:
+    ui.exhibit(2, "EV / EBITDA against the peer median")
     valid = [r for r in rows if r.ev_ebitda is not None]
     nm = [r.ticker for r in rows if r.ev_ebitda is None]
     fig = go.Figure(go.Bar(
         x=[r.ticker for r in valid], y=[r.ev_ebitda for r in valid], marker_color=ui.BLUE,
-        marker_cornerradius=4, text=[ui.fmt_x(r.ev_ebitda) for r in valid], textposition="outside",
+        marker_cornerradius=2, text=[ui.fmt_x(r.ev_ebitda) for r in valid], textposition="outside",
+        textfont=dict(color=ui.INK, size=12), cliponaxis=False,
         customdata=[r.company for r in valid], hovertemplate="%{customdata}<br>EV / EBITDA %{y:.1f}x<extra></extra>",
     ))
     if med["ev_ebitda"] is not None:
-        fig.add_hline(y=med["ev_ebitda"], line=dict(color=ui.INK_2, width=1.5, dash="dash"),
-                      annotation_text=f"Median {ui.fmt_x(med['ev_ebitda'])}", annotation_position="top right")
-    fig.update_layout(title=dict(text="EV / EBITDA by company", font_size=14), bargap=0.45)
+        fig.add_hline(y=med["ev_ebitda"], line=dict(color=ui.INK, width=1, dash="dot"),
+                      annotation_text=f"Median {ui.fmt_x(med['ev_ebitda'])}", annotation_position="top right",
+                      annotation_font=dict(color=ui.INK_2, size=11))
+    fig.update_layout(bargap=0.55)
     ui.show(ui.style(fig, y_title="EV / EBITDA (x)", y_format=".0f"))
-    if nm:
-        st.caption(f"Not shown (NM): {', '.join(nm)}.")
+    ui.source("company filings via the comps engine" + (f". Not shown (NM): {', '.join(nm)}." if nm else "."))
 
 with right:
+    ui.exhibit(3, "Profitability against growth")
     pts = [r for r in rows if r.ebitda_margin is not None and r.revenue_growth is not None]
     fig = go.Figure(go.Scatter(
         x=[r.revenue_growth for r in pts], y=[r.ebitda_margin for r in pts], mode="markers+text",
-        marker=dict(size=14, color=ui.BLUE, line=dict(color="white", width=2)),
-        text=[r.ticker for r in pts], textposition="top center",
+        marker=dict(size=13, color=ui.BLUE, line=dict(color=ui.PAPER, width=2)),
+        text=[r.ticker for r in pts], textposition="top center", textfont=dict(color=ui.INK, size=12),
+        cliponaxis=False,
         customdata=[[r.company, ui.fmt_pct(r.revenue_growth), ui.fmt_pct(r.ebitda_margin)] for r in pts],
         hovertemplate="%{customdata[0]}<br>Revenue growth %{customdata[1]}<br>"
                       "EBITDA margin %{customdata[2]}<extra></extra>",
     ))
-    fig.update_layout(title=dict(text="EBITDA margin vs revenue growth (LTM)", font_size=14))
-    fig.update_traces(cliponaxis=False)
-    fig.update_yaxes(automargin=True)
-    fig.update_xaxes(title="Revenue growth, LTM vs prior LTM", tickformat=".0%")
+    fig.update_xaxes(title="Revenue growth, LTM vs prior LTM", tickformat=".0%", title_font=dict(size=11))
     fig = ui.style(fig, y_title="EBITDA margin", y_format=".0%")
-    fig.update_layout(margin=dict(t=64, r=24))
+    fig.update_layout(margin=dict(t=24, r=24))
     ui.show(fig)
     dropped = [r.ticker for r in rows if r not in pts]
-    if dropped:
-        st.caption(f"Not plotted (margin or growth NM): {', '.join(dropped)}.")
+    ui.source("LTM vs prior-year LTM" + (f". Not plotted (NM): {', '.join(dropped)}." if dropped else "."))
 
 # ---------------------------------------------------------------- sources -----------
-with st.expander("Inputs and sources: where every number came from", icon=":material/source:"):
+ui.exhibit(4, "Inputs and sources")
+with st.expander("Every pulled value, its basis and its XBRL tag", icon=":material/source:"):
     qmap = {q.ticker: q for q in quotes}
     src = []
     for f in fundamentals:
@@ -153,6 +163,7 @@ with st.expander("Inputs and sources: where every number came from", icon=":mate
     st.caption("LTM basis per ticker: " + "; ".join(f"{f.ticker} {f.ltm_period}" for f in fundamentals))
 
 # ---------------------------------------------------------------- download ----------
+st.space("small")
 data, name = ui.build_file(write_comps_workbook, rows, fundamentals, quotes, peerset)
 st.download_button("Download Excel workbook", data, file_name=name, mime=ui.XLSX_MIME,
                    icon=":material/download:", type="primary")

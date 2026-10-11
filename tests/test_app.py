@@ -51,7 +51,7 @@ def metrics(at: AppTest) -> dict[str, str]:
 
 
 def sample_labeled(at: AppTest) -> bool:
-    return any(ui.SAMPLE_LABEL in i.value for i in at.info)
+    return any(ui.SAMPLE_LABEL in m.value for m in at.markdown)
 
 
 # ---------------------------------------------------------------- formatting ---------
@@ -64,12 +64,25 @@ def test_formatters_follow_excel_conventions():
 
 
 # ---------------------------------------------------------------- home ---------------
-def test_home_lists_five_tools_with_resume_lines():
+def test_router_opens_on_overview():
     at = run_page("Home.py")
+    assert "Finance tools that tie to the filing." in [t.value for t in at.title]
+
+
+def test_overview_lists_five_tools_with_resume_lines_and_live_tape():
+    from finlib.models.lbo import LBOAssumptions, run_lbo
+
+    at = run_page("Home.py")  # page links resolve only through the router
     captions = " ".join(c.value for c in at.caption)
     assert captions.count("Resume line:") == 5
     assert "Resume line: **" not in captions  # every README has its line
     assert "How the numbers are verified" in [s.value for s in at.subheader]
+    tape = metrics(at)
+    lbo = run_lbo(LBOAssumptions(**yaml.safe_load((ROOT / "projects/lbo/deal.yaml").read_text())))
+    assert tape["03 · LBO engine"] == ui.fmt_pct(lbo.irr) == "20.6%"
+    assert tape["01 · Comps builder"] == "20.8x"
+    assert tape["04 · Deal sourcing"] == "25 of 36"
+    assert tape["02 · Variance report"] == "($190,288)"
 
 
 # ---------------------------------------------------------------- comps --------------
@@ -132,10 +145,12 @@ def test_variance_matches_finlib_and_downloads_pack(downloads):
 
 def test_variance_threshold_slider_changes_flag_count():
     at = run_page("pages/2_Variance_Report.py")
-    before = [s.value for s in at.subheader if s.value.startswith("Flagged lines")][0]
+    def flagged(at):
+        return next(c.value for c in at.caption if "lines flagged" in c.value).split(" lines")[0]
+
+    before = flagged(at)
     at.sidebar.slider[0].set_value(5_000).run()
-    after = [s.value for s in at.subheader if s.value.startswith("Flagged lines")][0]
-    assert before == "Flagged lines (4)" and after != before
+    assert before == "4" and int(flagged(at)) > 4
 
 
 # ---------------------------------------------------------------- LBO ----------------
@@ -224,7 +239,7 @@ def test_dashboard_matches_totals_and_downloads_page(downloads):
     p = payload_from_frame(pd.read_csv(HERE / "sample_data" / "kpis.csv"), "Gulf Coast Portfolio KPIs")
     t = p["totals"]
     m = metrics(at)
-    assert m["Portfolio revenue"] == ui.fmt_usd(t["revenue"])
+    assert m[f"Portfolio revenue, {t['month']}"] == ui.fmt_usd(t["revenue"])
     assert m["Blended gross margin"] == ui.fmt_pct(t["gross_margin"])
     assert m["Needs attention"] == f"{t['critical'] + t['warning']} of {t['companies']}" == "3 of 8"
     assert downloads["index.html"].decode() == render_page(p)
