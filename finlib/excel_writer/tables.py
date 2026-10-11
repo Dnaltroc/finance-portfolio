@@ -147,9 +147,13 @@ def _input_row(ws, r, ticker, concept, basis, value, source):
 
 
 def _notes_sheet(ws, fundamentals: list[Fundamentals], quotes: list[Quote]) -> None:
+    fixture = all("fixture" in b for f in fundamentals for b in f.basis.values())
+    ltm_line = ("LTM = sum of the four most recent fixture quarters per concept (sample data)." if fixture else
+                "LTM = the 10-K twelve-month value, or after a 10-Q: prior fiscal year + year-to-date "
+                "- prior year-to-date (SEC companyfacts). The arithmetic per value is on the Inputs sheet.")
     lines = [
         "Methodology",
-        "LTM = sum of the four most recent reported quarters per concept.",
+        ltm_line,
         "EBITDA = operating income + depreciation and amortization (not adjusted).",
         "EV = market cap + total debt - cash. No minority interest, preferred, or leases.",
         "Multiples on a zero or negative denominator are shown as NM and excluded from median/mean.",

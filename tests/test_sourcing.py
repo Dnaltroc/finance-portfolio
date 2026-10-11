@@ -109,3 +109,17 @@ def test_digest_file_written(tmp_path):
     assert text.startswith("# Form D sourcing digest: 2026-10-09")
     assert "sec.gov/Archives/edgar/data" in text
     assert stats["kept"] >= 15
+
+
+def test_funnel_counts_follow_drop_order():
+    from finlib.models.sourcing import funnel
+
+    rows = rank([
+        _fd(accession="1", cik="1"),
+        _fd(accession="2", cik="2", industry_group="Pooled Investment Fund"),
+        _fd(accession="3", cik="3", is_amendment=True),
+        _fd(accession="4", cik="4", total_sold=1_000),
+        _fd(accession="5", cik="5"),
+    ], ScoringConfig(), set())
+    assert funnel(rows) == [("Form D filings", 5), ("After fund filter", 4),
+                            ("After amendment filter", 3), ("Kept (at or above min amount)", 2)]

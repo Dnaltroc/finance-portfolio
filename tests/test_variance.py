@@ -106,3 +106,28 @@ def test_sample_data_runs_end_to_end(tmp_path: Path):
     ws = load_workbook(tmp_path / "variance_2026-09.xlsx")["Flags"]
     accounts = [ws.cell(row=r, column=2).value for r in range(4, 8)]
     assert "Paid media" in accounts  # the planted overspend is in the top flags
+
+
+def test_commentary_uses_driver_when_filled_and_blank_otherwise():
+    a, b = _mini()
+    flags = top_flags(compute_variance(a, b, Thresholds(abs_amount=1, pct=0.05)), 10)
+    flags.loc[flags["account"] == "Product revenue", "driver"] = "two enterprise renewals pulled forward"
+    md = commentary(flags, "2026-09")
+    assert "driven by two enterprise renewals pulled forward" in md
+    assert md.count("driven by ___") == len(flags) - 1
+
+
+def test_waterfall_steps_bridge_budget_net_to_actual_net():
+    from finlib.models.variance import waterfall
+
+    actuals = validate_ledger(pd.read_csv(SD / "actuals.csv"), "actuals")
+    budget = validate_ledger(pd.read_csv(SD / "budget.csv"), "budget")
+    detail = compute_variance(actuals[actuals["period"] == "2026-09"], budget[budget["period"] == "2026-09"],
+                              Thresholds())
+    net = pnl_summary(detail).set_index("line").loc["Net"]
+    w = waterfall(detail)
+    assert w.iloc[0]["step"] == "Budget net" and w.iloc[0]["amount"] == pytest.approx(net["budget"])
+    assert w.iloc[-1]["step"] == "Actual net" and w.iloc[-1]["amount"] == pytest.approx(net["actual"])
+    steps = w[w["kind"] == "relative"]
+    assert set(steps["step"]) == set(detail["department"])
+    assert steps["amount"].sum() == pytest.approx(net["actual"] - net["budget"])

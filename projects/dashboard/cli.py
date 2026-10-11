@@ -25,7 +25,12 @@ def _root():
 
 
 def build_payload(kpis_csv: Path, title: str) -> dict:
-    k = compute_kpis(validate_kpis(pd.read_csv(kpis_csv)))
+    return payload_from_frame(pd.read_csv(kpis_csv), title)
+
+
+def payload_from_frame(raw: pd.DataFrame, title: str) -> dict:
+    """Validate and compute every KPI, then shape the page payload. No I/O."""
+    k = compute_kpis(validate_kpis(raw))
     snap = latest_snapshot(k)
     companies = snap.sort_values("revenue", ascending=False)["company"].tolist()
     series = {}
@@ -49,15 +54,20 @@ def save_sqlite(kpis_csv: Path, db: Path) -> None:
 
 
 def build_page(kpis_csv: Path, title: str, out: Path) -> Path:
-    import html as html_mod
-
-    payload = build_payload(kpis_csv, title)
-    data = json.dumps(payload).replace("</", "<\\/")  # never let a value close the script tag
-    html = (HERE / "template.html").read_text().replace("__DATA__", data)
-    html = html.replace("<title>Gulf Coast Portfolio KPIs</title>", f"<title>{html_mod.escape(title)}</title>")
+    html = render_page(build_payload(kpis_csv, title))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
     return out
+
+
+def render_page(payload: dict) -> str:
+    """The self-contained dashboard HTML for a payload built by payload_from_frame."""
+    import html as html_mod
+
+    data = json.dumps(payload).replace("</", "<\\/")  # never let a value close the script tag
+    html = (HERE / "template.html").read_text().replace("__DATA__", data)
+    title = html_mod.escape(payload["title"])
+    return html.replace("<title>Gulf Coast Portfolio KPIs</title>", f"<title>{title}</title>")
 
 
 @app.command()

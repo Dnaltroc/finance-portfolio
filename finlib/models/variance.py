@@ -140,17 +140,34 @@ def top_flags(detail: pd.DataFrame, n: int) -> pd.DataFrame:
 
 
 def commentary(flags: pd.DataFrame, period: str) -> str:
-    """One bullet per flagged line in plain FP&A language, with a blank for the driver."""
+    """One bullet per flagged line in plain FP&A language; the driver column fills the blank."""
     lines = [f"# Variance commentary: {period}", "",
              "Draft generated from flagged lines. Fill in the driver after each 'driven by'.", ""]
     for _, r in flags.iterrows():
         direction = "over" if r["variance_amt"] > 0 else "under"
         pct = f" ({abs(r['variance_pct']):.0%})" if pd.notna(r["variance_pct"]) else ""
         fu = "favorable" if r["fav_unfav"] == "F" else "unfavorable"
+        driver = str(r.get("driver") or "").strip() or "___"  # analyst's driver once filled in
         lines.append(
             f"- **{r['department']} / {r['account']}**: ${abs(r['variance_amt']):,.0f}{pct} "
-            f"{direction} budget, {fu}, driven by ___"
+            f"{direction} budget, {fu}, driven by {driver}"
         )
     if len(lines) == 4:
         lines.append("- No lines exceeded the flag thresholds this period.")
     return "\n".join(lines) + "\n"
+
+
+def waterfall(detail: pd.DataFrame) -> pd.DataFrame:
+    """Bridge from budgeted net to actual net, one step per department.
+
+    Each step is the department's favorable_amt (its contribution variance), so the steps
+    sum to actual net - budget net by construction. Columns: step, amount, kind
+    ("total" for the two ends, "relative" for department steps).
+    """
+    summary = pnl_summary(detail).set_index("line")
+    steps = rollup(detail, ["department"])[["department", "favorable_amt"]]
+    rows = [{"step": "Budget net", "amount": float(summary.loc["Net", "budget"]), "kind": "total"}]
+    rows += [{"step": d, "amount": float(v), "kind": "relative"}
+             for d, v in zip(steps["department"], steps["favorable_amt"])]
+    rows.append({"step": "Actual net", "amount": float(summary.loc["Net", "actual"]), "kind": "total"})
+    return pd.DataFrame(rows)

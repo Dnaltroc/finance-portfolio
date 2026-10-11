@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
@@ -28,25 +29,49 @@ def load_thresholds(config: Path) -> Thresholds:
     return Thresholds(**raw.get("thresholds", {}))
 
 
-def run_variance(actuals_csv: Path, budget_csv: Path, period: str, config: Path, out_dir: Path) -> tuple[Path, Path]:
-    th = load_thresholds(config)
-    actuals = validate_ledger(pd.read_csv(actuals_csv), "actuals")
-    budget = validate_ledger(pd.read_csv(budget_csv), "budget")
+@dataclass
+class VariancePack:
+    """Everything the Excel pack and the commentary are built from, for one period."""
+    period: str
+    thresholds: Thresholds
+    actuals: pd.DataFrame
+    budget: pd.DataFrame
+    detail: pd.DataFrame
+    summary: pd.DataFrame
+    by_dept: pd.DataFrame
+    flags: pd.DataFrame
+
+    @property
+    def thresholds_text(self) -> str:
+        th = self.thresholds
+        return f"|variance| >= ${th.abs_amount:,.0f} or >= {th.pct:.0%}"
+
+
+def build_variance(actuals_raw: pd.DataFrame, budget_raw: pd.DataFrame, period: str,
+                   th: Thresholds) -> VariancePack:
+    """Validate both ledgers, keep one period, and compute every table. No I/O."""
+    actuals = validate_ledger(actuals_raw, "actuals")
+    budget = validate_ledger(budget_raw, "budget")
     actuals = actuals[actuals["period"] == period]
     budget = budget[budget["period"] == period]
     if actuals.empty or budget.empty:
         raise typer.BadParameter(f"No rows for period {period} in both files")
-
     detail = compute_variance(actuals, budget, th)
-    summary = pnl_summary(detail)
-    by_dept = rollup(detail, ["department"])
-    flags = top_flags(detail, th.top_n)
-    text = f"|variance| >= ${th.abs_amount:,.0f} or >= {th.pct:.0%}"
+    return VariancePack(period, th, actuals, budget, detail, pnl_summary(detail),
+                        rollup(detail, ["department"]), top_flags(detail, th.top_n))
 
-    xlsx = write_variance_workbook(period, summary, by_dept, detail, flags, actuals, budget, text, out_dir)
-    md = out_dir / f"commentary_{period}.md"
-    md.write_text(commentary(flags, period))
+
+def write_variance(pack: VariancePack, out_dir: Path) -> tuple[Path, Path]:
+    xlsx = write_variance_workbook(pack.period, pack.summary, pack.by_dept, pack.detail, pack.flags,
+                                   pack.actuals, pack.budget, pack.thresholds_text, out_dir)
+    md = out_dir / f"commentary_{pack.period}.md"
+    md.write_text(commentary(pack.flags, pack.period))
     return xlsx, md
+
+
+def run_variance(actuals_csv: Path, budget_csv: Path, period: str, config: Path, out_dir: Path) -> tuple[Path, Path]:
+    pack = build_variance(pd.read_csv(actuals_csv), pd.read_csv(budget_csv), period, load_thresholds(config))
+    return write_variance(pack, out_dir)
 
 
 @app.command()

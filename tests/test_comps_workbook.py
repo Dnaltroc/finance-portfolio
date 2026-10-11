@@ -27,3 +27,19 @@ def test_inputs_sheet_cites_a_source_per_value(tmp_path: Path):
     rows = list(ws.iter_rows(min_row=4, values_only=True))
     assert len(rows) == 14  # price, shares, 5 flow + 5 prior-LTM rows, 2 stock concepts
     assert all(r[4] for r in rows)  # source column populated
+
+
+def test_notes_methodology_matches_ltm_basis():
+    from finlib.excel_writer.tables import _notes_sheet
+    from finlib.providers import EdgarProvider, MarketProvider
+    from openpyxl import Workbook
+
+    f = EdgarProvider().fundamentals("AAPL")
+    q = MarketProvider().quote("AAPL")
+    ws = Workbook().active
+    _notes_sheet(ws, [f], [q])
+    assert "fixture quarters" in ws["A2"].value
+    f.basis = {"revenue": "FY 2024-09-29..2025-09-27 1 + YTD ... - prior YTD ..."}
+    ws = Workbook().active
+    _notes_sheet(ws, [f], [q])
+    assert "prior year-to-date" in ws["A2"].value
