@@ -2,6 +2,10 @@
 
 Every company raising private capital under Reg D files a Form D within 15 days of first sale. That filing hits EDGAR weeks before a press release, and it is the primary record behind what PitchBook and FilingFlow sell. This pipeline reads yesterday's filings, drops the funds, scores the operating-company raises, and writes a ranked digest.
 
+## Resume line
+
+> Built a daily deal-sourcing pipeline on SEC Form D filings that filters out funds and scores operating-company raises against target states and industries.
+
 ```bash
 FINLIB_OFFLINE=1 python -m projects.sourcing run --day 2026-10-09        # fixture day, no network
 python -m projects.sourcing run                                          # yesterday, live (needs SEC_IDENTITY)

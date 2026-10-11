@@ -2,6 +2,10 @@
 
 A sponsor-style LBO in Python, exported to an Excel workbook where every computed cell is a live formula. Change an input or pick a scenario from the dropdown and IRR moves. The Python engine is the reference; tests recalc the workbook in LibreOffice and assert Excel's `IRR()` matches Python within 0.1%.
 
+## Resume line
+
+> Built an LBO returns engine in Python with a senior-first cash sweep and scenarios, exported to a live-formula Excel model whose IRR is tested against the Python engine.
+
 ```bash
 python -m projects.lbo run --deal projects/lbo/deal.yaml      # writes output/lbo_<deal>.xlsx
 python -m projects.lbo summary --deal projects/lbo/deal.yaml  # all scenarios + sensitivity grid in the terminal

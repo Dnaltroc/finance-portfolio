@@ -2,6 +2,10 @@
 
 Two CSV exports in, a budget-vs-actual Excel pack and a draft commentary out. Built for the monthly close: validate the GL export, compute variances with the right sign, rank what matters, hand the analyst a Flags sheet with a blank Driver column.
 
+## Resume line
+
+> Automated the monthly budget-vs-actual pack: validated GL exports, sign-correct F/U variances, contribution rollups by department, and a draft commentary for each flagged line.
+
 ```bash
 python -m projects.variance demo --period 2026-09                       # bundled sample data
 python -m projects.variance run --actuals a.csv --budget b.csv --period 2026-09 --config projects/variance/config.yaml

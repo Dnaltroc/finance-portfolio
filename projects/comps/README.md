@@ -2,6 +2,10 @@
 
 Give it a ticker list, get a formatted comparable-company workbook: EV/Revenue, EV/EBITDA, P/E, margins, growth, with median and mean rows and a source for every input.
 
+## Resume line
+
+> Built a Python comps builder that pulls LTM financials from SEC XBRL companyfacts and writes a sourced Excel comps table; tied every AAPL, MSFT and GOOGL input to the companies' earnings releases.
+
 ```bash
 # Offline demo on fixtures (no keys)
 FINLIB_OFFLINE=1 python -m projects.comps run --tickers AAPL,MSFT,GOOGL --peerset demo

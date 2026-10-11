@@ -2,6 +2,10 @@
 
 Monthly KPIs for a set of companies in, one self-contained interactive page out. Summary tiles, a revenue small-multiples grid, a sortable table with red/amber/green runway status, and a per-company detail view. Hostable on GitHub Pages, S3, or as a Claude artifact; no server.
 
+## Resume line
+
+> Built a portfolio KPI dashboard (revenue, margin, burn, runway with red/amber/green status) as a static page and an interactive Streamlit app.
+
 ```bash
 python -m projects.dashboard build                                     # sample data -> dist/index.html
 python -m projects.dashboard build --kpis fund.csv --title "Fund II"   # your data
