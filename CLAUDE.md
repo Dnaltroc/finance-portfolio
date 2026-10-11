@@ -9,17 +9,18 @@ Five finance tools on one shared library (`finlib/`). The engines in `finlib/mod
 ## Rules
 
 1. **`finlib/models/` and `finlib/providers/` are frozen.** Do not change math, tag lists, LTM logic, scoring, or sign conventions. If you believe a number is wrong, write a failing test in `tests/` that proves it, then stop and ask.
-2. **Run `FINLIB_OFFLINE=1 pytest -q` before and after any change.** 44 tests must pass. On Windows PowerShell: `$env:FINLIB_OFFLINE="1"; pytest -q`.
+2. **Run `FINLIB_OFFLINE=1 pytest -q` before and after any change.** All tests must pass (59 + 2 that need LibreOffice, which CI installs). On Windows PowerShell: `$env:FINLIB_OFFLINE="1"; pytest -q`.
 3. **New calculations go in `finlib/models/` with a test**, never inline in a page, CLI, or notebook.
 4. **Never fabricate a figure.** If live data is unavailable, say so and fall back to fixtures labeled "Sample data (synthetic)".
 5. **No paid APIs, no database server, no auth, no new backend service** without asking. SQLite files and free APIs (SEC, yfinance) are fine.
 6. **Excel conventions:** blue font = input, black = formula or computed; negatives in parentheses; `NM` where a ratio has no meaning; every pulled value carries its source.
-7. **Keep the CLIs working.** `make demo-*` targets are the regression check and the README demos.
-8. Commit per logical unit with a clear message. Do not commit `.env`, `output/`, `dist/`, or `*.sqlite`.
+7. **The app is a view.** Pages call finlib and the `build_*` / `load_all` / `payload_from_frame` builders in `projects/`; `tests/test_app.py` asserts each page's headline numbers equal a direct finlib call.
+8. **Keep the CLIs working.** `make demo-*` targets are the regression check and the README demos.
+9. Commit per logical unit with a clear message. Do not commit `.env`, `output/`, `dist/`, or `*.sqlite`.
 
 ## Environment
 
-- Python 3.11+. `pip install -e ".[dev]"`; add `.[live]` for yfinance; `.[app]` once the Streamlit app exists.
+- Python 3.11+. `pip install -e ".[dev]"`; add `.[live]` for yfinance; `.[app]` for the Streamlit app (`streamlit run app/Home.py`).
 - `.env` holds `SEC_IDENTITY` (required for any live SEC call; format `"Name email"`) and optionally `FINNHUB_KEY`.
 - `FINLIB_OFFLINE=1` makes every provider read `tests/fixtures/` instead of the network.
 - LibreOffice (`soffice`) is optional; two LBO tests that recalc Excel formulas skip without it.
@@ -38,4 +39,5 @@ Five finance tools on one shared library (`finlib/`). The engines in `finlib/mod
 | `finlib/models/kpi.py` | Margin, burn, runway, calendar-month growth |
 | `finlib/excel_writer/` | openpyxl writers; LBO workbook is live formulas |
 | `projects/<name>/cli.py` | Typer CLI per tool; `README.md` per tool has the spec and resume line |
+| `app/` | Streamlit app: `Home.py`, `pages/`, `fp_ui.py` (formatting, mode switch, chart style). A view only; no math. |
 | `tests/fixtures/` | Offline data: comps JSON (illustrative), Form D day (synthetic), sample CSVs |

@@ -1,0 +1,66 @@
+# finance-portfolio app
+
+A Streamlit front end for the five tools. Every page opens on sample data, calls the same `finlib` functions and project builders as the CLIs, and downloads the same Excel or markdown file. The app is a view: it formats numbers, it never computes them.
+
+```bash
+pip install -e ".[app]"
+streamlit run app/Home.py
+```
+
+## Pages
+
+### Home
+Five cards, one per tool, with the resume line from each project README and a summary of how the numbers are verified.
+
+![Home](../docs/screenshots/home.png)
+
+### Comps Builder
+Tickers in (default AAPL, MSFT, GOOGL), Offline or Live. Shows median multiples, the comps table with Median and Mean rows, EV/EBITDA by company against the median, EBITDA margin against revenue growth, and an **Inputs and sources** table that lists every pulled value with its XBRL tag and LTM arithmetic. Manual prices apply in Live mode only, because offline runs always use the fixture price.
+
+![Comps Builder](../docs/screenshots/comps.png)
+
+### Variance Report
+Upload `actuals.csv` and `budget.csv` or use the sample. Pick a period and set the flag thresholds. Shows Revenue / Expenses / Net with favorable / unfavorable badges and a bridge from budgeted to actual net by department. The flagged lines sit in an editable table: type a driver and the commentary and both downloads pick it up.
+
+![Variance Report](../docs/screenshots/variance.png)
+
+### LBO Engine
+Every `deal.yaml` input is a sidebar control: tranches and the scenario path are editable tables, and multiples are sliders. Shows the returns tile, sources and uses, the operating build, debt paydown by tranche, cash against the minimum (red band where it falls short), and an IRR heatmap of entry multiple against exit multiple. If debt exceeds the purchase price, the page shows **n/a** in place of a negative MOIC. The download is the live-formula workbook.
+
+![LBO Engine](../docs/screenshots/lbo.png)
+
+### Deal Sourcing
+One day of SEC Form D filings, Offline (the synthetic fixture day) or Live (any weekday). Target states, industries and weight sliders re-score instantly without re-fetching. Shows the filter funnel, kept raises by state, the ranked table with links to each filing, and a score breakdown per row. The download is the markdown digest.
+
+![Deal Sourcing](../docs/screenshots/sourcing.png)
+
+### KPI Dashboard
+Upload `kpis.csv` or use the sample. Shows portfolio tiles, revenue small multiples, a sortable red / amber / green runway table (click a row to drill down), and a per-company detail view. The download is the same static `index.html` that `python -m projects.dashboard build` writes.
+
+![KPI Dashboard](../docs/screenshots/dashboard.png)
+
+## Live data
+
+Live comps and Live Form D call the SEC, which requires a contact string. Add it to `.env` locally or to **Secrets** on Streamlit Cloud:
+
+```toml
+SEC_IDENTITY = "Your Name you@example.com"
+FINNHUB_KEY = ""   # optional; comps fall back to yfinance, then to manual prices
+```
+
+Without it the Live toggle shows a warning and the page stays on labeled sample data. Live Form D fetches a few hundred filings at 8 requests per second, so expect about a minute per day; results are cached for six hours. The page never writes `sourcing.sqlite`. If one exists locally, it is read to mark first-time filers.
+
+## Conventions
+
+- `$M` with parentheses for negatives on comps and LBO. Whole dollars on variance and KPIs, matching their Excel packs.
+- Multiples as `12.3x` (MOIC `2.55x`), and `NM` wherever the engine returns `None`.
+- One y-axis per chart. Blue is the primary series. Red, amber and green mean status only, and always carry a label or icon.
+
+## Tests and screenshots
+
+```bash
+FINLIB_OFFLINE=1 pytest tests/test_app.py   # each page renders, headline numbers equal finlib, downloads non-empty
+pip install -e ".[screenshots]" && python -m playwright install chromium
+streamlit run app/Home.py --server.port 8599 &
+python scripts/screenshots.py --url http://localhost:8599 --height 3200
+```

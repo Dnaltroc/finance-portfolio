@@ -1,4 +1,4 @@
-.PHONY: install test lint run-comps demo-comps
+.PHONY: install test lint run-comps demo-comps app screenshots
 
 install:
 	pip install -e ".[dev]"
@@ -28,3 +28,10 @@ demo-sourcing:
 
 demo-dashboard:
 	python -m projects.dashboard build
+
+# Streamlit app over the same engines (pip install -e ".[app]")
+app:
+	streamlit run app/Home.py
+
+screenshots:
+	python scripts/screenshots.py --url http://localhost:8599 --height 3200
