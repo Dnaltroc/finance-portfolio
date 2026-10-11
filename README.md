@@ -14,7 +14,7 @@ Five finance automation projects built on one shared library. Each project ends 
 
 ```bash
 pip install -e ".[dev]"          # core + pytest/ruff
-pip install -e ".[live]"         # edgartools + yfinance for live data
+pip install -e ".[live]"         # yfinance price fallback for live comps
 cp .env.example .env             # add SEC_IDENTITY and FINNHUB_KEY
 make test                        # all tests run offline on fixtures
 ```
@@ -23,7 +23,7 @@ make test                        # all tests run offline on fixtures
 
 ```
 finlib/
-  providers/     edgar.py (SEC XBRL via edgartools), market.py (Finnhub → yfinance fallback)
+  providers/     edgar.py (SEC companyfacts API), market.py (Finnhub → yfinance → manual), formd.py (SEC Form D)
   models/        ratios.py — pure valuation math, no I/O
   excel_writer/  styles.py, tables.py — house style, openpyxl
   store/         cache.py — SQLite JSON cache so demos never hit a rate limit twice

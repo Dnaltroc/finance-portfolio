@@ -121,16 +121,17 @@ def _inputs_sheet(ws, fundamentals: list[Fundamentals], quotes: list[Quote]) -> 
     qmap = {q.ticker: q for q in quotes}
     for f in fundamentals:
         q = qmap[f.ticker]
-        for concept, basis, val in (
-            ("price", "spot", q.price),
-            ("shares_outstanding", "spot", q.shares_outstanding),
-        ):
-            _input_row(ws, r, f.ticker, concept, basis, val, q.source); r += 1
+        _input_row(ws, r, f.ticker, "price", f"spot {q.as_of}", q.price, q.source); r += 1
+        _input_row(ws, r, f.ticker, "shares_outstanding", "spot", q.shares_outstanding,
+                   q.shares_source or q.source); r += 1
         for concept in ("revenue", "cogs", "operating_income", "da", "net_income"):
             _input_row(ws, r, f.ticker, concept, f"LTM {f.ltm_period}", f.ltm(concept),
-                       f.sources.get(concept, "")); r += 1
+                       f.sources.get(concept, "") + (" | " + f.basis[concept] if concept in f.basis else "")); r += 1
+            if f.prior_ltm(concept) is not None:
+                _input_row(ws, r, f.ticker, concept + " (prior LTM)", "LTM one year earlier",
+                           f.prior_ltm(concept), f.sources.get(concept, "")); r += 1
         for concept in ("cash", "total_debt"):
-            _input_row(ws, r, f.ticker, concept, f"as of {f.periods[0] if f.periods else ''}",
+            _input_row(ws, r, f.ticker, concept, f"as of {f.balance_date}",
                        f.latest(concept), f.sources.get(concept, "")); r += 1
     autosize(ws)
 
@@ -156,7 +157,7 @@ def _notes_sheet(ws, fundamentals: list[Fundamentals], quotes: list[Quote]) -> N
         "Periods used",
     ]
     for f in fundamentals:
-        lines.append(f"{f.ticker}: LTM {f.ltm_period}; quarters loaded: {len(f.periods)}")
+        lines.append(f"{f.ticker}: LTM {f.ltm_period}; balance sheet as of {f.balance_date}")
         if f.missing:
             lines.append(f"  missing concepts: {', '.join(f.missing)}")
     lines += ["", "Market data"]

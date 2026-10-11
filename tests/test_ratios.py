@@ -16,9 +16,39 @@ def test_growth_requires_positive_prior():
 
 
 def test_ltm_is_sum_of_four_quarters():
+    import json
+    from finlib.providers.edgar import FIXTURE_DIR
+
     f = EdgarProvider().fundamentals("MSFT")
-    assert f.ltm("revenue") == sum(f.quarterly["revenue"][:4])
-    assert f.prior_ltm("revenue") == sum(f.quarterly["revenue"][4:8])
+    q = json.loads((FIXTURE_DIR / "MSFT.json").read_text())["quarterly"]
+    assert f.ltm("revenue") == sum(q["revenue"][:4])
+    assert f.prior_ltm("revenue") == sum(q["revenue"][4:8])
+
+
+def test_live_ltm_math_fy_plus_ytd_minus_prior_ytd():
+    """The exact method used on real filings, on a hand-built fact list.
+
+    FY ending 2025-09-27 = 400; YTD to 2026-06-27 = 330; prior YTD to 2025-06-28 = 300.
+    LTM ending 2026-06-27 must be 400 + 330 - 300 = 430.
+    """
+    from datetime import date
+    from finlib.providers.edgar import ltm_ending
+
+    ent = [
+        dict(start="2024-09-29", end="2025-09-27", val=400, form="10-K", filed="2025-10-31"),
+        dict(start="2025-09-28", end="2026-06-27", val=330, form="10-Q", filed="2026-07-31"),
+        dict(start="2024-09-29", end="2025-06-28", val=300, form="10-Q", filed="2025-08-01"),
+        dict(start="2026-03-29", end="2026-06-27", val=110, form="10-Q", filed="2026-07-31"),  # 3-month, ignored
+    ]
+    v, basis = ltm_ending(ent, date(2026, 6, 27))
+    assert v == 430 and basis.startswith("FY ")
+    # A 12-month entry ending on the date wins outright
+    v2, basis2 = ltm_ending(ent, date(2025, 9, 27))
+    assert v2 == 400 and basis2.startswith("12 months")
+    # Restated value (later filed) replaces the original for the same period
+    from finlib.providers.edgar import _dedupe
+    d = _dedupe(ent + [dict(start="2024-09-29", end="2025-09-27", val=401, form="10-K/A", filed="2025-12-01")])
+    assert next(e["val"] for e in d if e["end"] == "2025-09-27" and e["start"] == "2024-09-29") == 401
 
 
 def test_comps_row_math_ties_to_inputs():

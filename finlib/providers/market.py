@@ -24,6 +24,7 @@ class Quote:
     shares_outstanding: float  # absolute share count
     as_of: str
     source: str
+    shares_source: str = ""  # filled in when shares come from the SEC filing instead
 
     @property
     def market_cap(self) -> float:
@@ -31,15 +32,22 @@ class Quote:
 
 
 class MarketProvider:
-    def __init__(self, finnhub_key: str | None = None, cache: JsonCache | None = None):
+    def __init__(self, finnhub_key: str | None = None, cache: JsonCache | None = None,
+                 price_overrides: dict[str, float] | None = None):
         self.key = finnhub_key or os.getenv("FINNHUB_KEY", "")
         self.cache = cache or JsonCache("market", ttl_seconds=6 * 3600)
+        self.overrides = {k.upper(): float(v) for k, v in (price_overrides or {}).items()}
 
     def quote(self, ticker: str) -> Quote:
         ticker = ticker.upper()
         if offline():
             raw = json.loads((FIXTURE_DIR / f"{ticker}.json").read_text())["market"]
             return Quote(ticker=ticker, source="fixture", **raw)
+        if ticker in self.overrides:
+            from datetime import date
+
+            return Quote(ticker=ticker, price=self.overrides[ticker], shares_outstanding=0.0,
+                         as_of=date.today().isoformat(), source="manual price")
 
         cached = self.cache.get(ticker)
         if cached:

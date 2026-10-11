@@ -25,5 +25,5 @@ def test_inputs_sheet_cites_a_source_per_value(tmp_path: Path):
     path = run_comps(["AAPL"], "test", tmp_path)
     ws = load_workbook(path)["Inputs"]
     rows = list(ws.iter_rows(min_row=4, values_only=True))
-    assert len(rows) == 9  # price, shares, 5 flow concepts, 2 stock concepts
+    assert len(rows) == 14  # price, shares, 5 flow + 5 prior-LTM rows, 2 stock concepts
     assert all(r[4] for r in rows)  # source column populated

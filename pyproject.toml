@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-live = ["edgartools>=4.0", "yfinance>=0.2"]
+live = ["yfinance>=0.2"]
 dash = ["plotly>=5.20"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
