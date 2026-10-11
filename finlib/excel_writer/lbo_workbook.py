@@ -25,7 +25,7 @@ from openpyxl.utils import get_column_letter as L
 from openpyxl.worksheet.datavalidation import DataValidation
 
 from finlib.models.lbo import LBOAssumptions, sensitivity
-from .styles import BODY_FONT, HEADER_FILL, HEADER_FONT, INPUT_FONT, SUMMARY_FILL, SUMMARY_FONT, TOP_BORDER
+from .styles import BODY_FONT, HEADER_FILL, HEADER_FONT, INPUT_FONT, SUMMARY_FILL, SUMMARY_FONT
 
 MONEY = '#,##0.0;(#,##0.0);"-"'
 PCT = '0.0%;(0.0%);"-"'

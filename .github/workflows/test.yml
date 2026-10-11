@@ -1,0 +1,27 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      # LibreOffice recalculates the exported LBO workbook so the Excel IRR() vs Python IRR
+      # tie-out runs here instead of skipping.
+      - name: Install LibreOffice
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-calc
+          which soffice
+      - run: pip install -e ".[dev,app]"
+      - run: ruff check .
+      - name: Tests (offline fixtures, app included)
+        env:
+          FINLIB_OFFLINE: "1"
+        run: pytest -q -rs

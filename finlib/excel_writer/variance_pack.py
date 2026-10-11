@@ -11,8 +11,8 @@ from openpyxl.styles import PatternFill
 from openpyxl.utils import get_column_letter
 
 from .styles import (
-    BODY_FONT, CENTER, HEADER_FILL, HEADER_FONT, INPUT_FONT, NUM_FMT, PCT_FMT, RIGHT,
-    SUMMARY_FILL, SUMMARY_FONT, TOP_BORDER, autosize,
+    BODY_FONT, CENTER, HEADER_FILL, HEADER_FONT, INPUT_FONT, PCT_FMT, RIGHT,
+    SUMMARY_FONT, TOP_BORDER, autosize,
 )
 
 RED = PatternFill("solid", fgColor="FFC7CE")
@@ -62,8 +62,6 @@ def write_variance_workbook(
     out_dir: Path,
 ) -> Path:
     wb = Workbook()
-    fm = {"actual": MONEY, "budget": MONEY, "variance_amt": MONEY, "favorable_amt": MONEY,
-          "variance_pct": PCT_FMT}
 
     # Summary
     ws = wb.active
