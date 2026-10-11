@@ -33,8 +33,7 @@ except Exception as e:
 
 t = p["totals"]
 if up is not None:
-    st.markdown(f":blue-badge[:material/upload_file: Your data]&nbsp; <small>{up.name}, through {t['month']}.</small>",
-                unsafe_allow_html=True)
+    ui.upload_badge([up.name], f"through {t['month']}.")
 else:
     ui.sample_badge(f"{p['title']}: 8 companies, 24 months, with planted stories (two near the end of their "
                     "runway, one flat, three profitable, one post-Series-B).")

@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import fp_ui as ui
-from finlib.models.sourcing import ScoringConfig, digest_markdown, funnel, rank
+from finlib.models.sourcing import ScoringConfig, digest_markdown, funnel, kept_in_states, rank
 from finlib.providers.formd import FIXTURE_DIR, FormDProvider
 from finlib.store.sourcing_db import SourcingDB
 from projects.sourcing.cli import HERE, load_config
@@ -97,8 +97,7 @@ with st.container(horizontal=True):
               delta_arrow="off", border=True, height="stretch")
     st.metric("Top score", f"{kept[0]['score']:.0f}" if kept else "–", kept[0]["issuer"] if kept else None,
               delta_color="off", delta_arrow="off", border=True, height="stretch")
-    in_target = sum(1 for r in kept if r["state"] in set(target_states))
-    st.metric("In target states", in_target, ", ".join(target_states) or "none set", delta_color="off",
+    st.metric("In target states", kept_in_states(rows, target_states), ", ".join(target_states) or "none set", delta_color="off",
               delta_arrow="off", border=True, height="stretch")
 
 left, right = st.columns(2, gap="large")
@@ -107,19 +106,19 @@ with left:
     stages = funnel(rows)
     fig = go.Figure(go.Bar(
         y=[s for s, _ in stages], x=[n for _, n in stages], orientation="h", marker_color=ui.NAVY,
-        marker_cornerradius=2, text=[f"{n}  ({n / stages[0][1]:.0%})" for _, n in stages], textposition="outside",
+        marker_cornerradius=2, text=[str(n) for _, n in stages], textposition="outside",
         textfont=dict(color=ui.INK, size=12), cliponaxis=False, hovertemplate="%{y}: %{x}<extra></extra>"))
-    fig.update_yaxes(autorange="reversed", gridcolor="rgba(0,0,0,0)", zeroline=False)
     fig.update_layout(bargap=0.45)
-    fig = ui.style(fig, height=280)
-    fig.update_xaxes(showticklabels=False, showgrid=False)
+    fig = ui.style(fig, height=280)  # then this chart's overrides: categorical rows, no grid
+    fig.update_yaxes(autorange="reversed", showgrid=False, zeroline=False)
+    fig.update_xaxes(showticklabels=False, showgrid=False, ticks="", showline=False)
     fig.update_layout(margin=dict(r=70))
     ui.show(fig)
     ui.source("fund filter by industry and name, then amendments, then the minimum amount sold.")
 with right:
     ui.exhibit(2, "Kept raises by issuer state")
     by_state = pd.Series([r["state"] or "?" for r in kept]).value_counts()
-    targets = set(target_states)
+    targets = set(target_states)  # color lookup only
     fig = go.Figure(go.Bar(
         x=by_state.index, y=by_state.values, marker_cornerradius=2,
         marker_color=[ui.BLUE if s in targets else ui.AXIS for s in by_state.index],
@@ -152,20 +151,20 @@ else:
         st.caption("First-time filer = CIK not in a local `sourcing.sqlite`. None exists here, so every issuer "
                    "counts as first-time.")
 
-    ui.exhibit(4, "Where each score comes from, top 10")
-    top = kept[:10]
-    fig = go.Figure()
-    part_colors = dict(zip(labels, ui.SERIES + ui.SERIES_EXTRA[:2]))
-    for k, lab in labels.items():
-        fig.add_trace(go.Bar(
-            y=[r["issuer"] for r in top], x=[r["score_parts"].get(k, 0) for r in top], name=lab, orientation="h",
-            marker=dict(color=part_colors[k], line=dict(color=ui.PAPER, width=1)),
-            hovertemplate=f"%{{y}}<br>{lab}: %{{x:.1f}} pts<extra></extra>"))
-    fig.update_layout(barmode="stack", bargap=0.35)
-    fig.update_yaxes(autorange="reversed", gridcolor="rgba(0,0,0,0)", zeroline=False)
-    fig = ui.style(fig, height=380, legend=True)
-    fig.update_xaxes(title="Points", showgrid=True, gridcolor=ui.GRID, title_font=dict(color=ui.MUTED, size=11))
-    fig.update_layout(legend_traceorder="normal", legend_y=-0.14)
+    top = kept[:min(top_n, 10)]
+    ui.exhibit(4, f"Where each score comes from, top {len(top)}")
+    # One hue, light to dark: the five parts are columns, so they need no categorical colors.
+    fig = go.Figure(go.Heatmap(
+        z=[[r["score_parts"].get(k, 0) for k in labels] for r in top],
+        x=list(labels.values()), y=[f"{i}. {r['issuer']}" for i, r in enumerate(top, start=1)],
+        text=[[f"{r['score_parts'].get(k, 0):.1f}" for k in labels] for r in top], texttemplate="%{text}",
+        textfont=dict(color=ui.INK, size=12, family=ui.MONO),
+        colorscale=[[i / 3, c] for i, c in enumerate(ui.SEQ_BLUE[:4])], zmin=0,
+        zmax=max(max(weights.values()), 1), showscale=False, xgap=3, ygap=3,
+        hovertemplate="%{y}<br>%{x}: %{text} pts<extra></extra>"))
+    fig = ui.style(fig, height=44 * len(top) + 60)
+    fig.update_xaxes(side="top", showline=False, ticks="", tickfont=dict(color=ui.INK_2))
+    fig.update_yaxes(autorange="reversed", showgrid=False, zeroline=False, ticks="", tickfont=dict(color=ui.INK))
     ui.show(fig)
     ui.source("score = amount (log-scaled) + investor count + first-time filer + target state + target industry, "
               "weighted by the sidebar sliders.")

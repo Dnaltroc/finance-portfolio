@@ -123,3 +123,16 @@ def test_funnel_counts_follow_drop_order():
     ], ScoringConfig(), set())
     assert funnel(rows) == [("Form D filings", 5), ("After fund filter", 4),
                             ("After amendment filter", 3), ("Kept (at or above min amount)", 2)]
+
+
+def test_kept_in_states_counts_only_kept_rows():
+    from finlib.models.sourcing import kept_in_states
+
+    rows = rank([
+        _fd(accession="1", cik="1", state="TX"),
+        _fd(accession="2", cik="2", state="TX", industry_group="Pooled Investment Fund"),
+        _fd(accession="3", cik="3", state="LA"),
+        _fd(accession="4", cik="4", state="CA"),
+    ], ScoringConfig(), set())
+    assert kept_in_states(rows, ["TX", "LA"]) == 2  # the TX fund is dropped, CA is not a target
+    assert kept_in_states(rows, []) == 0

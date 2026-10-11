@@ -47,7 +47,7 @@ def tape() -> dict:
     from finlib.models.lbo import LBOAssumptions, run_lbo
     from finlib.models.ratios import summary_rows
     from finlib.models.sourcing import funnel, rank
-    from finlib.providers.formd import FormDProvider
+    from finlib.providers.formd import FIXTURE_DIR, FormDProvider
     from projects.comps.cli import load_all
     from projects.dashboard.cli import HERE as DASH, payload_from_frame
     from projects.sourcing.cli import HERE as SRC, load_config
@@ -56,19 +56,22 @@ def tape() -> dict:
     with ui.finlib_mode(True):
         _, _, rows = load_all(["AAPL", "MSFT", "GOOGL"])
         cfg, _ = load_config(SRC / "config.yaml")
-        stages = funnel(rank(FormDProvider().filings_for(date(2026, 10, 9)), cfg, set()))
-    pack = build_variance(pd.read_csv(VAR / "sample_data/actuals.csv"), pd.read_csv(VAR / "sample_data/budget.csv"),
-                          "2026-09", load_thresholds(VAR / "config.yaml"))
+        day = max(date.fromisoformat(p.name) for p in FIXTURE_DIR.iterdir() if p.is_dir())  # as the page defaults
+        stages = funnel(rank(FormDProvider().filings_for(day), cfg, set()))
+    actuals, budget = pd.read_csv(VAR / "sample_data/actuals.csv"), pd.read_csv(VAR / "sample_data/budget.csv")
+    period = max(set(actuals["period"].astype(str)) & set(budget["period"].astype(str)))  # the page's default
+    pack = build_variance(actuals, budget, period, load_thresholds(VAR / "config.yaml"))
     net = pack.summary.set_index("line").loc["Net"]
     deal = LBOAssumptions(**yaml.safe_load((ui.ROOT / "projects/lbo/deal.yaml").read_text()))
     lbo = run_lbo(deal)
     totals = payload_from_frame(pd.read_csv(DASH / "sample_data/kpis.csv"), "")["totals"]
     return {
         "comps": (ui.fmt_x(summary_rows(rows)[0]["ev_ebitda"]), "median EV / EBITDA"),
-        "variance": (ui.fmt_usd(net["variance_amt"]), "net income vs budget, Sep-26"),
+        "variance": (ui.fmt_usd(net["variance_amt"]), f"net income vs budget, {pack.period}"),
         "lbo": (ui.fmt_pct(lbo.irr), f"base-case IRR, {ui.fmt_x(lbo.moic, 2)} MOIC"),
         "sourcing": (f"{stages[-1][1]} of {stages[0][1]}", "Form D raises kept"),
-        "dashboard": (f"{totals['revenue_yoy']:+.0%}", "portfolio revenue, YoY"),
+        "dashboard": ("NM" if totals["revenue_yoy"] is None else f"{totals['revenue_yoy']:+.0%}",
+                      f"portfolio revenue, YoY to {totals['month']}"),
     }
 
 

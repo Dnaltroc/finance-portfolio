@@ -92,6 +92,12 @@ def funnel(rows: list[dict]) -> list[tuple[str, int]]:
             ("After amendment filter", n - funds - amend), ("Kept (at or above min amount)", kept)]
 
 
+def kept_in_states(rows: list[dict], states) -> int:
+    """How many kept raises have an issuer address in one of the given states."""
+    states = set(states)
+    return sum(1 for r in rows if r["kept"] and r["state"] in states)
+
+
 def digest_markdown(rows: list[dict], day: str, top_n: int, cfg: ScoringConfig) -> str:
     kept = [r for r in rows if r["kept"]][:top_n]
     dropped = [r for r in rows if not r["kept"]]

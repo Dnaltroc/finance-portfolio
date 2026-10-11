@@ -30,7 +30,7 @@ Every `deal.yaml` input is a sidebar control: tranches and the scenario path are
 ![LBO Engine](../docs/screenshots/lbo.png)
 
 ### Deal Sourcing
-One day of SEC Form D filings, Offline (the synthetic fixture day) or Live (any weekday). Target states, industries and weight sliders re-score instantly without re-fetching. Shows the filter funnel, kept raises by state, the ranked table with links to each filing, and a score breakdown per row. The download is the markdown digest.
+One day of SEC Form D filings, Offline (the synthetic fixture day) or Live (any weekday). Target states, industries and weight sliders re-score instantly without re-fetching. Shows the filter funnel, kept raises by state, the ranked table with links to each filing, a heatmap of where each top score comes from, and a score breakdown per row. The download is the markdown digest.
 
 ![Deal Sourcing](../docs/screenshots/sourcing.png)
 

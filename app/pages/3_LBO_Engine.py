@@ -197,9 +197,10 @@ fig = go.Figure(go.Heatmap(
 if a.entry_multiple in entry_grid and exit_multiple in exit_grid:  # outline the current deal
     i, j = entry_grid.index(a.entry_multiple), exit_grid.index(exit_multiple)
     fig.add_shape(type="rect", x0=j - 0.5, x1=j + 0.5, y0=i - 0.5, y1=i + 0.5, line=dict(color=ui.INK, width=2))
-fig.update_xaxes(title="Exit EV / EBITDA", side="top", showline=False, ticks="")
-fig.update_yaxes(title="Entry EV / EBITDA", autorange="reversed", showgrid=False, zeroline=False)
-ui.show(ui.style(fig, height=330))
+fig = ui.style(fig, height=330)  # house style first; the heatmap's own axis settings override it
+fig.update_xaxes(title="Exit EV / EBITDA", side="top", showline=False, ticks="", title_font=dict(color=ui.MUTED, size=11))
+fig.update_yaxes(title="Entry EV / EBITDA", autorange="reversed", showgrid=False, zeroline=False, ticks="")
+ui.show(fig)
 ui.source("LBO engine, all other inputs as set. Outlined cell = current deal. n/a = equity wiped out or none invested.")
 
 # ---------------------------------------------------------------- download ----------

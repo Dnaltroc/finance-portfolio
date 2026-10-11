@@ -63,6 +63,12 @@ def test_formatters_follow_excel_conventions():
     assert ui.fmt_usd(-190288.48) == "($190,288)"
 
 
+def test_upload_names_are_escaped_before_markdown():
+    out = ui.escape_text("a</small><img src=x onerror=alert(1)>_*b*:material/x:.csv")
+    assert "<" not in out and ">" not in out
+    assert r"\_\*b\*\:material/x\:" in out
+
+
 # ---------------------------------------------------------------- home ---------------
 def test_router_opens_on_overview():
     at = run_page("Home.py")
@@ -70,7 +76,16 @@ def test_router_opens_on_overview():
 
 
 def test_overview_lists_five_tools_with_resume_lines_and_live_tape():
+    from datetime import date
+
     from finlib.models.lbo import LBOAssumptions, run_lbo
+    from finlib.models.ratios import summary_rows
+    from finlib.models.sourcing import funnel, rank
+    from finlib.providers.formd import FormDProvider
+    from projects.comps.cli import load_all
+    from projects.dashboard.cli import HERE as DASH, payload_from_frame
+    from projects.sourcing.cli import HERE as SRC, load_config
+    from projects.variance.cli import HERE as VAR, build_variance, load_thresholds
 
     at = run_page("Home.py")  # page links resolve only through the router
     captions = " ".join(c.value for c in at.caption)
@@ -80,9 +95,16 @@ def test_overview_lists_five_tools_with_resume_lines_and_live_tape():
     tape = metrics(at)
     lbo = run_lbo(LBOAssumptions(**yaml.safe_load((ROOT / "projects/lbo/deal.yaml").read_text())))
     assert tape["03 · LBO engine"] == ui.fmt_pct(lbo.irr) == "20.6%"
-    assert tape["01 · Comps builder"] == "20.8x"
-    assert tape["04 · Deal sourcing"] == "25 of 36"
-    assert tape["02 · Variance report"] == "($190,288)"
+    _, _, rows = load_all(["AAPL", "MSFT", "GOOGL"])
+    assert tape["01 · Comps builder"] == ui.fmt_x(summary_rows(rows)[0]["ev_ebitda"]) == "20.8x"
+    stages = funnel(rank(FormDProvider().filings_for(date(2026, 10, 9)), load_config(SRC / "config.yaml")[0], set()))
+    assert tape["04 · Deal sourcing"] == f"{stages[-1][1]} of {stages[0][1]}" == "25 of 36"
+    pack = build_variance(pd.read_csv(VAR / "sample_data/actuals.csv"), pd.read_csv(VAR / "sample_data/budget.csv"),
+                          "2026-09", load_thresholds(VAR / "config.yaml"))
+    net = pack.summary.set_index("line").loc["Net"]
+    assert tape["02 · Variance report"] == ui.fmt_usd(net["variance_amt"]) == "($190,288)"
+    totals = payload_from_frame(pd.read_csv(DASH / "sample_data/kpis.csv"), "")["totals"]
+    assert tape["05 · Portfolio KPIs"] == f"{totals['revenue_yoy']:+.0%}"
 
 
 # ---------------------------------------------------------------- comps --------------
@@ -192,7 +214,7 @@ def test_lbo_downside_scenario_switch():
 def test_sourcing_matches_rank_and_downloads_digest(downloads):
     from datetime import date
 
-    from finlib.models.sourcing import digest_markdown, funnel, rank
+    from finlib.models.sourcing import digest_markdown, funnel, kept_in_states, rank
     from finlib.providers.formd import FormDProvider
     from projects.sourcing.cli import HERE, load_config
 
@@ -203,6 +225,8 @@ def test_sourcing_matches_rank_and_downloads_digest(downloads):
     m = metrics(at)
     assert m["Form D filings"] == str(len(rows)) == "36"
     assert m["Operating-company raises kept"] == str(funnel(rows)[-1][1]) == "25"
+    assert m["In target states"] == str(kept_in_states(rows, cfg.target_states))
+    assert "top 10" in " ".join(h.value for h in at.get("html") if "Exhibit 4" in str(h.value))
     assert downloads["digest_2026-10-09.md"].decode() == digest_markdown(rows, "2026-10-09", top_n, cfg)
 
 

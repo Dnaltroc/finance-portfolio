@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import html
 import os
+import re
 import sys
 import tempfile
 import threading
@@ -105,10 +106,27 @@ def page_setup(title: str, dek: str, number: str = "", section: str = "") -> Non
 
 
 def provenance(sample: bool, note: str) -> None:
-    """One quiet line saying where the numbers on this page came from."""
+    """One quiet line saying where the numbers on this page came from. Always a gray badge:
+    provenance is not a status, so it never borrows gain / loss colors."""
     badge = (f":gray-badge[:material/science: {SAMPLE_LABEL}]" if sample
-             else ":green-badge[:material/cloud_done: Live data]")
+             else ":gray-badge[:material/cloud_done: Live · SEC EDGAR]")
     st.markdown(f"{badge}&nbsp; <small>{note}</small>", unsafe_allow_html=True)
+
+
+_MD_SPECIALS = re.compile(r"([\\`*_{}\[\]()#+\-.!|~:$])")
+
+
+def escape_text(text: str) -> str:
+    """User-supplied text (an upload's file name) made inert for st.markdown with HTML on:
+    markdown punctuation backslash-escaped, then <, > and & as entities."""
+    return html.escape(_MD_SPECIALS.sub(lambda m: "\\" + m.group(1), text), quote=False)
+
+
+def upload_badge(names: list[str], note: str) -> None:
+    """Provenance line for data the user uploaded; file names are escaped."""
+    files = " and ".join(escape_text(n) for n in names)
+    st.markdown(f":gray-badge[:material/upload_file: Your data]&nbsp; <small>{files}, {note}</small>",
+                unsafe_allow_html=True)
 
 
 def sample_badge(note: str = "") -> None:
@@ -130,15 +148,6 @@ def source(text: str) -> None:
 
 def rule() -> None:
     st.html('<hr class="fp-rule">')
-
-
-def fu_pill(fu: str) -> str:
-    """Markdown badge for a favorable / unfavorable judgment (status color + label)."""
-    if fu == "F":
-        return ":green-badge[:material/arrow_upward: Favorable]"
-    if fu == "U":
-        return ":red-badge[:material/arrow_downward: Unfavorable]"
-    return ":gray-badge[On budget]"
 
 
 # ---------------------------------------------------------------- secrets / mode -----

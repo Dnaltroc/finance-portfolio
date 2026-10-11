@@ -65,3 +65,5 @@ Minimal-functional. Streamlit's own transitions only.
 | --- | --- | --- |
 | 2026-10-11 | Research-note direction: Newsreader, IBM Plex Sans and Mono, paper and ink with a navy accent | The owner asked for a less generic look. A finance audience trusts the visual language of research reports, and stock Streamlit reads as a template. |
 | 2026-10-11 | Theme via `.streamlit/config.toml`; CSS only for exhibit labels and the masthead | Streamlit's bundled guidance: native theming survives upgrades, while CSS on internal classes does not. |
+| 2026-10-11 | Parts of a whole across more than three components are a one-hue heatmap with values printed, not a stacked bar | Only three series colors are validated; a fourth or fifth hue would be unvalidated or collide with chrome gray. |
+| 2026-10-11 | Every provenance badge is gray, including Live and uploaded data | Provenance is not a status; green and blue would borrow meanings the palette reserves. |
