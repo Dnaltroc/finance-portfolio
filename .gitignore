@@ -6,5 +6,5 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
-sourcing.sqlite
+*.sqlite
 dist/
