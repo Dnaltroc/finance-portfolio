@@ -19,6 +19,11 @@ dependencies = [
 live = ["yfinance>=0.2"]
 dash = ["plotly>=5.20"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
+app = ["streamlit>=1.38", "plotly>=5.20", "yfinance>=0.2"]
+screenshots = ["playwright>=1.44"]
+
+[tool.setuptools.packages.find]
+include = ["finlib*", "projects*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
