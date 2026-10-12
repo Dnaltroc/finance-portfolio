@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -59,15 +60,12 @@ XBRL_TAGS: dict[str, dict] = {
                                   (["CommercialPaper"], True), (["ShortTermBorrowings"], True)]},
 }
 
-# Borrowing tags the debt sum above does not use. If any is dated at the balance-sheet date,
-# a missing total_debt stays missing; only an issuer with none of them reads as debt = 0.
-OTHER_BORROWING_TAGS = [
-    "LongTermDebtAndCapitalLeaseObligations", "LongTermDebtNoncurrentAndCapitalLeaseObligations",
-    "ConvertibleNotesPayable", "ConvertibleNotesPayableCurrent", "ConvertibleDebtNoncurrent", "ConvertibleDebt",
-    "LineOfCredit", "LongTermLineOfCredit", "LinesOfCreditCurrent", "NotesPayable", "NotesPayableCurrent",
-    "LongTermNotesPayable", "SeniorNotes", "SecuredDebt", "UnsecuredDebt", "OtherLongTermDebtNoncurrent",
-    "DebtInstrumentCarryingAmount", "LongTermDebtFairValue", "OtherBorrowings", "BankLoans",
-]
+# A missing total_debt reads as zero only when no borrowing-shaped tag is dated at the balance
+# date. Matched by name, not a fixed list, because issuers coin tags (ONTO reports its converts
+# as ConvertibleLongTermNotesPayable). Asset-side names (debt securities held, notes receivable)
+# are excluded; anything else that looks like a borrowing keeps debt missing.
+BORROWING_TAG = re.compile(r"Debt|Borrowing|NotesPayable|LineOfCredit|LinesOfCredit|LoansPayable|SeniorNotes|BankLoans")
+NOT_BORROWING_TAG = re.compile(r"Securit|Receivable|Investment|DeferredTax|HeldToMaturity|AvailableForSale")
 BALANCE_SHEET_TAGS = ["Liabilities", "LiabilitiesAndStockholdersEquity", "LiabilitiesCurrent"]
 STALE_LTM_DAYS = 200  # LTM end this far behind the newest fact means the revenue tag fell behind
 
@@ -290,7 +288,8 @@ class EdgarProvider:
         # filing has a balance sheet at the LTM end and no other borrowing tag is dated there.
         if latest_v["total_debt"] is None:
             has_balance_sheet = any(instant(t) is not None for t in BALANCE_SHEET_TAGS)
-            other_debt = any(instant(t) is not None for t in OTHER_BORROWING_TAGS)
+            other_debt = any(BORROWING_TAG.search(t) and not NOT_BORROWING_TAG.search(t) and instant(t) is not None
+                             for t in gaap)
             if has_balance_sheet and not other_debt:
                 latest_v["total_debt"] = 0.0
                 sources["total_debt"] = "xbrl:no borrowing tags at balance date (debt = 0)"

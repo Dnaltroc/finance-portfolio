@@ -97,3 +97,29 @@ def test_ltm_far_behind_newest_filing_is_flagged(monkeypatch):
     assert f.warnings == ["stale LTM: ends 2017-12-30, filings run to 2026-06-27"]
     row = build_comps_row(f, Quote("TEST", 10.0, 1e6, "2026-10-11", "manual price"))
     assert "stale LTM: ends 2017-12-30" in row.flags
+
+
+def test_any_borrowing_shaped_tag_keeps_debt_missing(monkeypatch):
+    """ONTO tags $1.47B of converts as ConvertibleLongTermNotesPayable, a name no fixed list
+    anticipated. Any liability-side borrowing tag at the balance date must block debt = 0."""
+    gaap = {
+        **_flow({"Revenues": FY, "OperatingIncomeLoss": [("2025-06-29", "2026-06-27", 50.0)]}),
+        **_inst({"CashAndCashEquivalentsAtCarryingValue": [("2026-06-27", 100.0)],
+                 "Liabilities": [("2026-06-27", 80.0)],
+                 "ConvertibleLongTermNotesPayable": [("2026-06-27", 1471.7)]}),
+    }
+    f = _provider(monkeypatch, gaap).fundamentals("TEST")
+    assert "total_debt" in f.missing
+
+
+def test_asset_side_debt_words_do_not_block_zero_debt(monkeypatch):
+    """Debt securities held and notes receivable are assets, not borrowings."""
+    gaap = {
+        **_flow({"Revenues": FY, "OperatingIncomeLoss": [("2025-06-29", "2026-06-27", 50.0)]}),
+        **_inst({"CashAndCashEquivalentsAtCarryingValue": [("2026-06-27", 100.0)],
+                 "Liabilities": [("2026-06-27", 80.0)],
+                 "AvailableForSaleSecuritiesDebtSecurities": [("2026-06-27", 30.0)],
+                 "AccountsNotesAndLoansReceivableNetCurrent": [("2026-06-27", 12.0)]}),
+    }
+    f = _provider(monkeypatch, gaap).fundamentals("TEST")
+    assert f.latest("total_debt") == 0.0
