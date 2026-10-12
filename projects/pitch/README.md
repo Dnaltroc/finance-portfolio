@@ -14,7 +14,7 @@ A two-page sell-side style memo on Aehr Test Systems, a small-cap semiconductor 
 | --- | --- |
 | Rating | Sell |
 | Price (Oct 9, 2026) | $84.64 |
-| 12-month target | $35 (peer median EV / revenue on FY28 revenue) |
+| 12-month target | $52 (peer median EV / revenue on FY28 revenue), 39% downside |
 | DCF value, base / bull / bear | $16.77 / $28.63 / $8.74 |
 | What the price implies | A revenue path 6.4x our base case (about $1.8B by FY31), or 70x FY36 EBITDA |
 
@@ -41,7 +41,9 @@ SEC_IDENTITY="Name email" python -m projects.pitch snapshot   # refresh the data
 - **Working capital.** 40% of new revenue, against Aehr's own 58% to 100% of revenue over FY23 to FY26. A higher figure lowers every value.
 - **Margins.** The base case reaches a 25% EBIT margin by FY31, above the 20.6% FY23 peak, and the bull case reaches 30%. These are generous on purpose, so the call does not rest on a stingy forecast.
 - **Why the reverse DCF solves for revenue scale, not one growth rate.** With working capital tied to growth, very high growth makes free cash flow negative, so value is not monotonic in a single growth rate. Scaling the whole revenue path is monotonic and easy to explain.
-- **Peers with NM.** Onto, Camtek and Teradyne carry convertible notes or other borrowings that the comps engine does not sum. Their EV is left blank rather than understated, and they drop out of the medians.
+- **Peers with NM.** Onto and Camtek carry convertible notes that the comps engine does not sum. Their EV is left blank rather than understated, and they drop out of the medians, leaving four peers (median 8.8x EV / revenue). Teradyne repaid its revolver and is in the median at 14.0x.
+- **What changed since the first draft.** The first draft had Teradyne as NM because the engine read a $0 borrowing line and an undrawn credit facility as debt it could not sum. Fixed with a test (`tests/test_edgar_live_shapes.py`); the target moved from $35 to $52. The DCF and reverse DCF did not change.
+- **Signals to watch.** Q1 FY27 results on Nov 2; a pilot order from the second AI processor maker (the main risk to the call); share sales under the July 27 automatic shelf; insider selling (about $17M in August, no purchases); timing of the lead hyperscaler's second Sonoma device, now a calendar 2027 ramp.
 
 ## Tests
 

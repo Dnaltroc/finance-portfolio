@@ -484,13 +484,13 @@ def render_memo(cfg: dict, snap: dict, c: dict | None = None) -> str:
 </div>
 </div>
 <div class="ex" style="margin-top:4px">Exhibit 7<b>Trading comparables, last twelve months</b></div>{comps_html}
-<p class="src">Source: SEC companyfacts (XBRL) through each company's latest 10-Q or 10-K, prices from Yahoo Finance on {q['as_of']}, built with this repo's comps engine. NM = not meaningful (negative or missing base){(': ' + ', '.join(nm) + ' carry convertible notes or other borrowings the engine does not sum, so EV is left blank rather than understated') if nm else ''}. Relative value applies the peer median EV / revenue to base-case FY28 revenue of {musd(c['fy28_revenue'])}.</p>
+<p class="src">Source: SEC companyfacts (XBRL) through each company's latest 10-Q, 10-K or 20-F, prices from Yahoo Finance on {q['as_of']}, built with this repo's comps engine. NM = not meaningful (negative or missing base){(': ' + ', '.join(nm) + ' carry convertible notes or other borrowings the engine does not sum, so EV is left blank rather than understated') if nm else ''}. Relative value applies the peer median EV / revenue to base-case FY28 revenue of {musd(c['fy28_revenue'])}. {memo.get('comps_note', '')}</p>
 <div class="two">
 <div><div class="box"><h3>What would make us wrong</h3><ul>{''.join(f'<li>{para(t)}</li>' for t in memo['risks'])}</ul></div></div>
 <div><div class="box"><h3>Method</h3><p>Two lenses. Intrinsic: a ten-year DCF of unlevered free cash flow with a perpetuity-growth terminal value, cross-checked with exit multiples. Relative: what peers pay per dollar of revenue, applied a year past guidance. Then a reverse DCF: hold the price fixed and solve for the revenue path or exit multiple it requires.</p>
 <p>Every figure is computed from a dated snapshot by the open-source engine at github.com/Dnaltroc/finance-portfolio (projects/pitch). Change an assumption in aehr.yaml and the memo rebuilds.</p></div></div>
 </div>
-<p class="foot">Student research, prepared for a portfolio. Not investment advice. Data as of {q['as_of']}; snapshot pulled {snap['pulled_at']}. Fiscal years end in late May. $ in millions except per share.</p>
+<p class="foot">Student research, prepared for a portfolio. Not investment advice. Data as of {q['as_of']}; snapshot pulled {snap['pulled_at']}. {memo['fiscal_note']} $ in millions except per share.</p>
 </div>
 </body></html>"""
 
