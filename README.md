@@ -12,6 +12,8 @@ Five finance automation projects built on one shared library. Each project ends 
 
 ## Try it
 
+**Live app: [finance-portfolio-dnaltroc.streamlit.app](https://finance-portfolio-dnaltroc.streamlit.app/)** (sample data; it may take 30 seconds to wake up).
+
 ![Home page of the app](docs/screenshots/home.png)
 
 Every tool also runs as a Streamlit app: five pages that open on sample data, run the same engines, and download the same files. See [app/README.md](app/README.md) for a tour with screenshots.
