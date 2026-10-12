@@ -72,6 +72,7 @@ def build_comps_row(f: Fundamentals, q: Quote) -> CompsRow:
     flags = []
     if f.missing:
         flags.append("missing: " + ", ".join(f.missing))
+    flags.extend(f.warnings)
     if ebitda is not None and ebitda <= 0:
         flags.append("negative EBITDA")
     if ni is not None and ni <= 0:

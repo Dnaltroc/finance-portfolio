@@ -35,8 +35,9 @@ Data comes straight from the SEC's [companyfacts API](https://data.sec.gov/api/x
 | --- | --- | --- |
 | LTM revenue, COGS, operating income, D&A, net income | If the latest period is a 10-K: the 12-month value. If a 10-Q: **prior fiscal year + year-to-date this year − year-to-date last year**. Companies do not tag Q4 as a 3-month value, so summing four quarters fails for most tickers; this method works for all. | Trailing twelve months of GAAP results, as reported, not adjusted |
 | Prior LTM | Same method one year earlier | Basis for revenue growth |
+| Staleness flag | `stale LTM` when the LTM ends more than 200 days before the company's newest tagged fact (the revenue tag fell behind) | A warning in the Flags column, never a silent old number |
 | Cash | `CashCashEquivalentsAndShortTermInvestments` if tagged, else cash + current marketable securities | Cash and short-term investments at the LTM balance-sheet date |
-| Total debt | Long-term debt + current portion + commercial paper + short-term borrowings, whichever are tagged | Interest-bearing borrowings. No leases, preferred or minority interest |
+| Total debt | Long-term debt + current portion + commercial paper + short-term borrowings, whichever are tagged. **Zero** when the balance sheet at the LTM end tags no borrowing line at all (a debt-free issuer); still missing if any other borrowing tag (convertible notes, credit line) is there | Interest-bearing borrowings. No leases, preferred or minority interest |
 | Shares | `dei:EntityCommonStockSharesOutstanding` (cover page), else `us-gaap:CommonStockSharesOutstanding` for multi-class issuers such as Alphabet | Basic shares outstanding from the filing, not diluted |
 | Price | Finnhub, else yfinance, else `--prices` | Spot close on the run date |
 | Market cap | price × shares | |

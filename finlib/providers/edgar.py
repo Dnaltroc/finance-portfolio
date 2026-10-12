@@ -38,7 +38,8 @@ STOCK_CONCEPTS = ["cash", "total_debt"]
 # is present, add up the `components` (each component = first tag found in its list).
 # Components marked optional may be absent (a company with no commercial paper).
 XBRL_TAGS: dict[str, dict] = {
-    "revenue": {"total": ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "SalesRevenueNet"]},
+    "revenue": {"total": ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues",
+                       "RevenueFromContractWithCustomerIncludingAssessedTax", "SalesRevenueNet"]},
     "cogs": {"total": ["CostOfRevenue", "CostOfGoodsAndServicesSold", "CostOfGoodsSold"]},
     "operating_income": {"total": ["OperatingIncomeLoss"]},
     "da": {"total": ["DepreciationDepletionAndAmortization", "DepreciationAndAmortization",
@@ -58,6 +59,18 @@ XBRL_TAGS: dict[str, dict] = {
                                   (["CommercialPaper"], True), (["ShortTermBorrowings"], True)]},
 }
 
+# Borrowing tags the debt sum above does not use. If any is dated at the balance-sheet date,
+# a missing total_debt stays missing; only an issuer with none of them reads as debt = 0.
+OTHER_BORROWING_TAGS = [
+    "LongTermDebtAndCapitalLeaseObligations", "LongTermDebtNoncurrentAndCapitalLeaseObligations",
+    "ConvertibleNotesPayable", "ConvertibleNotesPayableCurrent", "ConvertibleDebtNoncurrent", "ConvertibleDebt",
+    "LineOfCredit", "LongTermLineOfCredit", "LinesOfCreditCurrent", "NotesPayable", "NotesPayableCurrent",
+    "LongTermNotesPayable", "SeniorNotes", "SecuredDebt", "UnsecuredDebt", "OtherLongTermDebtNoncurrent",
+    "DebtInstrumentCarryingAmount", "LongTermDebtFairValue", "OtherBorrowings", "BankLoans",
+]
+BALANCE_SHEET_TAGS = ["Liabilities", "LiabilitiesAndStockholdersEquity", "LiabilitiesCurrent"]
+STALE_LTM_DAYS = 200  # LTM end this far behind the newest fact means the revenue tag fell behind
+
 
 @dataclass
 class Fundamentals:
@@ -72,6 +85,7 @@ class Fundamentals:
     basis: dict[str, str] = field(default_factory=dict)    # concept -> how LTM was built
     sources: dict[str, str] = field(default_factory=dict)  # concept -> tags used
     missing: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)  # data-quality notes shown as comps flags
 
     def ltm(self, concept: str) -> float | None:
         return self.ltm_values.get(concept)
@@ -272,10 +286,25 @@ class EdgarProvider:
                 latest_v[concept], sources[concept] = r[0], src
                 balance_date = balance_date or r[1]
 
+        # A debt-free issuer tags no borrowing line at all. Read that as zero debt only when the
+        # filing has a balance sheet at the LTM end and no other borrowing tag is dated there.
+        if latest_v["total_debt"] is None:
+            has_balance_sheet = any(instant(t) is not None for t in BALANCE_SHEET_TAGS)
+            other_debt = any(instant(t) is not None for t in OTHER_BORROWING_TAGS)
+            if has_balance_sheet and not other_debt:
+                latest_v["total_debt"] = 0.0
+                sources["total_debt"] = "xbrl:no borrowing tags at balance date (debt = 0)"
+                missing.remove("total_debt")
+
+        warnings = []
+        newest = max((_d(e["end"]) for t in gaap for e in entries(t)), default=end)
+        if (newest - end).days > STALE_LTM_DAYS:
+            warnings.append(f"stale LTM: ends {end.isoformat()}, filings run to {newest.isoformat()}")
+
         return Fundamentals(
             ticker=ticker, company=title, cik=cik, ltm_values=ltm_v, prior_ltm_values=prior_v,
             latest_values=latest_v, ltm_period=f"{start_guess} to {end.isoformat()}",
-            balance_date=balance_date, basis=basis, sources=sources, missing=missing,
+            balance_date=balance_date, basis=basis, sources=sources, missing=missing, warnings=warnings,
         )
 
     def shares_outstanding(self, ticker: str) -> tuple[float, str, str] | None:
