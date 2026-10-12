@@ -123,3 +123,21 @@ def test_asset_side_debt_words_do_not_block_zero_debt(monkeypatch):
     }
     f = _provider(monkeypatch, gaap).fundamentals("TEST")
     assert f.latest("total_debt") == 0.0
+
+
+def test_borrowing_tag_reported_at_zero_does_not_block_zero_debt(monkeypatch):
+    """TER repaid its revolver: at 2026-06-28 it tags ShortTermBorrowings = 0 and the undrawn
+    facility as LineOfCreditFacilityCapacityAvailableForSpecificPurposeOtherThanForTradePurchases
+    = 200. Neither is money owed, yet each kept total_debt missing and TER's EV NM."""
+    gaap = {
+        **_flow({"Revenues": FY, "OperatingIncomeLoss": [("2025-06-29", "2026-06-27", 50.0)]}),
+        **_inst({"CashAndCashEquivalentsAtCarryingValue": [("2026-06-27", 100.0)],
+                 "Liabilities": [("2026-06-27", 80.0)],
+                 "ShortTermBorrowings": [("2025-12-31", 200.0), ("2026-06-27", 0.0)],
+                 "LineOfCreditFacilityCapacityAvailableForSpecificPurposeOtherThanForTradePurchases":
+                     [("2026-06-27", 200.0)],
+                 "LineOfCreditFacilityRemainingBorrowingCapacity": [("2026-06-27", 200.0)]}),
+    }
+    f = _provider(monkeypatch, gaap).fundamentals("TEST")
+    assert f.latest("total_debt") == 0.0
+    assert "total_debt" not in f.missing
