@@ -1,0 +1,15 @@
+account,account_type,is_revenue
+Cloud hosting,expense,False
+Commissions,expense,False
+Contractors,expense,False
+Events,expense,False
+Insurance,expense,False
+Interest income,revenue,True
+Legal,expense,False
+Paid media,expense,False
+Product revenue,revenue,True
+Rent,expense,False
+Salaries,expense,False
+Services revenue,revenue,True
+Software,expense,False
+Travel,expense,False

@@ -10,6 +10,7 @@ Five finance automation projects and an equity research pitch, built on one shar
 | 4 | [Deal Sourcing Pipeline](projects/sourcing/README.md) — daily SEC Form D → scored digest | **Working** | `make demo-sourcing` |
 | 5 | [Portfolio KPI Dashboard](projects/dashboard/README.md) — monthly KPIs → hosted page | **Working** | `make demo-dashboard` |
 | 6 | [Equity Pitch: AEHR](projects/pitch/README.md) — DCF, reverse DCF and comps → two-page memo ([PDF](docs/pitch/aehr_memo.pdf)) | **Working** | `python -m projects.pitch build` |
+| 7 | [Power BI Report](projects/powerbi/README.md) — variance, KPIs and comps as a star schema → Power BI model, DAX and three report pages | **Data + guide ready; report in progress** | `make export-powerbi` |
 
 ## Try it
 

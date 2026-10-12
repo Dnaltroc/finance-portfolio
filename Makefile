@@ -1,4 +1,4 @@
-.PHONY: install test lint run-comps demo-comps app screenshots
+.PHONY: install test lint run-comps demo-comps export-powerbi app screenshots
 
 install:
 	pip install -e ".[dev]"
@@ -25,6 +25,9 @@ demo-lbo:
 
 demo-sourcing:
 	FINLIB_OFFLINE=1 python -m projects.sourcing run --day 2026-10-09
+
+export-powerbi:
+	python -m projects.powerbi export
 
 demo-dashboard:
 	python -m projects.dashboard build
