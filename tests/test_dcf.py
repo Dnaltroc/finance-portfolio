@@ -7,7 +7,8 @@ import math
 
 import pytest
 
-from finlib.models.dcf import DCFAssumptions, capm, implied_cagr, run_dcf, sensitivity, wacc
+from finlib.models.dcf import (DCFAssumptions, capm, implied_exit_multiple, implied_revenue_scale, run_dcf,
+                               sensitivity, wacc)
 
 
 def _a(**kw) -> DCFAssumptions:
@@ -75,10 +76,39 @@ def test_sensitivity_grid_rises_as_wacc_falls_and_blanks_invalid_cells():
     assert math.isnan(grid[0][2])  # 8% WACC vs 9% growth
 
 
-def test_implied_cagr_recovers_the_growth_that_produced_a_price():
-    target = run_dcf(_a(growth=[0.25, 0.25])).per_share
-    assert implied_cagr(_a(), target) == pytest.approx(0.25, abs=1e-6)
+def test_exit_multiple_terminal_value_is_discounted_at_year_end():
+    r = run_dcf(_a(terminal_method="exit_multiple", exit_multiple=10.0, mid_year=True))
+    tv = 10.0 * (24.2 + 6.05)  # 10x final-year EBITDA
+    assert r.terminal_value == pytest.approx(tv)
+    assert r.pv_terminal == pytest.approx(tv / 1.1 ** 2)  # end of year 2, not 1.5 (Rosenbaum & Pearl)
+    # The perpetuity growth the multiple implies: TV = FCF x (1 + g) / (WACC - g), solved for g
+    assert r.implied_terminal_growth == pytest.approx((tv * 0.10 - 17.05) / (tv + 17.05))
 
 
-def test_implied_cagr_returns_none_when_no_growth_rate_reaches_the_price():
-    assert implied_cagr(_a(), 1e9) is None
+def test_exit_multiple_method_needs_a_multiple():
+    with pytest.raises(ValueError, match="exit_multiple"):
+        run_dcf(_a(terminal_method="exit_multiple"))
+
+
+def test_implied_exit_multiple_closes_the_gap_to_price_exactly():
+    a = _a(terminal_method="exit_multiple", exit_multiple=10.0)
+    price = run_dcf(a.model_copy(update=dict(exit_multiple=17.5))).per_share
+    assert implied_exit_multiple(a, price) == pytest.approx(17.5)
+
+
+def test_implied_revenue_scale_recovers_a_scaled_revenue_path():
+    # Doubling every year's revenue = year-1 growth of (1.1 x 2) - 1, later growth unchanged.
+    target = run_dcf(_a(growth=[1.2, 0.10])).per_share
+    assert implied_revenue_scale(_a(), target) == pytest.approx(2.0, abs=1e-6)
+
+
+def test_implied_revenue_scale_returns_none_when_out_of_reach():
+    assert implied_revenue_scale(_a(), 1e9) is None
+
+
+def test_multiple_value_per_share():
+    from finlib.models.dcf import multiple_value
+
+    # 8.0x on $182M revenue = $1,456M EV, plus $116.4M net cash, over 33.17M shares
+    assert multiple_value(182.0, 8.0, 116.4, 33.17) == pytest.approx((182.0 * 8.0 + 116.4) / 33.17)
+    assert multiple_value(-5.0, 8.0, 116.4, 33.17) is None  # no value on a negative metric
