@@ -1,6 +1,6 @@
 # finance-portfolio
 
-Five finance automation projects built on one shared library. Each project ends in a working tool and a one-command demo that runs on fixtures with no API keys.
+Five finance automation projects and an equity research pitch, built on one shared library. Each project ends in a working tool and a one-command demo that runs on fixtures with no API keys.
 
 | # | Project | Status | Run |
 | --- | --- | --- | --- |
@@ -9,6 +9,7 @@ Five finance automation projects built on one shared library. Each project ends 
 | 3 | [LBO Returns Engine](projects/lbo/README.md) — Python LBO → live-formula Excel with scenarios | **Working** | `make demo-lbo` |
 | 4 | [Deal Sourcing Pipeline](projects/sourcing/README.md) — daily SEC Form D → scored digest | **Working** | `make demo-sourcing` |
 | 5 | [Portfolio KPI Dashboard](projects/dashboard/README.md) — monthly KPIs → hosted page | **Working** | `make demo-dashboard` |
+| 6 | [Equity Pitch: AEHR](projects/pitch/README.md) — DCF, reverse DCF and comps → two-page memo ([PDF](docs/pitch/aehr_memo.pdf)) | **Working** | `python -m projects.pitch build` |
 
 ## Try it
 

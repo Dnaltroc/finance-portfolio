@@ -1,0 +1,519 @@
+{
+ "pulled_at": "2026-10-12T02:48:42+00:00",
+ "quote": {
+  "price": 84.63999938964844,
+  "as_of": "2026-10-09",
+  "source": "Yahoo Finance close",
+  "fifty_two_week_low": 18.7,
+  "fifty_two_week_high": 147.4,
+  "beta": 3.484,
+  "short_pct_float": 0.1685,
+  "target_mean": 128.0,
+  "analysts": 5
+ },
+ "price_history": [
+  [
+   "2025-10-06",
+   23.49
+  ],
+  [
+   "2025-10-13",
+   24.76
+  ],
+  [
+   "2025-10-20",
+   24.97
+  ],
+  [
+   "2025-10-27",
+   25.99
+  ],
+  [
+   "2025-11-03",
+   24.48
+  ],
+  [
+   "2025-11-10",
+   20.34
+  ],
+  [
+   "2025-11-17",
+   20.27
+  ],
+  [
+   "2025-11-24",
+   22.97
+  ],
+  [
+   "2025-12-01",
+   24.74
+  ],
+  [
+   "2025-12-08",
+   24.48
+  ],
+  [
+   "2025-12-15",
+   21.81
+  ],
+  [
+   "2025-12-22",
+   21.46
+  ],
+  [
+   "2025-12-29",
+   22.16
+  ],
+  [
+   "2026-01-05",
+   26.32
+  ],
+  [
+   "2026-01-12",
+   28.81
+  ],
+  [
+   "2026-01-19",
+   28.04
+  ],
+  [
+   "2026-01-26",
+   25.64
+  ],
+  [
+   "2026-02-02",
+   26.39
+  ],
+  [
+   "2026-02-09",
+   28.84
+  ],
+  [
+   "2026-02-16",
+   33.6
+  ],
+  [
+   "2026-02-23",
+   37.43
+  ],
+  [
+   "2026-03-02",
+   35.61
+  ],
+  [
+   "2026-03-09",
+   35.67
+  ],
+  [
+   "2026-03-16",
+   34.52
+  ],
+  [
+   "2026-03-23",
+   32.52
+  ],
+  [
+   "2026-03-30",
+   44.32
+  ],
+  [
+   "2026-04-06",
+   70.43
+  ],
+  [
+   "2026-04-13",
+   83.86
+  ],
+  [
+   "2026-04-20",
+   95.91
+  ],
+  [
+   "2026-04-27",
+   93.07
+  ],
+  [
+   "2026-05-04",
+   97.23
+  ],
+  [
+   "2026-05-11",
+   99.5
+  ],
+  [
+   "2026-05-18",
+   95.02
+  ],
+  [
+   "2026-05-25",
+   92.33
+  ],
+  [
+   "2026-06-01",
+   98.45
+  ],
+  [
+   "2026-06-08",
+   108.47
+  ],
+  [
+   "2026-06-15",
+   115.3
+  ],
+  [
+   "2026-06-22",
+   91.81
+  ],
+  [
+   "2026-06-29",
+   69.96
+  ],
+  [
+   "2026-07-06",
+   72.6
+  ],
+  [
+   "2026-07-13",
+   81.05
+  ],
+  [
+   "2026-07-20",
+   76.32
+  ],
+  [
+   "2026-07-27",
+   79.98
+  ],
+  [
+   "2026-08-03",
+   103.07
+  ],
+  [
+   "2026-08-10",
+   134.06
+  ],
+  [
+   "2026-08-17",
+   101.73
+  ],
+  [
+   "2026-08-24",
+   80.81
+  ],
+  [
+   "2026-08-31",
+   86.26
+  ],
+  [
+   "2026-09-07",
+   94.69
+  ],
+  [
+   "2026-09-14",
+   93.49
+  ],
+  [
+   "2026-09-21",
+   104.39
+  ],
+  [
+   "2026-09-28",
+   107.21
+  ],
+  [
+   "2026-10-05",
+   84.64
+  ]
+ ],
+ "risk_free": {
+  "value": 0.0524399995803833,
+  "as_of": "2026-10-09",
+  "source": "10-year US Treasury yield (^TNX, Yahoo Finance)"
+ },
+ "history": {
+  "years": {
+   "2021-05-31": {
+    "revenue": 16.6,
+    "gross_profit": 6.032,
+    "operating_income": -4.182,
+    "net_income": -2.027,
+    "depreciation": 0.31,
+    "capex": 0.227,
+    "sbc": 1.101,
+    "cfo": -2.701,
+    "inventory": 8.849,
+    "cash": 4.582,
+    "current_assets": 19.184,
+    "current_liabilities": 9.061
+   },
+   "2022-05-31": {
+    "revenue": 50.829,
+    "gross_profit": 23.665,
+    "operating_income": 7.8,
+    "net_income": 9.45,
+    "depreciation": 0.4,
+    "capex": 0.416,
+    "sbc": 3.006,
+    "cfo": 1.508,
+    "inventory": 15.051,
+    "cash": 31.484,
+    "current_assets": 60.007,
+    "current_liabilities": 11.014
+   },
+   "2023-05-31": {
+    "revenue": 64.961,
+    "gross_profit": 32.746,
+    "operating_income": 13.375,
+    "net_income": 14.557,
+    "depreciation": 0.5,
+    "capex": 1.362,
+    "sbc": 2.748,
+    "cfo": 10.011,
+    "inventory": 23.908,
+    "cash": 30.054,
+    "current_assets": 89.03,
+    "current_liabilities": 16.308
+   },
+   "2024-05-31": {
+    "revenue": 66.218,
+    "gross_profit": 32.543,
+    "operating_income": 10.078,
+    "net_income": 33.156,
+    "depreciation": 0.7,
+    "capex": 0.749,
+    "sbc": 2.518,
+    "cfo": 1.756,
+    "inventory": 37.47,
+    "cash": 49.159,
+    "current_assets": 97.848,
+    "current_liabilities": 10.508
+   },
+   "2025-05-30": {
+    "revenue": 58.968,
+    "gross_profit": 23.933,
+    "operating_income": -5.677,
+    "net_income": -3.91,
+    "depreciation": 1.0,
+    "capex": 4.992,
+    "sbc": 5.162,
+    "cfo": -7.4,
+    "inventory": 41.997,
+    "cash": 24.529,
+    "current_assets": 88.778,
+    "current_liabilities": 15.638
+   },
+   "2026-05-29": {
+    "revenue": 50.001,
+    "gross_profit": 17.651,
+    "operating_income": -14.149,
+    "net_income": -7.126,
+    "depreciation": 1.5,
+    "capex": 2.066,
+    "sbc": 6.761,
+    "cfo": -3.31,
+    "inventory": 41.354,
+    "cash": 116.358,
+    "current_assets": 184.448,
+    "current_liabilities": 17.855
+   }
+  },
+  "sources": {
+   "revenue": "xbrl:RevenueFromContractWithCustomerExcludingAssessedTax",
+   "gross_profit": "xbrl:GrossProfit",
+   "operating_income": "xbrl:OperatingIncomeLoss",
+   "net_income": "xbrl:NetIncomeLoss",
+   "depreciation": "xbrl:Depreciation",
+   "capex": "xbrl:PaymentsToAcquirePropertyPlantAndEquipment",
+   "sbc": "xbrl:ShareBasedCompensation",
+   "cfo": "xbrl:NetCashProvidedByUsedInOperatingActivities",
+   "inventory": "xbrl:InventoryNet",
+   "cash": "xbrl:CashAndCashEquivalentsAtCarryingValue",
+   "current_assets": "xbrl:AssetsCurrent",
+   "current_liabilities": "xbrl:LiabilitiesCurrent"
+  }
+ },
+ "comps": [
+  {
+   "ticker": "AEHR",
+   "company": "AEHR TEST SYSTEMS",
+   "ltm_period": "2025-05-30 to 2026-05-29",
+   "price": 84.63999938964844,
+   "shares_m": 32.62045,
+   "market_cap_m": 2760.9948680900575,
+   "total_debt_m": 0.0,
+   "cash_m": 116.358,
+   "ev_m": 2644.6368680900573,
+   "revenue_m": 50.001,
+   "ebitda_m": -11.35,
+   "ebit_m": -14.149,
+   "net_income_m": -7.126,
+   "ev_revenue": 52.89167952821058,
+   "ev_ebitda": null,
+   "pe": null,
+   "gross_margin": 0.3530129397412052,
+   "ebitda_margin": -0.22699546009079818,
+   "revenue_growth": -0.15206552706552712,
+   "flags": "negative EBITDA; negative NI",
+   "debt_source": "xbrl:no borrowing tags at balance date (debt = 0)",
+   "price_source": "yfinance",
+   "price_as_of": "2026-10-11",
+   "beta": 3.484
+  },
+  {
+   "ticker": "FORM",
+   "company": "FORMFACTOR INC",
+   "ltm_period": "2025-06-28 to 2026-06-27",
+   "price": 139.6699981689453,
+   "shares_m": 78.120725,
+   "market_cap_m": 10911.12151770668,
+   "total_debt_m": 11.644,
+   "cash_m": 345.64,
+   "ev_m": 10577.12551770668,
+   "revenue_m": 902.225,
+   "ebitda_m": 155.999,
+   "ebit_m": 115.942,
+   "net_income_m": 115.465,
+   "ev_revenue": 11.723378888532993,
+   "ev_ebitda": 67.80252128351259,
+   "pe": 94.49722009012844,
+   "gross_margin": 0.43127379533930005,
+   "ebitda_margin": 0.17290476322425116,
+   "revenue_growth": 0.1800670717830264,
+   "flags": "",
+   "debt_source": "xbrl:LongTermDebtNoncurrent+LongTermDebtCurrent",
+   "price_source": "yfinance",
+   "price_as_of": "2026-10-11",
+   "beta": 1.182
+  },
+  {
+   "ticker": "KLIC",
+   "company": "KULICKE & SOFFA INDUSTRIES INC",
+   "ltm_period": "2025-07-05 to 2026-07-04",
+   "price": 92.01000213623047,
+   "shares_m": 52.329115,
+   "market_cap_m": 4814.80198293705,
+   "total_debt_m": 0.0,
+   "cash_m": 516.573,
+   "ev_m": 4298.22898293705,
+   "revenue_m": 950.213,
+   "ebitda_m": 141.513,
+   "ebit_m": 125.54,
+   "net_income_m": 115.739,
+   "ev_revenue": 4.523437358715414,
+   "ev_ebitda": 30.373386070092852,
+   "pe": 41.60051480431877,
+   "gross_margin": 0.48180565831029465,
+   "ebitda_margin": 0.14892766148221503,
+   "revenue_growth": 0.4444395462740294,
+   "flags": "",
+   "debt_source": "xbrl:no borrowing tags at balance date (debt = 0)",
+   "price_source": "yfinance",
+   "price_as_of": "2026-10-11",
+   "beta": 1.555
+  },
+  {
+   "ticker": "COHU",
+   "company": "COHU INC",
+   "ltm_period": "2025-06-28 to 2026-06-27",
+   "price": 68.19000244140625,
+   "shares_m": 47.338433,
+   "market_cap_m": 3228.0078618423463,
+   "total_debt_m": 296.231,
+   "cash_m": 498.167,
+   "ev_m": 3026.071861842346,
+   "revenue_m": 522.6,
+   "ebitda_m": 8.913,
+   "ebit_m": -36.069,
+   "net_income_m": -38.816,
+   "ev_revenue": 5.790416880678045,
+   "ev_ebitda": 339.5121577294229,
+   "pe": null,
+   "gross_margin": null,
+   "ebitda_margin": 0.017055109070034442,
+   "revenue_growth": 0.3265945915758959,
+   "flags": "missing: cogs; negative NI",
+   "debt_source": "xbrl:LongTermDebtNoncurrent+LongTermDebtCurrent",
+   "price_source": "yfinance",
+   "price_as_of": "2026-10-11",
+   "beta": 1.512
+  },
+  {
+   "ticker": "ONTO",
+   "company": "ONTO INNOVATION INC.",
+   "ltm_period": "2025-07-01 to 2026-06-30",
+   "price": 294.5299987792969,
+   "shares_m": 49.074247,
+   "market_cap_m": 14453.837909004913,
+   "total_debt_m": null,
+   "cash_m": 1253.205,
+   "ev_m": null,
+   "revenue_m": 1120.137,
+   "ebitda_m": 218.931,
+   "ebit_m": 134.61,
+   "net_income_m": 132.605,
+   "ev_revenue": null,
+   "ev_ebitda": null,
+   "pe": 108.99919240605493,
+   "gross_margin": 0.5035616179092379,
+   "ebitda_margin": 0.19545019939525254,
+   "revenue_growth": 0.0808450402517289,
+   "flags": "missing: total_debt; EV needs debt and cash",
+   "debt_source": "",
+   "price_source": "yfinance",
+   "price_as_of": "2026-10-11",
+   "beta": 1.581
+  },
+  {
+   "ticker": "CAMT",
+   "company": "CAMTEK LTD",
+   "ltm_period": "2025-01-01 to 2025-12-31",
+   "price": 152.80999755859375,
+   "shares_m": 46.668177,
+   "market_cap_m": 7131.364013434021,
+   "total_debt_m": null,
+   "cash_m": 256.71,
+   "ev_m": null,
+   "revenue_m": 496.072,
+   "ebitda_m": 139.982,
+   "ebit_m": 128.203,
+   "net_income_m": 50.722,
+   "ev_revenue": null,
+   "ev_ebitda": null,
+   "pe": 140.59705874046807,
+   "gross_margin": 0.5045981228531342,
+   "ebitda_margin": 0.28218081246270704,
+   "revenue_growth": 0.15571459856395342,
+   "flags": "missing: total_debt; EV needs debt and cash",
+   "debt_source": "",
+   "price_source": "yfinance",
+   "price_as_of": "2026-10-11",
+   "beta": 1.586
+  },
+  {
+   "ticker": "TER",
+   "company": "TERADYNE, INC",
+   "ltm_period": "2025-06-29 to 2026-06-28",
+   "price": 402.67999267578125,
+   "shares_m": 156.34075,
+   "market_cap_m": 62955.29206492615,
+   "total_debt_m": null,
+   "cash_m": 349.538,
+   "ev_m": null,
+   "revenue_m": 4464.031,
+   "ebitda_m": 1481.912,
+   "ebit_m": 1349.317,
+   "net_income_m": 1150.22,
+   "ev_revenue": null,
+   "ev_ebitda": null,
+   "pe": 54.733261519471185,
+   "gross_margin": 0.5924161368951066,
+   "ebitda_margin": 0.33196722872220197,
+   "revenue_growth": 0.5787020287806981,
+   "flags": "missing: total_debt; EV needs debt and cash",
+   "debt_source": "",
+   "price_source": "yfinance",
+   "price_as_of": "2026-10-11",
+   "beta": 1.747
+  }
+ ]
+}

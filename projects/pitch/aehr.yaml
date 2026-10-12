@@ -1,0 +1,93 @@
+# Aehr Test Systems (AEHR): every model input, with where it came from.
+# Figures from the market or SEC live in aehr_snapshot.json (pulled by `snapshot`); this file
+# holds judgment calls. Prose fields may use {placeholders} filled from engine output at build.
+
+ticker: AEHR
+company: Aehr Test Systems
+exchange: NASDAQ
+author: Cortland Clarke
+rating: Sell
+peers: [FORM, KLIC, COHU, ONTO, CAMT, TER]
+
+base_fiscal_year: FY26            # ended May 29, 2026 (10-K)
+base_fiscal_year_end: 2026-05-29
+forecast_labels: [FY27, FY28, FY29, FY30, FY31, FY32, FY33, FY34, FY35, FY36]
+
+guidance:                          # 8-K exhibit 99.1, July 14, 2026 (Q4 FY26 results)
+  source: "Aehr 8-K, Ex. 99.1, Jul 14 2026"
+  url: https://www.sec.gov/Archives/edgar/data/0001040470/000165495426006655/aehr_ex991.htm
+  fy27_revenue_low: 130.0
+  fy27_revenue_high: 150.0
+  fy27_non_gaap_net_margin: [0.18, 0.22]
+  backlog: 80.6                    # May 29, 2026
+  effective_backlog: 100.6         # incl. bookings after May 29
+  q4_bookings: 60.7
+  diluted_shares: 33.17            # Q4 FY26 diluted weighted average, millions
+
+cost_of_capital:
+  equity_risk_premium: 0.045       # assumption; the sensitivity table spans 10% to 15% WACC
+  beta_method: median 5-year monthly beta of the peer set (Yahoo Finance), not AEHR's own
+  debt: 0.0                        # no borrowings on the May 29, 2026 balance sheet
+
+operating:                         # shared by every scenario
+  tax_rate: 0.21                   # US federal statutory; NOLs and credits ignored (conservative)
+  da_pct: 0.025                    # FY26 1.5 / 50.0 = 3.0%; FY25 1.7%
+  capex_pct: 0.035                 # FY22-26 capex / revenue = 3.3%
+  nwc_pct: 0.40                    # of incremental revenue. History is 58-100% of revenue (FY23-26);
+                                   # $41M of inventory on hand covers part of the ramp, so 40% is generous.
+  terminal_growth: 0.03
+  mid_year: true
+
+scenarios:
+  base:
+    label: Base
+    note: FY27 at the guidance midpoint, growth fading to 4%, EBIT margin to 25% ({peak_year} peak was {peak_margin})
+    growth: [1.80, 0.30, 0.22, 0.16, 0.12, 0.10, 0.08, 0.06, 0.05, 0.04]
+    ebit_margin: [0.14, 0.19, 0.22, 0.24, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25]
+  bull:
+    label: Bull
+    note: Top of guidance, AI wafer-level burn-in wins a second processor maker, margin to 30%
+    growth: [2.00, 0.45, 0.32, 0.24, 0.18, 0.14, 0.10, 0.08, 0.06, 0.05]
+    ebit_margin: [0.16, 0.23, 0.27, 0.29, 0.30, 0.30, 0.30, 0.30, 0.30, 0.30]
+  bear:
+    label: Bear
+    note: Bottom of guidance, then an AI capex digestion year; margin stalls at 18%
+    growth: [1.60, 0.05, 0.10, 0.08, 0.07, 0.06, 0.05, 0.04, 0.04, 0.03]
+    ebit_margin: [0.12, 0.15, 0.17, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18]
+
+relative:
+  metric: FY28 revenue (base case)
+  note: peer median LTM EV / revenue applied to FY28 revenue, a year past the guidance year
+
+sensitivity:
+  wacc_offsets: [-0.02, -0.01, 0.0, 0.01, 0.02, 0.03]   # around the model's own WACC
+  terminal_growth: [0.02, 0.025, 0.03, 0.035, 0.04]
+  exit_multiple: [10, 15, 20, 25, 30]
+
+memo:
+  headline: "Aehr Test Systems: a real AI win, priced as if it were the only one that matters"
+  thesis:
+    - >-
+      Aehr is doing everything right. Guidance calls for fiscal 2027 revenue of {guide_low} to {guide_high} million,
+      up about {fy27_growth} on {fy26_revenue}, backed by {effective_backlog} of effective backlog, as its lead AI
+      customer moves burn-in to the wafer. We model the midpoint and let margins pass the company's
+      prior peak.
+    - >-
+      The price asks for far more. At {price} the stock is worth {mcap}, {ev_rev_fy27} times fiscal 2027
+      guided revenue. To earn a {wacc} cost of capital from here, Aehr needs a revenue path
+      {rev_scale} times our base case, about {implied_fy31_rev} by fiscal 2031, or a buyer paying
+      {implied_exit}x fiscal 2036 EBITDA.
+    - >-
+      Both of our lenses land well below the market. The base-case DCF is worth {base_value} a share
+      (bull {bull_value}, bear {bear_value}). Paying the peer median {peer_ev_rev} EV / revenue on
+      fiscal 2028 revenue gives {relative_value}. Our 12-month target is {target}, the relative value,
+      {downside} today's price.
+  risks:
+    - >-
+      A second top-tier AI processor maker adopting wafer-level burn-in (one finished benchmarking and
+      wants pilot production validation) would push revenue toward our bull case and beyond.
+    - High-bandwidth memory is not in any of our cases. Aehr is pursuing it; a production win there is a different company.
+    - "{short_float} of the float is sold short. A strong November 2 print could squeeze the stock regardless of value."
+  catalysts:
+    - Q1 FY27 results on November 2, 2026, the first quarter of the guided ramp.
+    - Orders from the AI processor maker now in pilot validation, or their absence.

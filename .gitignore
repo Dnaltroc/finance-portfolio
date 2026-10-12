@@ -10,3 +10,6 @@ __pycache__/
 dist/
 .venv/
 sourcing.sqlite
+
+# Pitch memo HTML embeds plotly.js (~4MB); the PDF is the artifact
+docs/pitch/*.html
