@@ -54,7 +54,8 @@ jobs:
           import glob, sys
           sys.path.insert(0, '/app/app')
           from streamlit.testing.v1 import AppTest
-          pages = ['/app/app/Home.py'] + sorted(glob.glob('/app/app/pages/*.py'))
+          # Overview's page links resolve only through the router, so Home.py covers it.
+          pages = ['/app/app/Home.py'] + sorted(p for p in glob.glob('/app/app/pages/*.py') if 'Overview' not in p)
           for p in pages:
               at = AppTest.from_file(p, default_timeout=120).run()
               assert not at.exception, (p, [e.value for e in at.exception])
