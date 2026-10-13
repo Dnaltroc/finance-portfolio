@@ -1,0 +1,16 @@
+# Keep secrets, caches and build output out of the image.
+.env
+.env.*
+*.sqlite
+.venv/
+.git/
+.github/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+output/
+dist/
+docs/
+deploy/

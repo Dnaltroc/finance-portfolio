@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: finance-portfolio
+spec:
+  selector: { app: finance-portfolio }
+  # Streamlit keeps each browser session on one pod over a websocket.
+  sessionAffinity: ClientIP
+  ports:
+    - { name: http, port: 80, targetPort: http }

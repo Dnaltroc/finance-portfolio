@@ -1,0 +1,75 @@
+name: Docker and Kubernetes
+
+# Builds the app image, runs it, deploys it to a throwaway Kubernetes cluster (kind),
+# and checks every page renders inside the locked-down pod. On master, pushes the image to GHCR.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/dnaltroc/finance-portfolio
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t "$IMAGE:latest" -t "$IMAGE:${GITHUB_SHA::7}" .
+
+      - name: Smoke test with plain Docker
+        run: |
+          docker run -d --name app -p 8501:8501 "$IMAGE:latest"
+          for i in $(seq 1 30); do curl -fs http://localhost:8501/_stcore/health && break; sleep 2; done
+          curl -fs http://localhost:8501/_stcore/health
+          test "$(docker inspect -f '{{.Config.User}}' app)" = "10001"   # not root
+          docker rm -f app
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: ci
+
+      - name: Deploy to Kubernetes
+        run: |
+          kind load docker-image "$IMAGE:latest" --name ci
+          kubectl apply -k deploy/k8s
+          kubectl -n finance-portfolio rollout status deployment/finance-portfolio --timeout=240s
+          kubectl -n finance-portfolio get pods -o wide
+
+      - name: Check the app through the Service
+        run: |
+          kubectl -n finance-portfolio port-forward svc/finance-portfolio 8080:80 &
+          for i in $(seq 1 20); do curl -fs http://localhost:8080/_stcore/health && break; sleep 1; done
+          curl -fs http://localhost:8080/_stcore/health
+
+      - name: Render every page inside a pod (read-only filesystem, non-root)
+        run: |
+          kubectl -n finance-portfolio exec deploy/finance-portfolio -- python -c "
+          import glob, sys
+          sys.path.insert(0, '/app/app')
+          from streamlit.testing.v1 import AppTest
+          pages = ['/app/app/Home.py'] + sorted(glob.glob('/app/app/pages/*.py'))
+          for p in pages:
+              at = AppTest.from_file(p, default_timeout=120).run()
+              assert not at.exception, (p, [e.value for e in at.exception])
+              print('ok', p)
+          "
+
+      - name: Diagnostics on failure
+        if: failure()
+        run: |
+          kubectl -n finance-portfolio describe pods || true
+          kubectl -n finance-portfolio logs deploy/finance-portfolio --all-containers --tail=200 || true
+
+      - name: Push image to GHCR
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push "$IMAGE:latest"
+          docker push "$IMAGE:${GITHUB_SHA::7}"

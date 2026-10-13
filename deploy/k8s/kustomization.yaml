@@ -1,0 +1,12 @@
+# kubectl apply -k deploy/k8s
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: finance-portfolio
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+images:
+  - name: finance-portfolio
+    newName: ghcr.io/dnaltroc/finance-portfolio
+    newTag: latest

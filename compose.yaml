@@ -1,0 +1,12 @@
+# docker compose up --build   ->  http://localhost:8501
+# Live SEC data needs SEC_IDENTITY in .env; without it the app runs offline on fixtures.
+services:
+  app:
+    build: .
+    image: finance-portfolio:local
+    ports:
+      - "8501:8501"
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped
