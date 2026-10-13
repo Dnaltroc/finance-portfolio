@@ -42,6 +42,7 @@ Five finance tools on one shared library (`finlib/`). The engines in `finlib/mod
 | `projects/<name>/cli.py` | Typer CLI per tool; `README.md` per tool has the spec and resume line |
 | `projects/pitch/` | Equity pitch: `aehr.yaml` assumptions + committed `aehr_snapshot.json` -> memo PDF in `docs/pitch/` |
 | `projects/powerbi/` | Power BI export: star-schema CSVs in `data/` (committed) + build guide and DAX in `README.md` |
+| `Dockerfile`, `compose.yaml`, `deploy/k8s/` | Container image and Kubernetes manifests for the same app; `deploy/README.md`. CI deploys to kind on every push |
 | `app/` | Streamlit app: `Home.py`, `pages/`, `fp_ui.py` (formatting, mode switch, chart style). A view only; no math. |
 | `tests/fixtures/` | Offline data: comps JSON (illustrative), Form D day (synthetic), sample CSVs |
 

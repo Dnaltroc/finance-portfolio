@@ -11,6 +11,7 @@ Five finance automation projects and an equity research pitch, built on one shar
 | 5 | [Portfolio KPI Dashboard](projects/dashboard/README.md) — monthly KPIs → hosted page | **Working** | `make demo-dashboard` |
 | 6 | [Equity Pitch: AEHR](projects/pitch/README.md) — DCF, reverse DCF and comps → two-page memo ([PDF](docs/pitch/aehr_memo.pdf)) | **Working** | `python -m projects.pitch build` |
 | 7 | [Power BI Report](projects/powerbi/README.md) — variance, KPIs and comps as a star schema → Power BI model, DAX and three report pages | **Data + guide ready; report in progress** | `make export-powerbi` |
+| — | [Docker + Kubernetes](deploy/README.md): the app as a container image, deployed to Kubernetes and tested on a kind cluster in CI | **Working** | `docker compose up --build` |
 
 ## Try it
 
