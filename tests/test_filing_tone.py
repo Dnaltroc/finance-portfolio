@@ -171,3 +171,52 @@ def test_baseline_fits_and_predicts_probabilities():
     pipe = fit_baseline([e.text for e in ex], [e.label for e in ex])
     p = baseline_probs(pipe, ["Revenue rose 18% to a record."])
     assert p.shape == (1, 3) and p.sum() == pytest.approx(1.0)
+
+
+# ---------------------------------------------------------------- 10-K text ----------
+def test_html_to_text_drops_tags_scripts_and_entities():
+    from finlib.nlp.sec_text import html_to_text
+    t = html_to_text("<p>Item&#160;1A.<script>x()</script> Risk <b>Factors</b></p><p>Next</p>")
+    assert "x()" not in t and "Item 1A. Risk Factors" in t and "\nNext" in t
+
+
+def test_extract_sections_prefers_the_body_over_the_toc():
+    from finlib.nlp.sec_text import extract_sections, html_to_text
+    sections, warnings = extract_sections(html_to_text((FIX / "sample_10k.html").read_text(encoding="utf-8")))
+    assert "wafer-level" in sections["risk_factors"] and not sections["risk_factors"].startswith("Risk")
+    assert "Net sales" in sections["mdna"] and len(sections["mdna"]) > 300 and warnings == []
+    assert "Unresolved" not in sections["risk_factors"] and "market risk" not in sections["mdna"]
+
+
+def test_extract_sections_warns_instead_of_guessing():
+    from finlib.nlp.sec_text import extract_sections
+    body = "Item 1A. Risk Factors\n" + "Some risk here. " * 20 + "\nItem 1B. Unresolved"
+    sections, warnings = extract_sections(body)
+    assert sections["risk_factors"] and sections["mdna"] == "" and any("Item 7" in w for w in warnings)
+
+
+def test_split_sentences_keeps_abbreviations_and_decimals():
+    from finlib.nlp.sec_text import split_sentences
+    s = split_sentences("Aehr Test Systems, Inc. sells in the U.S. and abroad. Margin was 3.5% last year, "
+                        "up from 2.1%. We expect growth. Short one.")
+    assert s == ["Aehr Test Systems, Inc. sells in the U.S. and abroad.", "Margin was 3.5% last year, up from 2.1%."]
+
+
+def test_split_sentences_drops_table_rows():
+    from finlib.nlp.sec_text import split_sentences
+    assert split_sentences("2026 2025 2024 84.2 57.7 41.0 48.5% 44.1% 39.0% 9.6 (2.3) (4.1) totals.") == []
+
+
+def test_filing_tone_net_and_drivers():
+    from finlib.nlp.sec_text import filing_tone
+    probs = np.array([[0.1, 0.1, 0.8], [0.7, 0.2, 0.1], [0.2, 0.6, 0.2], [0.05, 0.05, 0.9]])
+    t = filing_tone(probs, ["a", "b", "c", "d"], top_k=1)
+    assert t["n"] == 4 and t["share_positive"] == 0.5 and t["share_negative"] == 0.25
+    assert t["net_tone"] == pytest.approx(0.25)
+    assert t["top_positive"] == [{"sentence": "d", "p": 0.9}] and t["top_negative"][0]["sentence"] == "b"
+
+
+def test_filing_tone_handles_no_sentences():
+    from finlib.nlp.sec_text import filing_tone
+    t = filing_tone(np.zeros((0, 3)), [])
+    assert t["n"] == 0 and t["net_tone"] == 0.0 and t["top_positive"] == []
