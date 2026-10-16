@@ -267,3 +267,19 @@ def test_dashboard_matches_totals_and_downloads_page(downloads):
     assert m["Blended gross margin"] == ui.fmt_pct(t["gross_margin"])
     assert m["Needs attention"] == f"{t['critical'] + t['warning']} of {t['companies']}" == "3 of 8"
     assert downloads["index.html"].decode() == render_page(p)
+
+
+# ---------------------------------------------------------------- filing tone --------
+def test_filing_tone_page_shows_snapshot_numbers_without_torch():
+    from projects.filing_tone import cli as ft
+
+    snap = ft.load_snapshot()
+    aehr = snap["companies"]["AEHR"]["sections"]
+    at = run_page("pages/6_Filing_Tone.py")
+    m = metrics(at)
+    assert m["AEHR net tone, MD&A"] == f"{aehr['mdna']['net_tone']:+.2f}"
+    assert m["AEHR net tone, risk factors"] == f"{aehr['risk_factors']['net_tone']:+.2f}"
+    assert m["Peer median, MD&A"] == f"{ft.peer_median(snap, 'mdna'):+.2f}"
+    assert m["Model macro-F1, test split"] == f"{ft.load_results()['distilbert']['macro_f1']:.3f}"
+    assert not any(mod == "torch" or mod.startswith("torch.") for mod in sys.modules)
+    assert any("Snapshot" in x.value for x in at.markdown)  # provenance badge
