@@ -1,0 +1,24 @@
+name: ML tests
+
+# Filing Tone needs torch, so it gets its own job: the main test job stays small and the
+# torch tests skip there. CPU torch is enough; the fixture training smoke takes seconds.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e ".[dev,ml]"
+      - name: Filing Tone tests (torch, offline fixtures)
+        env: { FINLIB_OFFLINE: "1" }
+        run: pytest -q -rs tests/test_filing_tone.py
+      - name: Train the CNN on the fixture (smoke)
+        env: { FINLIB_OFFLINE: "1" }
+        run: python -m projects.filing_tone train --model cnn --fixture --epochs 3 --device cpu

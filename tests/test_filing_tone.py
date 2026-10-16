@@ -266,6 +266,10 @@ def test_results_table_and_readme_block(tmp_path):
     ft.update_readme_results(readme, table)
     txt = readme.read_text(encoding="utf-8")
     assert "old" not in txt and "| cnn |" in txt and txt.endswith("y")
+    empty = tmp_path / "E.md"
+    empty.write_text("<!-- results:start -->\n<!-- results:end -->", encoding="utf-8")
+    ft.update_readme_results(empty, table)
+    assert "| cnn |" in empty.read_text(encoding="utf-8")  # a fresh README with an empty block
 
 
 def test_parse_phrasebank_lines_uses_at_separator_and_label_names():

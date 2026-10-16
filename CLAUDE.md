@@ -4,12 +4,12 @@ Guardrails for every session in this repo. Read before changing anything.
 
 ## What this is
 
-Five finance tools on one shared library (`finlib/`). The engines in `finlib/models/` and the data providers in `finlib/providers/` were verified against real SEC filings and independent hand recomputation on 2026-10-10 (see `projects/comps/README.md` and each project README). They are the product; everything else is a view on them.
+Six finance tools on one shared library (`finlib/`). The engines in `finlib/models/` and the data providers in `finlib/providers/` were verified against real SEC filings and independent hand recomputation on 2026-10-10 (see `projects/comps/README.md` and each project README). They are the product; everything else is a view on them.
 
 ## Rules
 
 1. **`finlib/models/` and `finlib/providers/` are frozen.** Do not change math, tag lists, LTM logic, scoring, or sign conventions. If you believe a number is wrong, write a failing test in `tests/` that proves it, then stop and ask.
-2. **Run `FINLIB_OFFLINE=1 pytest -q` before and after any change.** All tests must pass (96 + 2 that need LibreOffice, which CI installs). On Windows PowerShell: `$env:FINLIB_OFFLINE="1"; pytest -q`.
+2. **Run `FINLIB_OFFLINE=1 pytest -q` before and after any change.** All tests must pass (96 + 2 that need LibreOffice, which CI installs; the Filing Tone torch tests skip without the `[ml]` extra and run in `ml.yml`). On Windows PowerShell: `$env:FINLIB_OFFLINE="1"; pytest -q`.
 3. **New calculations go in `finlib/models/` with a test**, never inline in a page, CLI, or notebook.
 4. **Never fabricate a figure.** If live data is unavailable, say so and fall back to fixtures labeled "Sample data (synthetic)".
 5. **No paid APIs, no database server, no auth, no new backend service** without asking. SQLite files and free APIs (SEC, yfinance) are fine.
@@ -38,6 +38,8 @@ Five finance tools on one shared library (`finlib/`). The engines in `finlib/mod
 | `finlib/models/sourcing.py` | Fund filter and 0–100 score |
 | `finlib/models/kpi.py` | Margin, burn, runway, calendar-month growth |
 | `finlib/models/dcf.py` | UFCF DCF, perpetuity / exit-multiple terminal value, reverse DCF (revenue scale, exit multiple) |
+| `finlib/nlp/` | Filing Tone (PyTorch): PhraseBank loader, tokenizer, TextCNN, DistilBERT wrapper, training loop, hand-written metrics, 10-K section/sentence extraction. Torch is an optional `[ml]` extra; never import it under `app/` |
+| `projects/filing_tone/` | CLI (`train`, `snapshot`, `results`), committed `tone_snapshot.json` + `results.json` the page reads, `README.md` results block written by code |
 | `finlib/excel_writer/` | openpyxl writers; LBO workbook is live formulas |
 | `projects/<name>/cli.py` | Typer CLI per tool; `README.md` per tool has the spec and resume line |
 | `projects/pitch/` | Equity pitch: `aehr.yaml` assumptions + committed `aehr_snapshot.json` -> memo PDF in `docs/pitch/` |

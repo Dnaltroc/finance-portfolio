@@ -1,6 +1,6 @@
 # finance-portfolio
 
-Five finance automation projects and an equity research pitch, built on one shared library. Each project ends in a working tool and a one-command demo that runs on fixtures with no API keys.
+Six finance automation projects and an equity research pitch, built on one shared library. Each project ends in a working tool and a one-command demo that runs on fixtures with no API keys.
 
 | # | Project | Status | Run |
 | --- | --- | --- | --- |
@@ -11,6 +11,7 @@ Five finance automation projects and an equity research pitch, built on one shar
 | 5 | [Portfolio KPI Dashboard](projects/dashboard/README.md) — monthly KPIs → hosted page | **Working** | `make demo-dashboard` |
 | 6 | [Equity Pitch: AEHR](projects/pitch/README.md) — DCF, reverse DCF and comps → two-page memo ([PDF](docs/pitch/aehr_memo.pdf)) | **Working** | `python -m projects.pitch build` |
 | 7 | [Power BI Data Model](projects/powerbi/README.md) — variance, KPIs and comps exported as a star schema, with the DAX measures and a build guide | **Working** | `make export-powerbi` |
+| 8 | [Filing Tone](projects/filing_tone/README.md) — PyTorch sentiment models (from-scratch CNN, fine-tuned DistilBERT, TF-IDF baseline) on Financial PhraseBank, applied to 10-K risk factors and MD&A; [walkthrough](docs/filing_tone/WALKTHROUGH.md) | **Working** | `make demo-filing-tone` |
 | — | [Docker + Kubernetes](deploy/README.md): the app as a container image, deployed to Kubernetes and tested on a kind cluster in CI | **Working** | `docker compose up --build` |
 
 ## Try it
@@ -19,7 +20,7 @@ Five finance automation projects and an equity research pitch, built on one shar
 
 ![Home page of the app](docs/screenshots/home.png)
 
-Every tool also runs as a Streamlit app: five pages that open on sample data, run the same engines, and download the same files. See [app/README.md](app/README.md) for a tour with screenshots.
+Every tool also runs as a Streamlit app: six pages that open on sample data, run the same engines, and download the same files. See [app/README.md](app/README.md) for a tour with screenshots.
 
 **Locally**
 
@@ -50,6 +51,7 @@ make test                        # all tests run offline on fixtures (Windows: $
 finlib/
   providers/     edgar.py (SEC companyfacts API), market.py (Finnhub → yfinance → manual), formd.py (SEC Form D)
   models/        ratios, variance, lbo, sourcing, kpi — pure math, no I/O
+  nlp/           Filing Tone: data, tokenizer, TextCNN, DistilBERT wrapper, training loop, metrics, 10-K text
   excel_writer/  styles.py, tables.py — house style, openpyxl
   store/         cache.py — SQLite JSON cache so demos never hit a rate limit twice
 projects/        one package per project, each with cli.py and a README

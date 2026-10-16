@@ -1,4 +1,4 @@
-"""Overview: what the five tools are, today's headline figure from each, how they are verified."""
+"""Overview: what the six tools are, today's headline figure from each, how they are verified."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import fp_ui as ui
 
 ui.page_setup(
     "Finance tools that tie to the filing.",
-    "Five working tools for banking, private equity and FP&A, built on one tested Python library. "
+    "Six working tools for banking, private equity and FP&A, built on one tested Python library. "
     "Each page opens on sample data, runs the same engine as its command-line twin, and exports the "
     "Excel or markdown file an analyst would actually hand over.",
     section="finance-portfolio · working papers",
@@ -30,6 +30,9 @@ TOOLS = [
      "A day of SEC Form D filings in; funds filtered out, operating-company raises scored and ranked."),
     ("05", "dashboard", "pages/5_KPI_Dashboard.py", "Portfolio KPIs",
      "Monthly company KPIs in; revenue, margin, burn and runway with red / amber / green status."),
+    ("06", "filing_tone", "pages/6_Filing_Tone.py", "Filing tone",
+     "A sentiment model fine-tuned in PyTorch reads each 10-K's risk factors and MD&A and scores the "
+     "filing, sentence by sentence, with the driver sentences as evidence."),
 ]
 
 
@@ -50,6 +53,7 @@ def tape() -> dict:
     from finlib.providers.formd import FIXTURE_DIR, FormDProvider
     from projects.comps.cli import load_all
     from projects.dashboard.cli import HERE as DASH, payload_from_frame
+    from projects.filing_tone.cli import load_snapshot
     from projects.sourcing.cli import HERE as SRC, load_config
     from projects.variance.cli import HERE as VAR, build_variance, load_thresholds
 
@@ -65,6 +69,7 @@ def tape() -> dict:
     deal = LBOAssumptions(**yaml.safe_load((ui.ROOT / "projects/lbo/deal.yaml").read_text()))
     lbo = run_lbo(deal)
     totals = payload_from_frame(pd.read_csv(DASH / "sample_data/kpis.csv"), "")["totals"]
+    tone = load_snapshot()["companies"]["AEHR"]["sections"]["mdna"]
     return {
         "comps": (ui.fmt_x(summary_rows(rows)[0]["ev_ebitda"]), "median EV / EBITDA"),
         "variance": (ui.fmt_usd(net["variance_amt"]), f"net income vs budget, {pack.period}"),
@@ -72,11 +77,12 @@ def tape() -> dict:
         "sourcing": (f"{stages[-1][1]} of {stages[0][1]}", "Form D raises kept"),
         "dashboard": ("NM" if totals["revenue_yoy"] is None else f"{totals['revenue_yoy']:+.0%}",
                       f"portfolio revenue, YoY to {totals['month']}"),
+        "filing_tone": (f"{tone['net_tone']:+.2f}", f"AEHR MD&A net tone, {tone['n']} sentences"),
     }
 
 
 t = tape()
-st.html('<p class="fp-eyebrow" style="margin-top:18px">Headline figures, sample data</p>')
+st.html('<p class="fp-eyebrow" style="margin-top:18px">Headline figures, sample data (filing tone: live 10-K snapshot)</p>')
 with st.container(horizontal=True):
     for num, key, page, name, _ in TOOLS:
         value, label = t[key]

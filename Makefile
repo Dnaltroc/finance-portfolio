@@ -1,4 +1,4 @@
-.PHONY: install test lint run-comps demo-comps export-powerbi app screenshots
+.PHONY: install test lint run-comps demo-comps export-powerbi app screenshots demo-filing-tone train-filing-tone
 
 install:
 	pip install -e ".[dev]"
@@ -31,6 +31,14 @@ export-powerbi:
 
 demo-dashboard:
 	python -m projects.dashboard build
+
+# Filing Tone (pip install -e ".[ml]"). Demo trains the CNN on the synthetic fixture, offline.
+demo-filing-tone:
+	FINLIB_OFFLINE=1 python -m projects.filing_tone train --model cnn --fixture --epochs 3 --device cpu
+
+# Full run on Financial PhraseBank: baseline, CNN, DistilBERT, then the results table into the README
+train-filing-tone:
+	python -m projects.filing_tone train --model baseline && python -m projects.filing_tone train --model cnn && python -m projects.filing_tone train --model distilbert && python -m projects.filing_tone results
 
 # Streamlit app over the same engines (pip install -e ".[app]")
 app:

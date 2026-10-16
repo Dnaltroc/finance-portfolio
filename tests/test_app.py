@@ -89,7 +89,7 @@ def test_overview_lists_five_tools_with_resume_lines_and_live_tape():
 
     at = run_page("Home.py")  # page links resolve only through the router
     captions = " ".join(c.value for c in at.caption)
-    assert captions.count("Resume line:") == 5
+    assert captions.count("Resume line:") == 6
     assert "Resume line: **" not in captions  # every README has its line
     assert "How the numbers are verified" in [s.value for s in at.subheader]
     tape = metrics(at)
@@ -105,6 +105,9 @@ def test_overview_lists_five_tools_with_resume_lines_and_live_tape():
     assert tape["02 · Variance report"] == ui.fmt_usd(net["variance_amt"]) == "($190,288)"
     totals = payload_from_frame(pd.read_csv(DASH / "sample_data/kpis.csv"), "")["totals"]
     assert tape["05 · Portfolio KPIs"] == f"{totals['revenue_yoy']:+.0%}"
+    from projects.filing_tone.cli import load_snapshot
+    tone = load_snapshot()["companies"]["AEHR"]["sections"]["mdna"]["net_tone"]
+    assert tape["06 · Filing tone"] == f"{tone:+.2f}"
 
 
 # ---------------------------------------------------------------- comps --------------

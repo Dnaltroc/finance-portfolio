@@ -39,6 +39,9 @@ Upload `kpis.csv` or use the sample. Shows portfolio tiles, revenue small multip
 
 ![KPI Dashboard](../docs/screenshots/dashboard.png)
 
+### Filing Tone
+Reads the committed snapshot of AEHR and its peers' latest 10-Ks, scored sentence by sentence by a DistilBERT model fine-tuned on Financial PhraseBank. Net tone by company for MD&A and risk factors, the three-model comparison table, and the driver sentences per filing. No torch in the app; refresh with `python -m projects.filing_tone snapshot`.
+
 ## Live data
 
 Live comps and Live Form D call the SEC, which requires a contact string. Add it to `.env` locally or to **Secrets** on Streamlit Cloud:

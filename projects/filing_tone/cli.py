@@ -289,14 +289,14 @@ def ablation_table(results: dict) -> str:
     return "\n".join(rows) if len(rows) > 2 else ""
 
 
-_BLOCK = re.compile(r"(<!-- results:start -->\n).*?(\n<!-- results:end -->)", re.S)
+_BLOCK = re.compile(r"(<!-- results:start -->)\n?.*?\n?(<!-- results:end -->)", re.S)  # empty block allowed
 
 
 def update_readme_results(readme: Path, table: str) -> None:
     txt = readme.read_text(encoding="utf-8")
     if not _BLOCK.search(txt):
         raise ValueError(f"{readme} has no <!-- results:start --> / <!-- results:end --> block")
-    readme.write_text(_BLOCK.sub(lambda m: m.group(1) + table + m.group(2), txt), encoding="utf-8")
+    readme.write_text(_BLOCK.sub(lambda m: m.group(1) + "\n" + table + "\n" + m.group(2), txt), encoding="utf-8")
 
 
 @app.command()
