@@ -273,3 +273,21 @@ def test_parse_phrasebank_lines_uses_at_separator_and_label_names():
     raw = "Profit rose 10 % .@positive\nThe company is based in Espoo .@neutral\nSales fell .@negative\n"
     ex = parse_phrasebank(raw)
     assert [e.label for e in ex] == [2, 1, 0] and ex[0].text == "Profit rose 10 % ."
+
+
+def test_extract_sections_ignores_inline_cross_references():
+    """A real MD&A says 'see Part II, Item 8 - Financial Statements' mid-paragraph; only a heading on
+    its own line ends the section (KLIC FY2025 lost 90% of its MD&A to this)."""
+    from finlib.nlp.sec_text import extract_sections
+    body = ("Item 7. Management's Discussion and Analysis\n" + "Net sales rose on strong demand. " * 10
+            + "See \u201cPart II, Item 8 \u2013 Financial Statements\u201d for details. " + "Margins held. " * 10
+            + "\nItem 7A. Quantitative and Qualitative Disclosures\nrates.")
+    sections, _ = extract_sections(body)
+    assert "Margins held." in sections["mdna"] and "Item 7A" not in sections["mdna"]
+
+
+def test_split_sentences_strips_page_furniture():
+    from finlib.nlp.sec_text import split_sentences
+    s = split_sentences("Orders were strong in the period. 11 Table of Contents The following table reflects our "
+                        "backlog as of October 4, 2025 and the prior year.")
+    assert s[1].startswith("The following table") and "Table of Contents" not in s[1]
