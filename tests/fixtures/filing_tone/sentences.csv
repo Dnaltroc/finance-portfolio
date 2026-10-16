@@ -1,0 +1,91 @@
+sentence,label,source
+"Revenue for the quarter rose 18% to $412 million, ahead of guidance.",positive,synthetic
+"Operating margin expanded to 24.5% on a richer product mix.",positive,synthetic
+"The company raised its full-year outlook after record bookings.",positive,synthetic
+"Net income more than doubled from the prior-year period.",positive,synthetic
+"Backlog reached an all-time high, giving strong visibility into next year.",positive,synthetic
+"Gross margin improved for the fourth consecutive quarter.",positive,synthetic
+"Free cash flow turned positive a year earlier than planned.",positive,synthetic
+"The board approved a 15% increase in the quarterly dividend.",positive,synthetic
+"Customer wins in automotive drove a 30% jump in orders.",positive,synthetic
+"The acquisition closed ahead of schedule and is already accretive to earnings.",positive,synthetic
+"Demand for the new platform exceeded internal forecasts.",positive,synthetic
+"Shares climbed after the firm beat consensus on both revenue and profit.",positive,synthetic
+"Cost savings from the restructuring came in above the targeted $40 million.",positive,synthetic
+"The lender upgraded the company's credit rating to investment grade.",positive,synthetic
+"Same-store sales grew 6%, the fastest pace in three years.",positive,synthetic
+"The pipeline of qualified opportunities is the strongest in the company's history.",positive,synthetic
+"Churn fell to a record low as renewals improved.",positive,synthetic
+"The firm repaid its term loan early with cash from operations.",positive,synthetic
+"Export orders surged after the new facility came online.",positive,synthetic
+"Management expects margins to keep widening as volumes scale.",positive,synthetic
+"Earnings per share rose 42% on higher sales and lower interest expense.",positive,synthetic
+"The company won a multi-year supply agreement with its largest customer.",positive,synthetic
+"Return on invested capital climbed to 18%, well above the cost of capital.",positive,synthetic
+"Strong holiday demand lifted fourth-quarter revenue to a record.",positive,synthetic
+"The unit returned to profitability after two years of losses.",positive,synthetic
+"Analysts raised price targets following the upbeat guidance.",positive,synthetic
+"Working capital improved as inventory turns accelerated.",positive,synthetic
+"The product launch was the most successful in the company's history.",positive,synthetic
+"Subscription revenue grew 35% and now makes up most of total sales.",positive,synthetic
+"The company reported its tenth straight quarter of double-digit growth.",positive,synthetic
+"Revenue fell 22% as the largest customer paused orders.",negative,synthetic
+"The company cut its full-year guidance for the second time this year.",negative,synthetic
+"Gross margin contracted 400 basis points on pricing pressure.",negative,synthetic
+"The firm recorded a $120 million impairment on the acquired business.",negative,synthetic
+"Net loss widened to $38 million from $12 million a year earlier.",negative,synthetic
+"Shares dropped 15% after the earnings miss.",negative,synthetic
+"The company breached a covenant on its revolving credit facility.",negative,synthetic
+"Backlog declined for the third consecutive quarter.",negative,synthetic
+"Management warned that demand would stay weak through the first half.",negative,synthetic
+"The lender downgraded the debt to junk status.",negative,synthetic
+"Inventory write-downs pushed the quarter into a loss.",negative,synthetic
+"The plant closure will eliminate 600 jobs and cost $25 million.",negative,synthetic
+"Cash burn accelerated, leaving less than a year of runway.",negative,synthetic
+"The company suspended its dividend to preserve liquidity.",negative,synthetic
+"Orders slumped 40% as customers delayed capital spending.",negative,synthetic
+"The auditor raised substantial doubt about the company's ability to continue as a going concern.",negative,synthetic
+"Operating expenses outpaced revenue growth for the fourth quarter in a row.",negative,synthetic
+"A product recall will cost an estimated $80 million this year.",negative,synthetic
+"The firm lost its largest contract to a lower-priced competitor.",negative,synthetic
+"Same-store sales fell 8% amid weaker foot traffic.",negative,synthetic
+"The company missed consensus on revenue, margin, and earnings.",negative,synthetic
+"Rising input costs erased the benefit of higher prices.",negative,synthetic
+"The restructuring charge was larger than previously disclosed.",negative,synthetic
+"Churn rose sharply after the price increase.",negative,synthetic
+"The company delayed its product launch by a year due to quality problems.",negative,synthetic
+"Free cash flow turned negative as receivables ballooned.",negative,synthetic
+"Regulators fined the firm $50 million for compliance failures.",negative,synthetic
+"The company filed for bankruptcy protection after failing to refinance its notes.",negative,synthetic
+"Export sales collapsed following the new tariffs.",negative,synthetic
+"Earnings per share fell 60% on lower volumes and a higher tax rate.",negative,synthetic
+"The company will report fourth-quarter results on February 12.",neutral,synthetic
+"The board consists of nine directors, seven of whom are independent.",neutral,synthetic
+"The firm operates manufacturing sites in Texas, Ireland, and Malaysia.",neutral,synthetic
+"Revenue is recognized when control of the product transfers to the customer.",neutral,synthetic
+"The company's fiscal year ends on the last Friday in May.",neutral,synthetic
+"The annual meeting of shareholders will be held virtually.",neutral,synthetic
+"The segment sells test equipment to semiconductor manufacturers.",neutral,synthetic
+"The company has approximately 1,200 employees worldwide.",neutral,synthetic
+"Inventories are stated at the lower of cost or net realizable value.",neutral,synthetic
+"The notes bear interest at 5.25% and mature in 2031.",neutral,synthetic
+"The company's headquarters are located in Fremont, California.",neutral,synthetic
+"Management discusses results in the following section.",neutral,synthetic
+"The company reports in U.S. dollars.",neutral,synthetic
+"Sales to customers outside the United States were 45% of the total.",neutral,synthetic
+"The company leases its primary facility under an agreement expiring in 2029.",neutral,synthetic
+"Depreciation is computed using the straight-line method.",neutral,synthetic
+"The chief financial officer joined the company in 2019.",neutral,synthetic
+"The company has two reportable segments: systems and services.",neutral,synthetic
+"The credit facility is secured by substantially all of the company's assets.",neutral,synthetic
+"The company's common stock trades on the Nasdaq under the symbol AEHR.",neutral,synthetic
+"The effective tax rate was 21% in both periods.",neutral,synthetic
+"Research and development expenses are expensed as incurred.",neutral,synthetic
+"The company purchases wafers from three suppliers.",neutral,synthetic
+"The agreement includes customary representations and warranties.",neutral,synthetic
+"Approximately 60% of revenue came from the top five customers.",neutral,synthetic
+"The company files its reports with the Securities and Exchange Commission.",neutral,synthetic
+"Shares outstanding totaled 29.4 million at year end.",neutral,synthetic
+"The company held its investor day in San Jose.",neutral,synthetic
+"The quarterly report covers the three months ended August 31.",neutral,synthetic
+"Each option vests over four years with a one-year cliff.",neutral,synthetic
