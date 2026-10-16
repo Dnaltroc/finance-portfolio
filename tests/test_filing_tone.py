@@ -61,3 +61,33 @@ def test_vocab_min_freq_and_max_size_cap_the_vocab():
     assert "c" not in v.stoi and "b" in v.stoi
     v2 = Vocab.build(["a a a b b c"], tok, max_size=1)
     assert v2.itos == ["<pad>", "<unk>", "a"]
+
+
+# ---------------------------------------------------------------- metrics ------------
+Y_TRUE = [0, 0, 1, 1, 1, 2, 2, 2, 2, 0]
+Y_PRED = [0, 1, 1, 1, 2, 2, 2, 0, 2, 0]
+
+
+def test_confusion_matrix_rows_are_truth():
+    from finlib.nlp.evaluate import confusion_matrix
+    assert confusion_matrix(Y_TRUE, Y_PRED).tolist() == [[2, 1, 0], [0, 2, 1], [1, 0, 3]]
+
+
+def test_metrics_match_sklearn_oracle():
+    sk = pytest.importorskip("sklearn.metrics")
+    from finlib.nlp.evaluate import summary
+    s = summary(Y_TRUE, Y_PRED)
+    assert s["accuracy"] == pytest.approx(sk.accuracy_score(Y_TRUE, Y_PRED))
+    assert s["macro_f1"] == pytest.approx(sk.f1_score(Y_TRUE, Y_PRED, average="macro"))
+    p, r, f, _ = sk.precision_recall_fscore_support(Y_TRUE, Y_PRED)
+    for i, name in enumerate(LABELS):
+        assert s["per_class"][name]["f1"] == pytest.approx(f[i])
+        assert s["per_class"][name]["precision"] == pytest.approx(p[i])
+        assert s["per_class"][name]["recall"] == pytest.approx(r[i])
+    assert s["n"] == 10 and s["confusion"] == [[2, 1, 0], [0, 2, 1], [1, 0, 3]]
+
+
+def test_f1_is_zero_not_nan_for_a_class_never_predicted():
+    from finlib.nlp.evaluate import confusion_matrix, precision_recall_f1
+    _, _, f = precision_recall_f1(confusion_matrix([0, 1, 2], [0, 0, 0]))
+    assert f[1] == 0.0 and f[2] == 0.0 and not np.isnan(f).any()
