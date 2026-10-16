@@ -40,6 +40,8 @@ RESULTS = HERE / "results.json"
 README = HERE / "README.md"
 DEFAULT_TICKERS = ["AEHR", "FORM", "KLIC", "COHU", "ONTO", "TER", "CAMT"]  # the pitch universe
 MODEL_NAMES = ("baseline", "cnn", "distilbert")
+# Picked on the validation split only (30-run sweep, 2026-10-16; val macro-F1 0.765 vs 0.705 at the Kim 2014 defaults).
+CNN_ARCH = dict(embed_dim=200, channels=200, dropout=0.3)
 Scorer = Callable[[list[str]], np.ndarray]
 
 app = typer.Typer(add_completion=False, help="Financial sentiment in PyTorch, applied to SEC 10-K text.")
@@ -83,13 +85,14 @@ def _fit_cnn(train, val, cfg, device):
 
     vocab = Vocab.build([e.text for e in train], RegexTokenizer(), min_freq=1)
     enc = vocab_encoder(vocab, cfg.max_len)
-    model = TextCNN(len(vocab))
+    model = TextCNN(len(vocab), **CNN_ARCH)
     log = RunLog.start(cfg, device=str(device))
     log.vocab_size = len(vocab)
     model = train_loop(model, make_loader(train, enc, cfg.batch_size, True, seed=cfg.seed),
                        make_loader(val, enc, 128, False), cfg, device, log)
     MODELS.mkdir(parents=True, exist_ok=True)
-    torch.save({"state": model.state_dict(), "itos": vocab.itos, "config": cfg.to_dict()}, MODELS / "cnn.pt")
+    torch.save({"state": model.state_dict(), "itos": vocab.itos, "config": cfg.to_dict(), "arch": CNN_ARCH},
+               MODELS / "cnn.pt")
     return model, enc, log
 
 
@@ -145,7 +148,7 @@ def load_scorer(model: str, device: str | None = None) -> Scorer:
 
         ck = torch.load(MODELS / "cnn.pt", map_location=dev, weights_only=False)
         vocab = Vocab(ck["itos"][2:])
-        net = TextCNN(len(vocab))
+        net = TextCNN(len(vocab), **ck.get("arch", {}))
         net.load_state_dict(ck["state"])
         net.to(dev)
         enc = vocab_encoder(vocab, ck["config"]["max_len"])
@@ -206,7 +209,7 @@ def train(model: str = typer.Option("cnn", help="baseline | cnn | distilbert"),
     from finlib.nlp.train import TrainConfig, choose_device, set_seed
 
     defaults = {"baseline": dict(epochs=0, batch_size=0, lr=0.0),
-                "cnn": dict(epochs=30, batch_size=32, lr=1e-3, max_len=64),
+                "cnn": dict(epochs=30, batch_size=32, lr=2e-3, max_len=64, patience=4),
                 "distilbert": dict(epochs=4, batch_size=32, lr=3e-5, max_len=128, patience=2)}[model]
     cfg = TrainConfig(model=model, seed=seed, device=device, **defaults)
     for k, v in (("epochs", epochs), ("batch_size", batch_size), ("lr", lr)):
