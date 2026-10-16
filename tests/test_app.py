@@ -278,11 +278,12 @@ def test_filing_tone_page_shows_snapshot_numbers_without_torch():
 
     snap = ft.load_snapshot()
     aehr = snap["companies"]["AEHR"]["sections"]
+    before = set(sys.modules)
     at = run_page("pages/6_Filing_Tone.py")
     m = metrics(at)
     assert m["AEHR net tone, MD&A"] == f"{aehr['mdna']['net_tone']:+.2f}"
     assert m["AEHR net tone, risk factors"] == f"{aehr['risk_factors']['net_tone']:+.2f}"
     assert m["Peer median, MD&A"] == f"{ft.peer_median(snap, 'mdna'):+.2f}"
     assert m["Model macro-F1, test split"] == f"{ft.load_results()['distilbert']['macro_f1']:.3f}"
-    assert not any(mod == "torch" or mod.startswith("torch.") for mod in sys.modules)
+    assert not any(mod == "torch" or mod.startswith("torch.") for mod in set(sys.modules) - before)
     assert any("Snapshot" in x.value for x in at.markdown)  # provenance badge

@@ -4,12 +4,12 @@
 to one; the largest is the prediction.
 
 TextCNN, built from scratch (Kim, 2014):
-    embedding     each token id becomes a learned vector of 100 numbers. Training moves words
+    embedding     each token id becomes a learned vector of 200 numbers. Training moves words
                   that behave alike ("fell", "declined", "dropped") close together.
     convolutions  filters slide windows of 3, 4 and 5 tokens along the sentence and fire on
                   phrases like "fell short of" or "ahead of guidance", wherever they occur.
     max-pool      keep only the strongest response of each filter: did its phrase appear?
-    dropout       during training, randomly zero half the features so the model cannot lean
+    dropout       during training, randomly zero 30% of the features so the model cannot lean
                   on any single one; off at prediction time.
     linear        map the pooled features to three logits.
 
@@ -37,7 +37,18 @@ class TextCNN(nn.Module):
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor | None = None) -> torch.Tensor:
         x = self.embed(input_ids).transpose(1, 2)  # (batch, tokens, embed) -> (batch, embed, tokens)
-        pooled = [torch.relu(conv(x)).max(dim=2).values for conv in self.convs]  # each (batch, channels)
+        if attention_mask is None:
+            attention_mask = torch.ones_like(input_ids)
+        pooled = []
+        for conv in self.convs:
+            k = conv.kernel_size[0]
+            h = torch.relu(conv(x))  # (batch, channels, tokens + k - 1) with padding k-1 each side
+            # A window is kept only if it touches at least one real token; windows made purely of
+            # batch padding would otherwise contribute relu(bias) and make a sentence's score depend
+            # on the longest sentence in its batch.
+            touches = torch.nn.functional.conv1d(attention_mask.unsqueeze(1).float(),
+                                                 torch.ones(1, 1, k, device=x.device), padding=k - 1) > 0
+            pooled.append(h.masked_fill(~touches, 0.0).max(dim=2).values)  # each (batch, channels)
         return self.out(self.drop(torch.cat(pooled, dim=1)))
 
 

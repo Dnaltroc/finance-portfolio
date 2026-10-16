@@ -30,7 +30,7 @@ st.markdown(f":gray-badge[:material/description: Snapshot · SEC EDGAR 10-Ks]&nb
 # ---------------------------------------------------------------- KPI strip ----------
 aehr = companies["AEHR"]["sections"]
 peer_mdna = peer_median(snap, "mdna")
-best = results.get("distilbert") or max(results.values(), key=lambda r: r["macro_f1"]) if results else None
+best = results.get(snap["model"])  # the model that scored the snapshot, or NM
 with st.container(horizontal=True):
     st.metric("AEHR net tone, MD&A", f"{aehr['mdna']['net_tone']:+.2f}",
               f"{aehr['mdna']['n']} sentences, FY ended {companies['AEHR']['report_date']}",

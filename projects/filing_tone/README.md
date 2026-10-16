@@ -16,7 +16,7 @@ Held-out test split: 486 sentences, 10% of Financial PhraseBank (50% agreement l
 | Model | Accuracy | Macro-F1 | F1 negative | F1 neutral | F1 positive | Train time |
 | --- | --- | --- | --- | --- | --- | --- |
 | baseline | 77.6% | 0.711 | 0.595 | 0.847 | 0.692 | 1s |
-| cnn | 76.7% | 0.705 | 0.606 | 0.836 | 0.672 | 6s |
+| cnn | 78.0% | 0.719 | 0.613 | 0.844 | 0.700 | 6s |
 | distilbert | 85.0% | 0.815 | 0.734 | 0.888 | 0.824 | 26s |
 
 On the sentences every annotator agreed on (test split only):
@@ -24,14 +24,14 @@ On the sentences every annotator agreed on (test split only):
 | Model | Accuracy, all agree | Macro-F1, all agree | n |
 | --- | --- | --- | --- |
 | baseline | 89.7% | 0.845 | 232 |
-| cnn | 88.4% | 0.829 | 232 |
+| cnn | 89.7% | 0.844 | 232 |
 | distilbert | 95.3% | 0.920 | 232 |
 <!-- results:end -->
 
 What the table says:
 
 - **The transformer wins by a wide margin.** DistilBERT already knows English; fine-tuning it on 3,876 sentences for four epochs (26 seconds on an RTX 5070) beats everything else on every class.
-- **The from-scratch CNN only matches the baseline.** On 4k sentences a model that must learn word meanings from zero has no advantage over counting words. That is the honest finding, and the reason transfer learning dominates applied NLP. Its settings came from a 30-run sweep on the validation split only.
+- **The from-scratch CNN is level with the baseline.** On 4k sentences a model that must learn word meanings from zero has little advantage over counting words. That is the honest finding, and the reason transfer learning dominates applied NLP. Its settings came from a 30-run sweep on the validation split only; on the GPU its test macro-F1 moves by a few hundredths between otherwise identical runs (cuDNN is not bit-deterministic, and the validation set is 484 sentences), so read it as roughly level with the baseline.
 - **Negative is the hard class.** It is 12% of the data; macro-F1 weights it equally with neutral, which is why macro-F1 sits below accuracy for every model.
 - **All-agree is easier.** The sentences every annotator agreed on are the clear-cut ones. The original paper reports on this subset, so the ablation makes the numbers comparable.
 
@@ -44,18 +44,25 @@ python -m projects.filing_tone summary         # print the committed snapshot
 
 For AEHR and its pitch peers, the latest 10-K is found through the SEC submissions API, Item 1A (Risk Factors) and Item 7 (MD&A) are cut out of the HTML, split into sentences, and each sentence is classified. Net tone = share positive − share negative. The five most confident positive and negative sentences per section are kept as evidence. The result is `tone_snapshot.json`, which the Streamlit page reads so the app never needs torch.
 
-| Ticker | Fiscal year end | MD&A net tone | Risk-factor net tone |
-| --- | --- | --- | --- |
-| AEHR | 2026-05-29 | −0.08 | −0.31 |
-| FORM | 2025-12-27 | +0.10 | +0.03 |
-| KLIC | 2025-10-04 | −0.06 | −0.12 |
-| COHU | 2025-12-27 | +0.01 | −0.14 |
-| ONTO | 2026-01-03 | +0.08 | +0.02 |
-| TER | 2025-12-31 | +0.04 | −0.25 |
+<!-- tone:start -->
+| Ticker | Fiscal year end | MD&A net tone | Risk-factor net tone | Sentences (MD&A / risk) |
+| --- | --- | --- | --- | --- |
+| AEHR | 2026-05-29 | -0.08 | -0.31 | 145 / 258 |
+| FORM | 2025-12-27 | +0.10 | -0.42 | 193 / 286 |
+| KLIC | 2025-10-04 | -0.06 | -0.30 | 179 / 345 |
+| COHU | 2025-12-27 | +0.01 | -0.33 | 307 / 395 |
+| ONTO | 2026-01-03 | +0.08 | -0.37 | 167 / 417 |
+| TER | 2025-12-31 | +0.04 | -0.34 | 225 / 257 |
+| CAMT | — | skipped | skipped | CAMT (CAMTEK LTD) has no 10-K in recent filings (foreign filers use 20-F) |
 
-CAMT files a 20-F, not a 10-K, and is skipped with a note rather than guessed. Snapshot date 2026-10-16; `summary` prints the live table.
+Snapshot 2026-10-16, model `distilbert` (run distilbert-20261016-084102).
+<!-- tone:end -->
 
-AEHR's MD&A is the most negative in the group and its risk factors the most negative by a distance, in the same filing where it guided revenue up 180%. That is consistent with the [pitch](../pitch/README.md): the business is fine, the filing is candid about customer concentration, and the price assumes neither.
+CAMT files a 20-F, not a 10-K, and is skipped with a note rather than guessed. The table is written by `snapshot`; `summary` prints it.
+
+AEHR's MD&A is the most negative in the group, in the same filing where it guided revenue up 180%, while its risk factors read mildest of the six (every risk-factor section is negative; AEHR's is the least so). Taken with the [pitch](../pitch/README.md): management's narrative is cautious about the year just ended, the risk section is boilerplate-light for a company with 58% customer concentration, and the price assumes neither.
+
+The first version of this table said the opposite about AEHR's risk factors. A review found that an in-text cross-reference ("see Item 1A. Risk Factors") was opening the section early on five of six filings, so peers' numbers included Item 1 or the financial statements. Fixed with a test; the committed snapshot is from the corrected extractor.
 
 ## How it is built
 

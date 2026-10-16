@@ -38,7 +38,7 @@ DistilBERT has its own tokenizer that splits rare words into pieces ("burn-in" b
 
 Updating the model after every single sentence is slow and noisy. Instead, `batches.py` groups 32 sentences into a **batch** and the model updates once per batch. A `Dataset` hands out one example; a `DataLoader` groups them and shuffles the order each pass.
 
-Sentences in a batch have different lengths, but a tensor is rectangular. Short sentences are **padded** with id 0 out to the longest one in the batch, and an **attention mask** of 1s and 0s records which positions are real. The model's embedding for id 0 is held at zero so padding carries no signal.
+Sentences in a batch have different lengths, but a tensor is rectangular. Short sentences are **padded** with id 0 out to the longest one in the batch, and an **attention mask** of 1s and 0s records which positions are real. The model's embedding for id 0 is held at zero, and the CNN's max-pool ignores positions outside the mask, so padding carries no signal.
 
 ## 5. The model from scratch: TextCNN
 
@@ -47,7 +47,7 @@ Sentences in a batch have different lengths, but a tensor is rectangular. Short 
 1. **Embedding.** A table with one row of 200 numbers per vocabulary id. Looking up a sentence's ids gives a 200-wide vector per token. These numbers start random and are learned; by the end, words that behave alike ("fell", "declined", "dropped") have similar rows.
 2. **Convolutions.** A filter is a small pattern over 3, 4 or 5 consecutive token vectors. It slides along the sentence and produces a high value wherever its pattern matches, so one filter might learn to fire on "ahead of guidance" and another on "fell short of". There are 200 filters of each width.
 3. **Max-pooling.** For each filter, keep only its strongest response anywhere in the sentence. The question becomes "did this phrase occur?", not "where?".
-4. **Dropout and the linear head.** During training, half the pooled features are randomly zeroed each batch so no single feature can carry the prediction (**dropout**). A linear layer then maps the 600 features to three scores, the **logits**. Softmax turns logits into probabilities that sum to one.
+4. **Dropout and the linear head.** During training, 30% of the pooled features are randomly zeroed each batch so no single feature can carry the prediction (**dropout**). A linear layer then maps the 600 features to three scores, the **logits**. Softmax turns logits into probabilities that sum to one.
 
 This is the architecture from Kim (2014). It is small (about 2 million weights), trains in seconds, and is a good first neural text model to read because every piece is visible.
 
@@ -89,7 +89,7 @@ Every run writes a JSON log with the config, seed, device, per-epoch history and
 
 1. **Find the filing.** The SEC's submissions API lists every filing by a company; the newest form "10-K" gives an accession number and primary document. The fetcher uses the same etiquette as the rest of this repo (identity header, under 10 requests a second, cached).
 2. **HTML to text.** Strip tags, drop scripts, put every block element on its own line.
-3. **Cut the sections.** Item 1A (Risk Factors) and Item 7 (MD&A) each appear at least twice: in the table of contents and in the body. Among all heading-to-next-heading spans, the longest is the body. A heading only counts if it starts a line, because filings say "see Item 8" mid-sentence.
+3. **Cut the sections.** Item 1A (Risk Factors) and Item 7 (MD&A) each appear at least twice: in the table of contents and in the body. Among all heading-to-next-heading spans, the longest is the body. A heading, start or end, only counts if it starts a line, because filings say "see Item 1A. Risk Factors" and "see Item 8" mid-sentence; an unanchored start once swallowed whole sections on five of six real filings.
 4. **Split sentences.** On `.`, `!`, `?` followed by a capital, after protecting "Inc.", "U.S." and the like. Keep sentences of 6 to 120 words that are mostly letters, which drops tables and page furniture.
 5. **Score and aggregate.** The model gives each sentence three probabilities. Net tone = share of sentences whose top class is positive − share negative, in [−1, 1]. The five most confident positive and negative sentences are kept as evidence.
 
@@ -100,7 +100,7 @@ The page does not compute anything. It reads `tone_snapshot.json` and `results.j
 - Compare **macro-F1** between models, and **accuracy** only as a sanity check.
 - Per-class F1 shows where a model struggles: negative is lowest for every model because it is rare.
 - The **all-agree** column is the easier subset the original paper reports on; it makes our numbers comparable to published ones.
-- Train time shows the trade: DistilBERT is 10 times slower than the CNN and far better; on CPU it is minutes, not seconds.
+- Train time shows the trade: DistilBERT is several times slower than the CNN and far better; on CPU it is minutes, not seconds.
 
 ## 12. Where to go next
 

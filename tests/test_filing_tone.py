@@ -312,3 +312,100 @@ def test_committed_snapshot_is_internally_consistent():
             assert all(0 <= d["p"] <= 1 for d in s["top_positive"] + s["top_negative"])
             assert "Table of Contents" not in " ".join(d["sentence"] for d in s["top_positive"] + s["top_negative"])
     assert ft.peer_median(snap, "mdna") is not None
+
+
+def test_extract_sections_ignores_cross_references_to_the_start_heading():
+    """Review finding: a mid-sentence 'see Item 1A. Risk Factors' must not open a span. On 5 of 6
+    real filings it did, and the longest-span rule then swallowed Item 1 or the whole back half."""
+    from finlib.nlp.sec_text import extract_sections
+    body = ("Item 1. Business\n" + "We sell test systems to chip makers. " * 20
+            + "Risks are discussed under \u201cItem 1A. Risk Factors\u201d below. " + "We have 900 staff. " * 20
+            + "\nItem 1A. Risk Factors\n" + "A downturn could reduce orders sharply. " * 20
+            + "\nItem 1B. Unresolved Staff Comments\nNone.\n"
+            + "Item 7. Management's Discussion and Analysis\n" + "Net sales rose 46%. " * 20
+            + "See \u201cItem 1A: Risk Factors\u201d for more. " + "Margins held. " * 20
+            + "\nItem 7A. Quantitative and Qualitative Disclosures\nrates.\nItem 8. Financial Statements\naudit.")
+    sections, warnings = extract_sections(body)
+    assert "test systems" not in sections["risk_factors"] and "Net sales" not in sections["risk_factors"]
+    assert "900 staff" not in sections["risk_factors"]  # the span opened by the in-text reference
+    assert "downturn" in sections["risk_factors"] and "Margins held." in sections["mdna"] and warnings == []
+
+
+def test_split_sentences_strips_split_word_page_furniture():
+    from finlib.nlp.sec_text import split_sentences
+    s = split_sentences("Orders were strong in the period. 13 Tab le of Contents The following table shows "
+                        "our backlog at year end.")
+    assert s[1].startswith("The following table") and "Tab le" not in s[1]
+
+
+# ---------------------------------------------------------------- review fixes -------
+def test_fixture_runs_use_their_own_model_and_run_dirs():
+    """Review finding: `train --fixture` overwrote the real cnn.pt and newest run log."""
+    from projects.filing_tone import cli as ft
+    real, fix = ft.paths(fixture=False), ft.paths(fixture=True)
+    assert real != fix and all(p.is_relative_to(ft.OUT) for p in real + fix) and "fixture" in str(fix[0])
+
+
+def test_checkpoint_carries_its_run_id(tmp_path, monkeypatch):
+    torch = pytest.importorskip("torch")
+    from finlib.nlp.train import TrainConfig
+    from projects.filing_tone import cli as ft
+    train, val, _ = stratified_split(load_fixture(), seed=0)
+    cfg = TrainConfig(model="cnn", epochs=1, batch_size=16, device="cpu")
+    _, _, log = ft._fit_cnn(train, val, cfg, torch.device("cpu"), tmp_path)
+    assert ft.checkpoint_run_id("cnn", tmp_path) == log.run_id
+
+
+def test_snapshot_offline_never_targets_the_committed_file():
+    from projects.filing_tone import cli as ft
+    assert ft.default_snapshot_out() != ft.SNAPSHOT and ft.default_snapshot_out().is_relative_to(ft.OUT)
+
+
+def test_build_snapshot_records_a_request_failure_and_keeps_going():
+    import requests
+
+    from finlib.nlp.sec_text import TenKFetcher
+    from projects.filing_tone import cli as ft
+
+    class Flaky(TenKFetcher):
+        def latest_10k(self, ticker):
+            if ticker == "BAD":
+                raise requests.HTTPError("503 Service Unavailable")
+            return super().latest_10k(ticker)
+
+    snap = ft.build_snapshot(["BAD", "AEHR"], lambda s: np.tile([0.1, 0.8, 0.1], (len(s), 1)), Flaky(), "t", "t")
+    assert "AEHR" in snap["companies"] and "503" in snap["skipped"]["BAD"]
+
+
+def test_tone_table_is_rendered_from_the_snapshot():
+    from projects.filing_tone import cli as ft
+    snap = ft.load_snapshot()
+    table = ft.tone_table(snap)
+    a = snap["companies"]["AEHR"]["sections"]
+    assert f"| AEHR | {snap['companies']['AEHR']['report_date']} | {a['mdna']['net_tone']:+.2f} |" in table
+    assert "CAMT" in table and "20-F" in table
+    readme = (Path(ft.README)).read_text(encoding="utf-8")
+    assert "<!-- tone:start -->" in readme and table in readme  # README block is code-written and current
+
+
+def test_textcnn_output_does_not_depend_on_batch_padding():
+    """Review finding: all-pad windows produced relu(bias) that max-pool could pick, so a sentence's
+    probabilities moved with the longest sentence in its batch."""
+    torch = pytest.importorskip("torch")
+    from finlib.nlp.batches import vocab_encoder
+    from finlib.nlp.models import TextCNN
+    from finlib.nlp.tokenize import RegexTokenizer, Vocab
+    v = Vocab.build(["profit rose", "a b c d e f g h i j k l m n o p"], RegexTokenizer())
+    enc = vocab_encoder(v)
+    torch.manual_seed(0)
+    m = TextCNN(len(v), embed_dim=8, channels=4).eval()
+    with torch.no_grad():
+        m.out.bias.fill_(0.0)
+        m.out.weight.copy_(torch.arange(12.0).reshape(3, 4).repeat(1, 3))
+        m.embed.weight.data[2:].fill_(1.0)  # real tokens positive, pad stays zero
+        for conv in m.convs:
+            conv.weight.fill_(-1.0)  # any window touching a real token -> relu(3 - 8k) == 0
+            conv.bias.fill_(3.0)  # an all-pad window -> relu(3) == 3, the artefact
+        alone = torch.softmax(m(**enc(["profit rose"])), 1)[0]
+        padded = torch.softmax(m(**enc(["profit rose", "a b c d e f g h i j k l m n o p"])), 1)[0]
+    assert torch.allclose(alone, padded, atol=1e-6)

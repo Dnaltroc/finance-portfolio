@@ -25,6 +25,7 @@ from statistics import median
 from typing import Callable
 
 import numpy as np
+import requests
 import typer
 
 from finlib.nlp.data import LABELS, Example, label_counts, load_fixture, load_phrasebank, stratified_split
@@ -35,6 +36,19 @@ HERE = Path(__file__).resolve().parent
 OUT = Path("output") / "filing_tone"
 MODELS = OUT / "models"
 RUNS = OUT / "runs"
+
+
+def paths(fixture: bool) -> tuple[Path, Path]:
+    """(models dir, runs dir). Fixture runs get their own so a demo never overwrites a real checkpoint."""
+    base = OUT / "fixture" if fixture else OUT
+    return base / "models", base / "runs"
+
+
+def default_snapshot_out() -> Path:
+    """Offline, the snapshot is synthetic and must never replace the committed, live-labeled file."""
+    from finlib import offline
+
+    return OUT / "tone_snapshot_fixture.json" if offline() else SNAPSHOT
 SNAPSHOT = HERE / "tone_snapshot.json"
 RESULTS = HERE / "results.json"
 README = HERE / "README.md"
@@ -75,7 +89,7 @@ def data(fixture: bool = typer.Option(False, help="Use the 90-sentence synthetic
 
 
 # ---------------------------------------------------------------- training -----------
-def _fit_cnn(train, val, cfg, device):
+def _fit_cnn(train, val, cfg, device, models_dir: Path = MODELS):
     import torch
 
     from finlib.nlp.batches import make_loader, vocab_encoder
@@ -90,13 +104,13 @@ def _fit_cnn(train, val, cfg, device):
     log.vocab_size = len(vocab)
     model = train_loop(model, make_loader(train, enc, cfg.batch_size, True, seed=cfg.seed),
                        make_loader(val, enc, 128, False), cfg, device, log)
-    MODELS.mkdir(parents=True, exist_ok=True)
-    torch.save({"state": model.state_dict(), "itos": vocab.itos, "config": cfg.to_dict(), "arch": CNN_ARCH},
-               MODELS / "cnn.pt")
+    models_dir.mkdir(parents=True, exist_ok=True)
+    torch.save({"state": model.state_dict(), "itos": vocab.itos, "config": cfg.to_dict(), "arch": CNN_ARCH,
+                "run_id": log.run_id}, models_dir / "cnn.pt")
     return model, enc, log
 
 
-def _fit_distilbert(train, val, cfg, device):
+def _fit_distilbert(train, val, cfg, device, models_dir: Path = MODELS):
     from finlib.nlp.batches import hf_encoder, make_loader
     from finlib.nlp.models import build_distilbert
     from finlib.nlp.train import RunLog, train_loop
@@ -106,13 +120,14 @@ def _fit_distilbert(train, val, cfg, device):
     log = RunLog.start(cfg, device=str(device))
     model = train_loop(model, make_loader(train, enc, cfg.batch_size, True, seed=cfg.seed),
                        make_loader(val, enc, 128, False), cfg, device, log)
-    MODELS.mkdir(parents=True, exist_ok=True)
-    model.model.save_pretrained(MODELS / "distilbert")
-    tok.save_pretrained(MODELS / "distilbert")
+    models_dir.mkdir(parents=True, exist_ok=True)
+    model.model.save_pretrained(models_dir / "distilbert")
+    tok.save_pretrained(models_dir / "distilbert")
+    (models_dir / "distilbert" / "run_id.txt").write_text(log.run_id, encoding="utf-8")
     return model, enc, log
 
 
-def _fit_baseline(train, cfg):
+def _fit_baseline(train, cfg, models_dir: Path = MODELS):
     import joblib
 
     from finlib.nlp.baseline import fit_baseline
@@ -122,19 +137,19 @@ def _fit_baseline(train, cfg):
     t0 = datetime.now()
     pipe = fit_baseline([e.text for e in train], [e.label for e in train], seed=cfg.seed)
     log.wall_seconds = (datetime.now() - t0).total_seconds()
-    MODELS.mkdir(parents=True, exist_ok=True)
-    joblib.dump(pipe, MODELS / "baseline.joblib")
+    models_dir.mkdir(parents=True, exist_ok=True)
+    joblib.dump({"pipe": pipe, "run_id": log.run_id}, models_dir / "baseline.joblib")
     return pipe, log
 
 
-def load_scorer(model: str, device: str | None = None) -> Scorer:
+def load_scorer(model: str, device: str | None = None, models_dir: Path = MODELS) -> Scorer:
     """A function sentences -> (N, 3) probabilities, from a saved checkpoint."""
     if model == "baseline":
         import joblib
 
         from finlib.nlp.baseline import baseline_probs
 
-        pipe = joblib.load(MODELS / "baseline.joblib")
+        pipe = joblib.load(models_dir / "baseline.joblib")["pipe"]
         return lambda texts: baseline_probs(pipe, texts)
     import torch
 
@@ -146,7 +161,7 @@ def load_scorer(model: str, device: str | None = None) -> Scorer:
         from finlib.nlp.models import TextCNN
         from finlib.nlp.tokenize import Vocab
 
-        ck = torch.load(MODELS / "cnn.pt", map_location=dev, weights_only=False)
+        ck = torch.load(models_dir / "cnn.pt", map_location=dev, weights_only=False)
         vocab = Vocab(ck["itos"][2:])
         net = TextCNN(len(vocab), **ck.get("arch", {}))
         net.load_state_dict(ck["state"])
@@ -158,19 +173,37 @@ def load_scorer(model: str, device: str | None = None) -> Scorer:
         from finlib.nlp.batches import hf_encoder
         from finlib.nlp.models import HFClassifier
 
-        tok = AutoTokenizer.from_pretrained(MODELS / "distilbert")
-        net = HFClassifier(AutoModelForSequenceClassification.from_pretrained(MODELS / "distilbert")).to(dev)
+        tok = AutoTokenizer.from_pretrained(models_dir / "distilbert")
+        net = HFClassifier(AutoModelForSequenceClassification.from_pretrained(models_dir / "distilbert")).to(dev)
         enc = hf_encoder(tok, 128)
     else:
         raise typer.BadParameter(f"model must be one of {MODEL_NAMES}")
     return lambda texts: predict_texts(net, enc, texts, dev)
 
 
-def best_available_model() -> str:
+def _checkpoint_path(model: str, models_dir: Path) -> Path:
+    return models_dir / {"distilbert": "distilbert", "cnn": "cnn.pt", "baseline": "baseline.joblib"}[model]
+
+
+def best_available_model(models_dir: Path = MODELS) -> str:
     for m in ("distilbert", "cnn", "baseline"):
-        if (MODELS / ("distilbert" if m == "distilbert" else f"{m}.{'pt' if m == 'cnn' else 'joblib'}")).exists():
+        if _checkpoint_path(m, models_dir).exists():
             return m
-    raise FileNotFoundError(f"No trained model under {MODELS}. Run `train --model cnn` first.")
+    raise FileNotFoundError(f"No trained model under {models_dir}. Run `train --model cnn` first.")
+
+
+def checkpoint_run_id(model: str, models_dir: Path = MODELS) -> str:
+    """The run that produced the checkpoint, read from the checkpoint itself (not the newest log)."""
+    path = _checkpoint_path(model, models_dir)
+    if model == "distilbert":
+        return (path / "run_id.txt").read_text(encoding="utf-8").strip()
+    if model == "cnn":
+        import torch
+
+        return torch.load(path, map_location="cpu", weights_only=False).get("run_id", "cnn")
+    import joblib
+
+    return joblib.load(path).get("run_id", "baseline")
 
 
 def _evaluate(scorer: Scorer, test: list[Example]) -> dict:
@@ -219,18 +252,19 @@ def train(model: str = typer.Option("cnn", help="baseline | cnn | distilbert"),
     tr, va, te = splits(fixture, seed)
     dev = choose_device(device)
     typer.echo(f"{model}: train {len(tr)} / val {len(va)} / test {len(te)} on {dev}")
+    models_dir, runs_dir = paths(fixture)
     if model == "baseline":
-        _, log = _fit_baseline(tr, cfg)
+        _, log = _fit_baseline(tr, cfg, models_dir)
     elif model == "cnn":
-        _, _, log = _fit_cnn(tr, va, cfg, dev)
+        _, _, log = _fit_cnn(tr, va, cfg, dev, models_dir)
     else:
-        _, _, log = _fit_distilbert(tr, va, cfg, dev)
+        _, _, log = _fit_distilbert(tr, va, cfg, dev, models_dir)
     log.train_size, log.val_size, log.test_size = len(tr), len(va), len(te)
-    scorer = load_scorer(model, device)
+    scorer = load_scorer(model, device, models_dir)
     log.test = _evaluate(scorer, te)
     if not fixture and not no_ablation:
         log.ablation = _ablation(scorer, te)
-    path = log.save(RUNS / f"{log.run_id}.json")
+    path = log.save(runs_dir / f"{log.run_id}.json")
     for h in log.history:
         typer.echo(f"  epoch {h['epoch']:>2}  loss {h['train_loss']:.3f}  val acc {h['val_accuracy']:.3f}  "
                    f"val F1 {h['val_macro_f1']:.3f}  {h['seconds']:.0f}s")
@@ -289,14 +323,33 @@ def ablation_table(results: dict) -> str:
     return "\n".join(rows) if len(rows) > 2 else ""
 
 
-_BLOCK = re.compile(r"(<!-- results:start -->)\n?.*?\n?(<!-- results:end -->)", re.S)  # empty block allowed
+def _block(name: str) -> re.Pattern:
+    return re.compile(rf"(<!-- {name}:start -->)\n?.*?\n?(<!-- {name}:end -->)", re.S)  # empty block allowed
+
+
+def update_readme_block(readme: Path, name: str, body: str) -> None:
+    """Replace the README text between <!-- name:start --> and <!-- name:end -->; tables are code-written."""
+    txt = readme.read_text(encoding="utf-8")
+    if not _block(name).search(txt):
+        raise ValueError(f"{readme} has no <!-- {name}:start --> / <!-- {name}:end --> block")
+    readme.write_text(_block(name).sub(lambda m: m.group(1) + "\n" + body + "\n" + m.group(2), txt),
+                      encoding="utf-8")
 
 
 def update_readme_results(readme: Path, table: str) -> None:
-    txt = readme.read_text(encoding="utf-8")
-    if not _BLOCK.search(txt):
-        raise ValueError(f"{readme} has no <!-- results:start --> / <!-- results:end --> block")
-    readme.write_text(_BLOCK.sub(lambda m: m.group(1) + "\n" + table + "\n" + m.group(2), txt), encoding="utf-8")
+    update_readme_block(readme, "results", table)
+
+
+def tone_table(snap: dict) -> str:
+    rows = ["| Ticker | Fiscal year end | MD&A net tone | Risk-factor net tone | Sentences (MD&A / risk) |",
+            "| --- | --- | --- | --- | --- |"]
+    for t, c in snap["companies"].items():
+        m, r = c["sections"]["mdna"], c["sections"]["risk_factors"]
+        rows.append(f"| {t} | {c['report_date']} | {m['net_tone']:+.2f} | {r['net_tone']:+.2f} | {m['n']} / {r['n']} |")
+    for t, why in snap["skipped"].items():
+        rows.append(f"| {t} | — | skipped | skipped | {why} |")
+    rows.append(f"\nSnapshot {snap['date']}, model `{snap['model']}` (run {snap['run_id']}).")
+    return "\n".join(rows)
 
 
 @app.command()
@@ -330,8 +383,8 @@ def build_snapshot(tickers: list[str], scorer: Scorer, fetcher: TenKFetcher, mod
         t = t.upper()
         try:
             f = fetcher.latest_10k(t)
-        except (LookupError, FileNotFoundError) as exc:
-            skipped[t] = str(exc)
+        except (LookupError, FileNotFoundError, requests.RequestException) as exc:
+            skipped[t] = str(exc)  # one bad ticker never throws away the others
             continue
         sections, warnings = extract_sections(html_to_text(f.html))
         scored = {}
@@ -360,15 +413,19 @@ def peer_median(snap: dict, section: str, exclude: str = "AEHR") -> float | None
 
 @app.command()
 def snapshot(tickers: str = typer.Option(",".join(DEFAULT_TICKERS)), model: str = typer.Option(None),
-             out: Path = typer.Option(SNAPSHOT)):
+             out: Path = typer.Option(None, help="Default: the committed snapshot live; output/ when offline.")):
     """Score the latest 10-K of each ticker and write the snapshot the app reads (live unless FINLIB_OFFLINE=1)."""
     model = model or best_available_model()
-    runs = sorted(RUNS.glob(f"{model}-*.json"))
-    run_id = runs[-1].stem if runs else model
-    snap = build_snapshot(tickers.split(","), load_scorer(model), TenKFetcher(), model_name=model, run_id=run_id)
+    out = out or default_snapshot_out()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    snap = build_snapshot(tickers.split(","), load_scorer(model), TenKFetcher(), model_name=model,
+                          run_id=checkpoint_run_id(model))
     out.write_text(json.dumps(snap, indent=2, ensure_ascii=False), encoding="utf-8")
     _print_snapshot(snap)
     typer.echo(f"wrote {out}")
+    if out == SNAPSHOT and README.exists():
+        update_readme_block(README, "tone", tone_table(snap))
+        typer.echo(f"README tone table updated: {README}")
 
 
 def _print_snapshot(snap: dict) -> None:

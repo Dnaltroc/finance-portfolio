@@ -69,16 +69,18 @@ def html_to_text(html: str) -> str:
 
 # ---------------------------------------------------------------- sections ------------
 _DASH = r"[\-–—:]?"
-# End headings must start a line: html_to_text puts every block element on its own line, while an
-# in-text cross-reference ("see Part II, Item 8 - Financial Statements") sits mid-paragraph.
+# Every heading, start or end, must begin a line: html_to_text puts each block element on its own
+# line, while an in-text cross-reference ("see Item 1A. Risk Factors", "see Part II, Item 8") sits
+# mid-paragraph. Unanchored starts let such references open a span that the longest-span rule then
+# preferred, swallowing Item 1 or the back half of the filing on five of six real 10-Ks.
 SECTIONS = {
     "risk_factors": (
-        re.compile(rf"item\s*1a\.?\s*{_DASH}\s*risk\s+factors", re.I),
+        re.compile(rf"^\s*item\s*1a\.?\s*{_DASH}\s*risk\s+factors", re.I | re.M),
         re.compile(rf"^\s*(?:item\s*1b\.?|item\s*2\.?\s*{_DASH}\s*propert)", re.I | re.M),
         "Item 1A",
     ),
     "mdna": (
-        re.compile(rf"item\s*7\.?\s*{_DASH}\s*management['’]?s\s+discussion", re.I),
+        re.compile(rf"^\s*item\s*7\.?\s*{_DASH}\s*management['’]?s\s+discussion", re.I | re.M),
         re.compile(rf"^\s*(?:item\s*7a\.?|item\s*8\.?\s*{_DASH}\s*financial\s+statements)", re.I | re.M),
         "Item 7",
     ),
@@ -110,7 +112,7 @@ _ABBR = ["Inc.", "Corp.", "Ltd.", "Co.", "LLC.", "U.S.", "U.K.", "No.", "vs.", "
          "approx.", "Jan.", "Feb.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
 _SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"“(])")
 # Page breaks leave "<page number> Table of Contents" glued to the next paragraph.
-_FURNITURE = re.compile(r"(?:^|\s)\d{1,3}\s*Table of Contents\s+")
+_FURNITURE = re.compile(r"(?:^|\s)\d{1,3}\s*Tab\s?le\s?of\s?Contents\s+")  # AEHR renders it "Tab le of Contents"
 
 
 def split_sentences(text: str, min_words: int = 6, max_words: int = 120) -> list[str]:

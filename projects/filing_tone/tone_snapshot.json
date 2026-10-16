@@ -2,7 +2,7 @@
   "date": "2026-10-16",
   "model": "distilbert",
   "run_id": "distilbert-20261016-084102",
-  "pulled_at": "2026-10-16T08:52:45+00:00",
+  "pulled_at": "2026-10-16T10:46:49+00:00",
   "training_data": "Financial PhraseBank (Malo et al., 2014), sentences_50agree",
   "net_tone_definition": "share of sentences classified positive minus share classified negative",
   "companies": {
@@ -27,16 +27,16 @@
               "p": 0.9836
             },
             {
-              "sentence": "13 Tab le of Contents Additionally, the semiconductor industry has experienced significant consolidation over the past several years, and such consolidation may further increase competitive factors within the industry.",
-              "p": 0.9823
-            },
-            {
               "sentence": "Our competitors may be more successful in their AI strategy and develop superior products and services with the aid of AI.",
               "p": 0.9815
             },
             {
               "sentence": "Over the past few years, the Company has increased inventory levels significantly.",
               "p": 0.9814
+            },
+            {
+              "sentence": "Additionally, the semiconductor industry has experienced significant consolidation over the past several years, and such consolidation may further increase competitive factors within the industry.",
+              "p": 0.9805
             },
             {
               "sentence": "It is anticipated that the rules and regulations applicable to public companies have increased and will continue to increase substantially the legal and financial compliance costs incurred by us and make some activities more time-consuming and costly.",
@@ -130,53 +130,53 @@
       "document_url": "https://www.sec.gov/Archives/edgar/data/1039399/000103939926000009/form-20251227.htm",
       "sections": {
         "risk_factors": {
-          "n": 699,
-          "share_positive": 0.07439198855507868,
-          "share_negative": 0.04148783977110158,
-          "share_neutral": 0.8841201716738197,
-          "net_tone": 0.03290414878397711,
+          "n": 286,
+          "share_positive": 0.10839160839160839,
+          "share_negative": 0.5314685314685315,
+          "share_neutral": 0.36013986013986016,
+          "net_tone": -0.4230769230769231,
           "top_positive": [
             {
-              "sentence": "Highlights during fiscal year 2025 include the following: •Achieved record annual revenue of $785.0 million. •Purchased a manufacturing site in Texas, which is expected to begin ramping production in late fiscal 2026. •Benefited from growth driven by exposure to end markets supporting artificial intelligence–related infrastructure, including HBM. •Made meaningful progress in establishing customer engagements to further diversify our customer base.",
-              "p": 0.9855
+              "sentence": "We have experienced increased competition in the markets in which we operate, and we expect competition to intensify in the future.",
+              "p": 0.9826
             },
             {
-              "sentence": "Excluding the impact from the fiscal 2024 gain, our financial performance was driven by record revenue levels led by strong growth in our DRAM product segment, particularly with demand for HBM chips utilized in generative artificial intelligence applications.",
-              "p": 0.9851
+              "sentence": "As a result, they might be able to respond more quickly to new or emerging technologies and changes in customer requirements, devote greater resources to the development, promotion, sale and support of their products, and reduce prices to increase market share.",
+              "p": 0.9778
             },
             {
-              "sentence": "We evaluated the impact of these provisions and implemented our current strategy, which, after considering the interplay of the various tax calculations affected by the OBBBA, resulted in a modest net increase to our effective tax rate.",
-              "p": 0.9838
+              "sentence": "These relationships also provide us with opportunities to understand the performance and functionality requirements of our customers, which improves our ability to customize our products to fulfill their needs.",
+              "p": 0.9719
             },
             {
-              "sentence": "We recognized a net gain from foreign exchange of $1.8 million, $1.0 million, and $0.6 million in fiscal 2025, 2024, and 2023, respectively.",
-              "p": 0.9831
+              "sentence": "We must continuously improve our manufacturing processes in an effort to increase yields and product performance, lower our costs and reduce the time required for us to design, manufacture and deliver our products in volume.",
+              "p": 0.9716
             },
             {
-              "sentence": "This acquisition strengthened our position at the forefront of AI infrastructure demand, and strengthened our position at the forefront of the explosive market growth in silicon photonics (“SiPh”), extending our integrated test system leadership and leveraging our unique lab-to-fab position as SiPh and co-packaged optics manufacturers leap from concept to high-volume production.",
-              "p": 0.9823
+              "sentence": "Inflation rates in the markets in which we operate have increased and may continue to rise.",
+              "p": 0.9714
             }
           ],
           "top_negative": [
             {
-              "sentence": "Liquidity and Capital Resources Capital Resources Our working capital decreased to $433.2 million at December 27, 2025 compared to $473.8 million at December 28, 2024.",
-              "p": 0.9896
+              "sentence": "Further, a protracted downturn could cause one or more of our customers to become insolvent, resulting in a loss of revenue and impacting our ability to collect on accounts receivable.",
+              "p": 0.9887
             },
             {
-              "sentence": "The decrease in interest income in fiscal 2025 compared to fiscal 2024 was attributable to lower invested balances and lower weighted average yield on cash and investments.",
-              "p": 0.9862
+              "sentence": "During industry downturns, semiconductor manufacturers sharply curtail their spending, including their spending on our products, which may adversely impact our revenues, gross margins and results of operations.",
+              "p": 0.9887
             },
             {
-              "sentence": "Foundry & Logic — The decrease in Foundry & Logic product revenue in fiscal 2025 compared to fiscal 2024 was primarily driven by weaker demand for probe cards associated with client PC and server microprocessor designs, reflecting reduced customer production levels during the year.",
-              "p": 0.9851
+              "sentence": "Ineffective internal and disclosure controls could also cause stockholders to lose confidence in our reported financial information and our ability to manage our business, which would likely have a negative effect on the trading price of our securities.",
+              "p": 0.9877
             },
             {
-              "sentence": "In addition, operating lease liabilities decreased by $8.1 million and accounts payable declined by $5.7 million.",
-              "p": 0.9831
+              "sentence": "The global economic and semiconductor downturns have caused and may in the future cause our operating results to decline dramatically from one period to the next.",
+              "p": 0.9876
             },
             {
-              "sentence": "During the year ended December 27, 2025, we recorded a loss of $2.0 million, from our equity share of the HoldCo using lag reporting.",
-              "p": 0.9789
+              "sentence": "If we are unable to continue to reduce the time it takes for us to design, manufacture and ship our products in response to the needs of our customers, our competitive position could be harmed and we could lose sales.",
+              "p": 0.9873
             }
           ]
         },
@@ -244,31 +244,31 @@
       "document_url": "https://www.sec.gov/Archives/edgar/data/56978/000005697825000081/klic-20251004.htm",
       "sections": {
         "risk_factors": {
-          "n": 542,
-          "share_positive": 0.15498154981549817,
-          "share_negative": 0.2785977859778598,
-          "share_neutral": 0.566420664206642,
-          "net_tone": -0.12361623616236161,
+          "n": 345,
+          "share_positive": 0.11014492753623188,
+          "share_negative": 0.4115942028985507,
+          "share_neutral": 0.4782608695652174,
+          "net_tone": -0.3014492753623188,
           "top_positive": [
             {
-              "sentence": "The following table reflects our backlog as of October 4, 2025 and September 28, 2024: As of (in thousands) October 4, 2025 September 28, 2024 Backlog $ 245,280 $ 148,585 Manufacturing We believe excellence in manufacturing can create a competitive advantage, both by producing at lower costs and by providing superior responsiveness to changes in customer demand.",
-              "p": 0.9824
+              "sentence": "With considerable incentives from the Chinese government, manufacturers based in China are able to lower selling prices, thereby increasing overall competition.",
+              "p": 0.9788
             },
             {
-              "sentence": "This new advanced dispensing platform leverages the Company's market-leading machine architecture in wire bonding, which has already been successfully deployed by leading customers in critical high-reliability and high-volume production environments worldwide for decades.",
-              "p": 0.982
+              "sentence": "The Chinese government’s initiatives around self-sustainability in the semiconductor sector are propelling China to expand its domestic manufacturing capacity.",
+              "p": 0.9784
             },
             {
-              "sentence": "In addition to producing technical advances, these collaborative development efforts strengthen customer relationships and enhance our reputation as a technology leader and solutions provider.",
-              "p": 0.9819
+              "sentence": "Continued improvement in manufacturing capabilities, control of material, emphasis on product safety and manufacturing quality and costs and product testing are critical factors in our future growth.",
+              "p": 0.9763
             },
             {
-              "sentence": "Our Asterion hybrid wedge bonder has demonstrated the capability to provide and enable an expanded bond area, laser bonding, new robust pattern recognition capabilities and extremely tight process controls.",
-              "p": 0.9797
+              "sentence": "Where necessary, we will ramp up our manufacturing capabilities in China as part of our general business contingency strategy.",
+              "p": 0.9748
             },
             {
-              "sentence": "Our leadership also has allowed us to maintain a competitive position in the latest generations of ball bonders.",
-              "p": 0.9797
+              "sentence": "As part of our supply chain management, we have increased our inventory levels in an effort to mitigate component shortages, which may increase the risk of inventory obsolescence.",
+              "p": 0.9678
             }
           ],
           "top_negative": [
@@ -358,31 +358,31 @@
       "document_url": "https://www.sec.gov/Archives/edgar/data/21535/000143774926004339/cohu20251227_10k.htm",
       "sections": {
         "risk_factors": {
-          "n": 571,
-          "share_positive": 0.1681260945709282,
-          "share_negative": 0.30998248686514884,
-          "share_neutral": 0.521891418563923,
-          "net_tone": -0.14185639229422065,
+          "n": 395,
+          "share_positive": 0.10632911392405063,
+          "share_negative": 0.4379746835443038,
+          "share_neutral": 0.45569620253164556,
+          "net_tone": -0.33164556962025316,
           "top_positive": [
-            {
-              "sentence": "Growth programs in these segments delivered incremental revenue gains in fiscal 2025, with increased recurring orders and design wins indicating stronger pull-though opportunities across test automation, inspection platforms, semiconductor test and interface products.",
-              "p": 0.9841
-            },
             {
               "sentence": "In addition, the expansion of high technology companies worldwide and growth in the demand for semiconductors has increased demand for qualified personnel.",
               "p": 0.9833
             },
             {
-              "sentence": "These investments, spanning AI-enabled analytics, high-precision inspection and metrology, advanced thermal control, and intelligent automation, expand our serviceable available market (“SAM”) to approximately $3 billion and strengthen our competitive differentiation in high-complexity device segments.",
-              "p": 0.9824
+              "sentence": "We believe that the implementation of extensive employee telework practices has increased our cybersecurity risks.",
+              "p": 0.9772
             },
             {
-              "sentence": "Cohu’s supply chain is further strengthened by long-standing relationships with strategic partners, including dedicated semiconductor ATE manufacturing operations at a facility of Jabil, Inc. (“Jabil”), in Penang, Malaysia equipped with automated process lines, smart-factory capabilities, and Lean Six Sigma practices to deliver high-quality system builds at scale.",
-              "p": 0.9823
+              "sentence": "We expect our competitors to continue to improve the design and performance of their current products and to introduce new products with improved performance capabilities.",
+              "p": 0.977
             },
             {
-              "sentence": "This program strengthens our internal pipeline and ensures that we continue to cultivate the next generation of leaders capable of driving Cohu’s long-term success.",
-              "p": 0.9814
+              "sentence": "Our international operations are significant to our revenues and net income, and we plan to continue to grow internationally.",
+              "p": 0.9661
+            },
+            {
+              "sentence": "We believe that our future success will depend in part on our ability to enhance existing products and develop new products with improved performance capabilities.",
+              "p": 0.9659
             }
           ],
           "top_negative": [
@@ -472,53 +472,53 @@
       "document_url": "https://www.sec.gov/Archives/edgar/data/704532/000119312526066937/onto-20260103.htm",
       "sections": {
         "risk_factors": {
-          "n": 707,
-          "share_positive": 0.04809052333804809,
-          "share_negative": 0.03253182461103253,
-          "share_neutral": 0.9193776520509194,
-          "net_tone": 0.015558698727015562,
+          "n": 417,
+          "share_positive": 0.11031175059952038,
+          "share_negative": 0.48201438848920863,
+          "share_neutral": 0.407673860911271,
+          "net_tone": -0.37170263788968827,
           "top_positive": [
             {
-              "sentence": "During the year ended December 30, 2023, the Company recognized a gain of $0.3 million on maturities of forward contracts.",
-              "p": 0.9849
+              "sentence": "The expansion of high technology companies worldwide and growth in the demand for semiconductors have increased demand and competition for qualified personnel.",
+              "p": 0.9838
             },
             {
-              "sentence": "Total systems and software revenue increased $167.1 million for the year ended December 28, 2024, as compared to the year ended December 30, 2023, primarily due to an increase in units shipped of our inspection product line to customers in support of advanced packaging needs for chips used in AI applications.",
-              "p": 0.9843
-            },
-            {
-              "sentence": "The goodwill recognized reflects the anticipated benefits from expanding the Company’s product portfolio and its growth opportunities in both new and existing markets.",
-              "p": 0.983
-            },
-            {
-              "sentence": "Cash provided by operating activities in fiscal 2024 increased compared to fiscal 2023 primarily due to higher net income and continued improvements in inventory management.",
+              "sentence": "In addition, during periods of rapid growth, we must be able to increase manufacturing capacity and personnel to meet customer demand.",
               "p": 0.9824
             },
             {
-              "sentence": "During fiscal 2024, the increase in total parts and services revenue was primarily due to increased spending by our customers on system upgrades and repairs of existing systems.",
-              "p": 0.981
+              "sentence": "Further, there may be significant merger and acquisition activity among our competitors and potential competitors, which, in turn, may provide them with a competitive advantage over us by enabling them to rapidly expand their product offerings and service capabilities to meet a broader range of customer needs.",
+              "p": 0.9796
+            },
+            {
+              "sentence": "Additionally, over the last several years, the U.S. government has significantly expanded export controls on certain technologies and commodities to certain markets, particularly with respect to semiconductor and other high technology exports to China.",
+              "p": 0.9794
+            },
+            {
+              "sentence": "The success of the Semilab USA acquisition, including the realization of anticipated benefits, will depend, in part, on our ability to successfully combine our and Semilab USA’s businesses.",
+              "p": 0.9785
             }
           ],
           "top_negative": [
             {
-              "sentence": "The year-over-year dollar decrease from 2024 through 2025 was primarily due to decreases in compensation costs, outside services and fees, and facilities expenses.",
-              "p": 0.985
+              "sentence": "Violations by others of our confidentiality agreements and the loss of employees who have specialized knowledge and expertise could harm our competitive position and cause our sales and operating results to decline as a result of increased competition.",
+              "p": 0.9894
             },
             {
-              "sentence": "The decrease in gross profit as a percentage of revenue from 2024 to 2025 was primarily due to restructuring and other expenses for the write down of excess and obsolete inventory.",
-              "p": 0.984
+              "sentence": "We have experienced and may continue to experience a temporary loss of revenues while we are obtaining licenses with certain customers affected by export controls.",
+              "p": 0.9889
             },
             {
-              "sentence": "The year-over-year dollar decrease from 2024 to 2025 was due to certain assets becoming fully amortized, partially offset by Semilab USA amortization of $5.6 million.",
-              "p": 0.9827
+              "sentence": "Risks Related to Product Development If we are not successful in developing new and enhanced products for the semiconductor device manufacturing industry, we will lose sales and market share to our competitors.",
+              "p": 0.9887
             },
             {
-              "sentence": "It is possible that we are at risk if interest rates, market liquidity or credit ratings of issuers change in an unfavorable direction.",
-              "p": 0.9748
+              "sentence": "In recent history, the industry has experienced significant downturns, generally in connection with declines in economic conditions.",
+              "p": 0.9884
             },
             {
-              "sentence": "The year-over-year dollar decrease from 2023 through 2024 was due to certain assets becoming fully amortized. • Restructuring and Other.",
-              "p": 0.9632
+              "sentence": "If we deliver systems with defects, our credibility will be harmed, and the sales and market acceptance of our systems will decrease.",
+              "p": 0.9881
             }
           ]
         },
@@ -586,11 +586,11 @@
       "document_url": "https://www.sec.gov/Archives/edgar/data/97210/000119312526059002/ter-20251231.htm",
       "sections": {
         "risk_factors": {
-          "n": 342,
-          "share_positive": 0.1023391812865497,
-          "share_negative": 0.3567251461988304,
-          "share_neutral": 0.5409356725146199,
-          "net_tone": -0.2543859649122807,
+          "n": 257,
+          "share_positive": 0.0933852140077821,
+          "share_negative": 0.4357976653696498,
+          "share_neutral": 0.4708171206225681,
+          "net_tone": -0.3424124513618677,
           "top_positive": [
             {
               "sentence": "If this trend continues, it could make us more dependent on fewer customers who may be able to exert increased pressure on our prices and other contract terms and could increase the portion of our total sales concentration for any single customer.",
@@ -637,11 +637,11 @@
           ]
         },
         "mdna": {
-          "n": 231,
-          "share_positive": 0.12121212121212122,
-          "share_negative": 0.07792207792207792,
-          "share_neutral": 0.8008658008658008,
-          "net_tone": 0.043290043290043295,
+          "n": 225,
+          "share_positive": 0.12444444444444444,
+          "share_negative": 0.08,
+          "share_neutral": 0.7955555555555556,
+          "net_tone": 0.04444444444444444,
           "top_positive": [
             {
               "sentence": "In the Product Test Group, we also achieved revenue growth in 2025, bolstered primarily by strength in defense and aerospace applications.",
