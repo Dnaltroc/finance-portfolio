@@ -233,3 +233,36 @@ def test_latest_10k_offline_unknown_ticker_raises():
     from finlib.nlp.sec_text import TenKFetcher
     with pytest.raises(LookupError):
         TenKFetcher().latest_10k("ZZZZ")
+
+
+# ---------------------------------------------------------------- CLI helpers --------
+def test_build_snapshot_uses_scorer_and_skips_missing_filers():
+    from finlib.nlp.sec_text import TenKFetcher
+    from projects.filing_tone import cli as ft
+
+    def scorer(sentences):  # every sentence positive with p = 0.9
+        return np.tile([0.05, 0.05, 0.9], (len(sentences), 1))
+
+    snap = ft.build_snapshot(["AEHR", "CAMT"], scorer, TenKFetcher(), model_name="test", run_id="t")
+    a = snap["companies"]["AEHR"]
+    assert a["sections"]["mdna"]["net_tone"] == 1.0 and a["sections"]["risk_factors"]["n"] > 3
+    assert a["form"] == "10-K" and a["document_url"].startswith("fixture:") and a["warnings"] == []
+    assert snap["skipped"] == {"CAMT": "No fixture filing for CAMT"} and snap["model"] == "test"
+    assert ft.peer_median(snap, "mdna", exclude="AEHR") is None  # no peers left
+
+
+def test_results_table_and_readme_block(tmp_path):
+    from projects.filing_tone import cli as ft
+    results = {
+        "baseline": {"accuracy": 0.8, "macro_f1": 0.75, "run_id": "b-1", "wall_seconds": 1.0,
+                     "per_class": {"negative": {"f1": .7}, "neutral": {"f1": .8}, "positive": {"f1": .75}}},
+        "cnn": {"accuracy": 0.85, "macro_f1": 0.8, "run_id": "c-1", "wall_seconds": 12.0,
+                "per_class": {"negative": {"f1": .8}, "neutral": {"f1": .85}, "positive": {"f1": .75}}},
+    }
+    table = ft.results_table(results)
+    assert "| cnn | 85.0% | 0.800 |" in table
+    readme = tmp_path / "README.md"
+    readme.write_text("x\n<!-- results:start -->\nold\n<!-- results:end -->\ny", encoding="utf-8")
+    ft.update_readme_results(readme, table)
+    txt = readme.read_text(encoding="utf-8")
+    assert "old" not in txt and "| cnn |" in txt and txt.endswith("y")
