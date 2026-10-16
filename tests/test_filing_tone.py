@@ -34,3 +34,30 @@ def test_stratified_split_keeps_class_balance_and_is_deterministic():
     assert [len(s) for s in a] == [72, 9, 9]
     assert label_counts(a[2]) == {"negative": 3, "neutral": 3, "positive": 3}
     assert not {e.text for e in a[0]} & {e.text for e in a[2]}
+
+
+# ---------------------------------------------------------------- tokenizer ----------
+def test_tokenizer_lowercases_splits_punctuation_keeps_numbers():
+    from finlib.nlp.tokenize import RegexTokenizer
+    tok = RegexTokenizer()
+    assert tok("Revenue rose 18.5% to $412M, Inc.") == ["revenue", "rose", "18.5%", "to", "$", "412", "m",
+                                                        ",", "inc", "."]
+
+
+def test_vocab_round_trips_and_maps_unknowns():
+    from finlib.nlp.tokenize import RegexTokenizer, Vocab
+    tok = RegexTokenizer()
+    v = Vocab.build(["profit rose", "profit fell"], tok, min_freq=1)
+    assert v.itos[:2] == ["<pad>", "<unk>"] and Vocab.PAD_ID == 0 and Vocab.UNK_ID == 1
+    assert v.decode(v.encode("profit rose")) == ["profit", "rose"]
+    assert v.encode("profit soared") == [v.stoi["profit"], Vocab.UNK_ID]
+    assert len(v) == 5
+
+
+def test_vocab_min_freq_and_max_size_cap_the_vocab():
+    from finlib.nlp.tokenize import RegexTokenizer, Vocab
+    tok = RegexTokenizer()
+    v = Vocab.build(["a a a b b c"], tok, min_freq=2)
+    assert "c" not in v.stoi and "b" in v.stoi
+    v2 = Vocab.build(["a a a b b c"], tok, max_size=1)
+    assert v2.itos == ["<pad>", "<unk>", "a"]
