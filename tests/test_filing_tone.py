@@ -220,3 +220,16 @@ def test_filing_tone_handles_no_sentences():
     from finlib.nlp.sec_text import filing_tone
     t = filing_tone(np.zeros((0, 3)), [])
     assert t["n"] == 0 and t["net_tone"] == 0.0 and t["top_positive"] == []
+
+
+def test_latest_10k_offline_reads_fixture():
+    from finlib.nlp.sec_text import TenKFetcher
+    f = TenKFetcher().latest_10k("aehr")
+    assert f.ticker == "AEHR" and f.form == "10-K" and "Risk Factors" in f.html and f.url.startswith("fixture:")
+    assert "synthetic" in f.company.lower()
+
+
+def test_latest_10k_offline_unknown_ticker_raises():
+    from finlib.nlp.sec_text import TenKFetcher
+    with pytest.raises(LookupError):
+        TenKFetcher().latest_10k("ZZZZ")
