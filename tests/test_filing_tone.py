@@ -291,3 +291,20 @@ def test_split_sentences_strips_page_furniture():
     s = split_sentences("Orders were strong in the period. 11 Table of Contents The following table reflects our "
                         "backlog as of October 4, 2025 and the prior year.")
     assert s[1].startswith("The following table") and "Table of Contents" not in s[1]
+
+
+# ---------------------------------------------------------------- committed snapshot -
+def test_committed_snapshot_is_internally_consistent():
+    from projects.filing_tone import cli as ft
+    snap = ft.load_snapshot()
+    assert snap["companies"] and snap["model"] and snap["date"] and "AEHR" in snap["companies"]
+    for t, c in snap["companies"].items():
+        assert c["form"] == "10-K" and c["document_url"].startswith("https://www.sec.gov/")
+        for sec in ("risk_factors", "mdna"):
+            s = c["sections"][sec]
+            assert s["n"] > 0, (t, sec)
+            assert s["net_tone"] == pytest.approx(s["share_positive"] - s["share_negative"])
+            assert s["share_positive"] + s["share_negative"] + s["share_neutral"] == pytest.approx(1.0)
+            assert all(0 <= d["p"] <= 1 for d in s["top_positive"] + s["top_negative"])
+            assert "Table of Contents" not in " ".join(d["sentence"] for d in s["top_positive"] + s["top_negative"])
+    assert ft.peer_median(snap, "mdna") is not None

@@ -1,0 +1,697 @@
+{
+  "date": "2026-10-16",
+  "model": "distilbert",
+  "run_id": "distilbert-20261016-084102",
+  "pulled_at": "2026-10-16T08:52:45+00:00",
+  "training_data": "Financial PhraseBank (Malo et al., 2014), sentences_50agree",
+  "net_tone_definition": "share of sentences classified positive minus share classified negative",
+  "companies": {
+    "AEHR": {
+      "company": "AEHR TEST SYSTEMS",
+      "cik": "0001040470",
+      "form": "10-K",
+      "accession": "0001654954-26-006919",
+      "report_date": "2026-05-29",
+      "filed": "2026-07-27",
+      "document_url": "https://www.sec.gov/Archives/edgar/data/1040470/000165495426006919/aehr_10k.htm",
+      "sections": {
+        "risk_factors": {
+          "n": 258,
+          "share_positive": 0.13953488372093023,
+          "share_negative": 0.45348837209302323,
+          "share_neutral": 0.4069767441860465,
+          "net_tone": -0.313953488372093,
+          "top_positive": [
+            {
+              "sentence": "This decision was driven by previously experienced long lead time in obtaining critical parts and in producing the systems and by higher projected revenues.",
+              "p": 0.9836
+            },
+            {
+              "sentence": "13 Tab le of Contents Additionally, the semiconductor industry has experienced significant consolidation over the past several years, and such consolidation may further increase competitive factors within the industry.",
+              "p": 0.9823
+            },
+            {
+              "sentence": "Our competitors may be more successful in their AI strategy and develop superior products and services with the aid of AI.",
+              "p": 0.9815
+            },
+            {
+              "sentence": "Over the past few years, the Company has increased inventory levels significantly.",
+              "p": 0.9814
+            },
+            {
+              "sentence": "It is anticipated that the rules and regulations applicable to public companies have increased and will continue to increase substantially the legal and financial compliance costs incurred by us and make some activities more time-consuming and costly.",
+              "p": 0.9777
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "If we were to lose one or more of our large customers, operating results could suffer dramatically.",
+              "p": 0.9882
+            },
+            {
+              "sentence": "In addition, our reputation with our customers could be damaged as a result of such product defects, which could reduce demand for our products and negatively impact our business.",
+              "p": 0.9881
+            },
+            {
+              "sentence": "A delay or reduction in shipments near the end of a particular quarter, due, for example, to unanticipated shipment rescheduling, cancellations, or deferrals by customers, customer credit issues, unexpected manufacturing difficulties experienced by us or delays in deliveries by suppliers, could cause net sales in a particular quarter to fall significantly.",
+              "p": 0.9869
+            },
+            {
+              "sentence": "While we have limited sales in Europe, the Middle East and Taiwan, and procurement from these regions, unrest in these areas may result in a decrease in sales of our products, or an increase in costs of materials and services.",
+              "p": 0.9866
+            },
+            {
+              "sentence": "Supply chain issues, including a shortage of critical components or contract manufacturing capacity, could result in a delay in fulfillment of customer orders, or an increase in costs, resulting in an adverse impact on our business and operating results.",
+              "p": 0.9861
+            }
+          ]
+        },
+        "mdna": {
+          "n": 145,
+          "share_positive": 0.1103448275862069,
+          "share_negative": 0.19310344827586207,
+          "share_neutral": 0.696551724137931,
+          "net_tone": -0.08275862068965517,
+          "top_positive": [
+            {
+              "sentence": "This trend is driving additional test requirements, incremental capacity needs, and new opportunities for Aehr Test products and solutions.",
+              "p": 0.9794
+            },
+            {
+              "sentence": "Research and development expenses increased by $1.7 million in fiscal year 2025 over fiscal year 2024 primarily due to $0.7 million in severance benefits incurred following the death of an executive officer, $0.9 million of higher employment related costs, including stock-based compensation expense, resulting from growth in engineering headcount, and $0.3 million of additional research and development expenses from the newly acquired Incal business.",
+              "p": 0.9793
+            },
+            {
+              "sentence": "Research and development expenses increased by $2.2 million in fiscal year 2026 over fiscal year 2025 primarily driven by $1.6 million of higher employment-related costs, including stock-based compensation, resulting from increased headcount, and $1.1 million of higher allocated office expenses.",
+              "p": 0.9783
+            },
+            {
+              "sentence": "A significant income tax benefit in fiscal year 2024 was recognized primarily due to the release of a valuation allowance of $21.9 million, as management determined that there was sufficient positive evidence to conclude that it is more likely than not that the deferred tax assets will be realized, which was partially offset by income tax expense of $1.2 million in fiscal year 2024.",
+              "p": 0.9773
+            },
+            {
+              "sentence": "Other income (expense), net, increased by $1.1 million, primarily attributable to the Employee Retention Credit (“ERC”) refund of $1.3 million received, net of a $0.3 million third-party service fee incurred in connection with the filing of the ERC claims.",
+              "p": 0.9741
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "For fiscal year 2026, revenue decreased in Asia primarily due to the ongoing softness in demand for electric vehicles.",
+              "p": 0.9905
+            },
+            {
+              "sentence": "Gross profit decreased by $8.6 million in fiscal year 2025 compared to fiscal year 2024.",
+              "p": 0.9903
+            },
+            {
+              "sentence": "Revenue decreased by $7.3 million in fiscal year 2025 over fiscal year 2024 driven by a decrease in shipments of our systems and contactors primarily due to the continued softness in the power semiconductor demand for electric vehicles.",
+              "p": 0.9893
+            },
+            {
+              "sentence": "Interest and other income, net, decreased by $1.0 million in fiscal year 2025 over fiscal year 2024, primarily driven by lower interest income earned on a lower average cash balances as a result of $11.1 million spent on the acquisition of Incal and lower yields from our investments in money market funds.",
+              "p": 0.9893
+            },
+            {
+              "sentence": "Gross margin decreased by 8.5 percentage points primarily due to the amortization of certain acquired intangible assets, the acquisition related fair value adjustment to inventory, an inventory variance charge, lower system shipments leading to reduced manufacturing efficiencies, and a change in product mix.",
+              "p": 0.989
+            }
+          ]
+        }
+      },
+      "warnings": []
+    },
+    "FORM": {
+      "company": "FORMFACTOR INC",
+      "cik": "0001039399",
+      "form": "10-K",
+      "accession": "0001039399-26-000009",
+      "report_date": "2025-12-27",
+      "filed": "2026-02-20",
+      "document_url": "https://www.sec.gov/Archives/edgar/data/1039399/000103939926000009/form-20251227.htm",
+      "sections": {
+        "risk_factors": {
+          "n": 699,
+          "share_positive": 0.07439198855507868,
+          "share_negative": 0.04148783977110158,
+          "share_neutral": 0.8841201716738197,
+          "net_tone": 0.03290414878397711,
+          "top_positive": [
+            {
+              "sentence": "Highlights during fiscal year 2025 include the following: •Achieved record annual revenue of $785.0 million. •Purchased a manufacturing site in Texas, which is expected to begin ramping production in late fiscal 2026. •Benefited from growth driven by exposure to end markets supporting artificial intelligence–related infrastructure, including HBM. •Made meaningful progress in establishing customer engagements to further diversify our customer base.",
+              "p": 0.9855
+            },
+            {
+              "sentence": "Excluding the impact from the fiscal 2024 gain, our financial performance was driven by record revenue levels led by strong growth in our DRAM product segment, particularly with demand for HBM chips utilized in generative artificial intelligence applications.",
+              "p": 0.9851
+            },
+            {
+              "sentence": "We evaluated the impact of these provisions and implemented our current strategy, which, after considering the interplay of the various tax calculations affected by the OBBBA, resulted in a modest net increase to our effective tax rate.",
+              "p": 0.9838
+            },
+            {
+              "sentence": "We recognized a net gain from foreign exchange of $1.8 million, $1.0 million, and $0.6 million in fiscal 2025, 2024, and 2023, respectively.",
+              "p": 0.9831
+            },
+            {
+              "sentence": "This acquisition strengthened our position at the forefront of AI infrastructure demand, and strengthened our position at the forefront of the explosive market growth in silicon photonics (“SiPh”), extending our integrated test system leadership and leveraging our unique lab-to-fab position as SiPh and co-packaged optics manufacturers leap from concept to high-volume production.",
+              "p": 0.9823
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "Liquidity and Capital Resources Capital Resources Our working capital decreased to $433.2 million at December 27, 2025 compared to $473.8 million at December 28, 2024.",
+              "p": 0.9896
+            },
+            {
+              "sentence": "The decrease in interest income in fiscal 2025 compared to fiscal 2024 was attributable to lower invested balances and lower weighted average yield on cash and investments.",
+              "p": 0.9862
+            },
+            {
+              "sentence": "Foundry & Logic — The decrease in Foundry & Logic product revenue in fiscal 2025 compared to fiscal 2024 was primarily driven by weaker demand for probe cards associated with client PC and server microprocessor designs, reflecting reduced customer production levels during the year.",
+              "p": 0.9851
+            },
+            {
+              "sentence": "In addition, operating lease liabilities decreased by $8.1 million and accounts payable declined by $5.7 million.",
+              "p": 0.9831
+            },
+            {
+              "sentence": "During the year ended December 27, 2025, we recorded a loss of $2.0 million, from our equity share of the HoldCo using lag reporting.",
+              "p": 0.9789
+            }
+          ]
+        },
+        "mdna": {
+          "n": 193,
+          "share_positive": 0.16580310880829016,
+          "share_negative": 0.06217616580310881,
+          "share_neutral": 0.772020725388601,
+          "net_tone": 0.10362694300518135,
+          "top_positive": [
+            {
+              "sentence": "Highlights during fiscal year 2025 include the following: •Achieved record annual revenue of $785.0 million. •Purchased a manufacturing site in Texas, which is expected to begin ramping production in late fiscal 2026. •Benefited from growth driven by exposure to end markets supporting artificial intelligence–related infrastructure, including HBM. •Made meaningful progress in establishing customer engagements to further diversify our customer base.",
+              "p": 0.9855
+            },
+            {
+              "sentence": "Excluding the impact from the fiscal 2024 gain, our financial performance was driven by record revenue levels led by strong growth in our DRAM product segment, particularly with demand for HBM chips utilized in generative artificial intelligence applications.",
+              "p": 0.9851
+            },
+            {
+              "sentence": "We evaluated the impact of these provisions and implemented our current strategy, which, after considering the interplay of the various tax calculations affected by the OBBBA, resulted in a modest net increase to our effective tax rate.",
+              "p": 0.9838
+            },
+            {
+              "sentence": "This acquisition strengthened our position at the forefront of AI infrastructure demand, and strengthened our position at the forefront of the explosive market growth in silicon photonics (“SiPh”), extending our integrated test system leadership and leveraging our unique lab-to-fab position as SiPh and co-packaged optics manufacturers leap from concept to high-volume production.",
+              "p": 0.9823
+            },
+            {
+              "sentence": "Excluding the impact of gains in each period, our financial performance was driven by the strengthening of certain areas of the semiconductor industry, which increased demand in some markets within our Probe Cards segment, particularly with demand for HBM chips utilized in generative artificial intelligence applications and the ramp of new mobile application processor designs.",
+              "p": 0.9818
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "Liquidity and Capital Resources Capital Resources Our working capital decreased to $433.2 million at December 27, 2025 compared to $473.8 million at December 28, 2024.",
+              "p": 0.9896
+            },
+            {
+              "sentence": "The decrease in interest income in fiscal 2025 compared to fiscal 2024 was attributable to lower invested balances and lower weighted average yield on cash and investments.",
+              "p": 0.9862
+            },
+            {
+              "sentence": "Foundry & Logic — The decrease in Foundry & Logic product revenue in fiscal 2025 compared to fiscal 2024 was primarily driven by weaker demand for probe cards associated with client PC and server microprocessor designs, reflecting reduced customer production levels during the year.",
+              "p": 0.9851
+            },
+            {
+              "sentence": "In addition, operating lease liabilities decreased by $8.1 million and accounts payable declined by $5.7 million.",
+              "p": 0.9831
+            },
+            {
+              "sentence": "The decrease in net income in fiscal 2024 compared to fiscal 2023 was primarily due to a reduced gain on sale of business with the fiscal 2024 gain from the sale of our China operations being less than the fiscal 2023 gain from the sale of our FRT business further described below.",
+              "p": 0.9785
+            }
+          ]
+        }
+      },
+      "warnings": []
+    },
+    "KLIC": {
+      "company": "KULICKE & SOFFA INDUSTRIES INC",
+      "cik": "0000056978",
+      "form": "10-K",
+      "accession": "0000056978-25-000081",
+      "report_date": "2025-10-04",
+      "filed": "2025-11-20",
+      "document_url": "https://www.sec.gov/Archives/edgar/data/56978/000005697825000081/klic-20251004.htm",
+      "sections": {
+        "risk_factors": {
+          "n": 542,
+          "share_positive": 0.15498154981549817,
+          "share_negative": 0.2785977859778598,
+          "share_neutral": 0.566420664206642,
+          "net_tone": -0.12361623616236161,
+          "top_positive": [
+            {
+              "sentence": "The following table reflects our backlog as of October 4, 2025 and September 28, 2024: As of (in thousands) October 4, 2025 September 28, 2024 Backlog $ 245,280 $ 148,585 Manufacturing We believe excellence in manufacturing can create a competitive advantage, both by producing at lower costs and by providing superior responsiveness to changes in customer demand.",
+              "p": 0.9824
+            },
+            {
+              "sentence": "This new advanced dispensing platform leverages the Company's market-leading machine architecture in wire bonding, which has already been successfully deployed by leading customers in critical high-reliability and high-volume production environments worldwide for decades.",
+              "p": 0.982
+            },
+            {
+              "sentence": "In addition to producing technical advances, these collaborative development efforts strengthen customer relationships and enhance our reputation as a technology leader and solutions provider.",
+              "p": 0.9819
+            },
+            {
+              "sentence": "Our Asterion hybrid wedge bonder has demonstrated the capability to provide and enable an expanded bond area, laser bonding, new robust pattern recognition capabilities and extremely tight process controls.",
+              "p": 0.9797
+            },
+            {
+              "sentence": "Our leadership also has allowed us to maintain a competitive position in the latest generations of ball bonders.",
+              "p": 0.9797
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "As a result, a decline in our net revenue would adversely affect our operating results as we continue to make these expenditures.",
+              "p": 0.9887
+            },
+            {
+              "sentence": "The broad-based weakening in the global macroeconomic environment may result in lower than expected demand for our products, and our inability to sell products after we devote significant resources to them could have a material adverse effect on our levels of inventory, revenues and profitability.",
+              "p": 0.9883
+            },
+            {
+              "sentence": "Undetected problems in our products could directly impair our financial results.",
+              "p": 0.9878
+            },
+            {
+              "sentence": "If we are not able to develop and sell our products that meet the demands of our customers, it would result in lower net revenues and our operating results would be adversely affected.",
+              "p": 0.9877
+            },
+            {
+              "sentence": "Downturns have been characterized by, among other things, diminished product demand, excess production capacity, and accelerated erosion of selling prices.",
+              "p": 0.9866
+            }
+          ]
+        },
+        "mdna": {
+          "n": 179,
+          "share_positive": 0.1005586592178771,
+          "share_negative": 0.1564245810055866,
+          "share_neutral": 0.7430167597765364,
+          "net_tone": -0.055865921787709494,
+          "top_positive": [
+            {
+              "sentence": "The increase in inventories was due to the buildup of long lead time materials to fulfill certain customer purchase orders.",
+              "p": 0.9801
+            },
+            {
+              "sentence": "The increase in inventories was due to the buildup of long lead time materials to fulfill certain customer purchase orders.",
+              "p": 0.9801
+            },
+            {
+              "sentence": "Advanced Solutions For fiscal 2025, the increase in Advanced Solutions net revenue as compared to fiscal 2024 was primarily due to a higher volume of customer purchases in LED which is included in the industrial end market and higher customer purchases in the general semiconductor end market.",
+              "p": 0.9772
+            },
+            {
+              "sentence": "The increase in prepaid expenses and other current assets was mainly due to higher prepayments to suppliers.",
+              "p": 0.9755
+            },
+            {
+              "sentence": "Wedge Bonding Equipment For fiscal 2025, the increase in Wedge Bonding Equipment net revenue as compared to fiscal 2024 was primarily due to a higher volume of customer purchases primarily in the general semiconductor and partially offset by lower customer purchases in the automotive markets.",
+              "p": 0.956
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "The decrease in accounts and other receivable was mainly due to lower sales for the year.",
+              "p": 0.9899
+            },
+            {
+              "sentence": "APS For fiscal 2025, the decrease in APS net revenue as compared to fiscal 2024 was primarily due to a lower volume of customer purchases primarily in spares and services, and unfavorable pricing from bonding tools.",
+              "p": 0.9889
+            },
+            {
+              "sentence": "Net Revenue Our net revenues for fiscal 2025 decreased as compared to our net revenues for fiscal 2024.",
+              "p": 0.988
+            },
+            {
+              "sentence": "APS For fiscal 2025, the lower APS gross profit margin as compared to fiscal 2024 was primarily driven by the spares related inventory write-down charges incurred as a result of the cessation of the EA equipment business, lower volume from spares and services, and unfavorable pricing from bonding tools.",
+              "p": 0.9878
+            },
+            {
+              "sentence": "All Others For fiscal 2025, the decrease in net revenue in the “All Others” category as compared to fiscal 2024 was primarily due to a lower volume of customer purchases in the general semiconductor end market.",
+              "p": 0.9877
+            }
+          ]
+        }
+      },
+      "warnings": []
+    },
+    "COHU": {
+      "company": "COHU INC",
+      "cik": "0000021535",
+      "form": "10-K",
+      "accession": "0001437749-26-004339",
+      "report_date": "2025-12-27",
+      "filed": "2026-02-17",
+      "document_url": "https://www.sec.gov/Archives/edgar/data/21535/000143774926004339/cohu20251227_10k.htm",
+      "sections": {
+        "risk_factors": {
+          "n": 571,
+          "share_positive": 0.1681260945709282,
+          "share_negative": 0.30998248686514884,
+          "share_neutral": 0.521891418563923,
+          "net_tone": -0.14185639229422065,
+          "top_positive": [
+            {
+              "sentence": "Growth programs in these segments delivered incremental revenue gains in fiscal 2025, with increased recurring orders and design wins indicating stronger pull-though opportunities across test automation, inspection platforms, semiconductor test and interface products.",
+              "p": 0.9841
+            },
+            {
+              "sentence": "In addition, the expansion of high technology companies worldwide and growth in the demand for semiconductors has increased demand for qualified personnel.",
+              "p": 0.9833
+            },
+            {
+              "sentence": "These investments, spanning AI-enabled analytics, high-precision inspection and metrology, advanced thermal control, and intelligent automation, expand our serviceable available market (“SAM”) to approximately $3 billion and strengthen our competitive differentiation in high-complexity device segments.",
+              "p": 0.9824
+            },
+            {
+              "sentence": "Cohu’s supply chain is further strengthened by long-standing relationships with strategic partners, including dedicated semiconductor ATE manufacturing operations at a facility of Jabil, Inc. (“Jabil”), in Penang, Malaysia equipped with automated process lines, smart-factory capabilities, and Lean Six Sigma practices to deliver high-quality system builds at scale.",
+              "p": 0.9823
+            },
+            {
+              "sentence": "This program strengthens our internal pipeline and ensures that we continue to cultivate the next generation of leaders capable of driving Cohu’s long-term success.",
+              "p": 0.9814
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "Additionally, failures in the performance of our AI models could damage our reputation, erode customer trust, and result in loss of business and negative publicity.",
+              "p": 0.989
+            },
+            {
+              "sentence": "Consolidation in the semiconductor industry may reduce our customer base and could adversely affect the market for our products, which could cause a decline in our revenues.",
+              "p": 0.9884
+            },
+            {
+              "sentence": "Our revenues and margins are affected by sudden downturns, as seen in recent years with sharp declines in mobile, automotive, and industrial market sales.",
+              "p": 0.9878
+            },
+            {
+              "sentence": "For example, in 2025, we experienced supply constraints and delays in accessing certain critical components used in our test sockets due to governmental regulatory changes, which if not managed quickly and diligently, could have adversely impacted our ability to supply the finished goods and our overall gross margin in fiscal 2025.",
+              "p": 0.9874
+            },
+            {
+              "sentence": "We have recorded restructuring, inventory write-offs and asset impairment charges in the past, and may do so again in the future, which could have a material negative impact on our financial results.",
+              "p": 0.9872
+            }
+          ]
+        },
+        "mdna": {
+          "n": 307,
+          "share_positive": 0.09446254071661238,
+          "share_negative": 0.08794788273615635,
+          "share_neutral": 0.8175895765472313,
+          "net_tone": 0.006514657980456029,
+          "top_positive": [
+            {
+              "sentence": "Additionally, results for fiscal 2025 benefited from a $0.4 million gain from the sale of our investment in Fraes-und Technologiezentrum GmbH Frasdorf (“FTZ”).",
+              "p": 0.9849
+            },
+            {
+              "sentence": "The provision for income taxes increased from $4.9 million in fiscal 2024 to $11.9 million in fiscal 2025 primarily due to the increase in pre-tax income from foreign operations and valuation allowances established to offset net deferred tax assets of our subsidiaries in Switzerland and Malaysia.",
+              "p": 0.9822
+            },
+            {
+              "sentence": "For the fiscal year ending December 27, 2025, our net sales increased 12.7%, year-over-year, to $453.0 million.",
+              "p": 0.9817
+            },
+            {
+              "sentence": "2025 Compared to 2024 Net Sales Cohu’s consolidated net sales increased 12.7% from $401.8 million in fiscal 2024 to $453.0 million in fiscal 2025, driven by stronger demand for AI-based computing applications.",
+              "p": 0.9816
+            },
+            {
+              "sentence": "The increase in cash provided by operating activities in the current year was a result of improved business conditions.",
+              "p": 0.9807
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "Our gross margin, as a percentage of net sales, decreased to 42.7% in fiscal 2025 from 44.9% in fiscal 2024.",
+              "p": 0.9898
+            },
+            {
+              "sentence": "During fiscal 2025, our gross margin experienced a decline primarily driven by the product mix of systems delivered to customers, along with a one‑time charge related to our decision to end manufacturing of certain products, discussed below.",
+              "p": 0.9883
+            },
+            {
+              "sentence": "SG&A expense as a percentage of net sales decreased to 27.3% in fiscal 2025, from 31.9% in fiscal 2024, decreasing from $128.0 million in fiscal 2024 to $123.6 million in fiscal 2025.",
+              "p": 0.9874
+            },
+            {
+              "sentence": "Our liquidity could be negatively affected by a decrease in demand for our products.",
+              "p": 0.9861
+            },
+            {
+              "sentence": "However, reductions in customer forecasts, continued modifications to products, or our failure to meet specifications or other customer requirements may result in additional charges to operations that could negatively impact our gross margin in future periods.",
+              "p": 0.9845
+            }
+          ]
+        }
+      },
+      "warnings": []
+    },
+    "ONTO": {
+      "company": "ONTO INNOVATION INC.",
+      "cik": "0000704532",
+      "form": "10-K",
+      "accession": "0001193125-26-066937",
+      "report_date": "2026-01-03",
+      "filed": "2026-02-24",
+      "document_url": "https://www.sec.gov/Archives/edgar/data/704532/000119312526066937/onto-20260103.htm",
+      "sections": {
+        "risk_factors": {
+          "n": 707,
+          "share_positive": 0.04809052333804809,
+          "share_negative": 0.03253182461103253,
+          "share_neutral": 0.9193776520509194,
+          "net_tone": 0.015558698727015562,
+          "top_positive": [
+            {
+              "sentence": "During the year ended December 30, 2023, the Company recognized a gain of $0.3 million on maturities of forward contracts.",
+              "p": 0.9849
+            },
+            {
+              "sentence": "Total systems and software revenue increased $167.1 million for the year ended December 28, 2024, as compared to the year ended December 30, 2023, primarily due to an increase in units shipped of our inspection product line to customers in support of advanced packaging needs for chips used in AI applications.",
+              "p": 0.9843
+            },
+            {
+              "sentence": "The goodwill recognized reflects the anticipated benefits from expanding the Company’s product portfolio and its growth opportunities in both new and existing markets.",
+              "p": 0.983
+            },
+            {
+              "sentence": "Cash provided by operating activities in fiscal 2024 increased compared to fiscal 2023 primarily due to higher net income and continued improvements in inventory management.",
+              "p": 0.9824
+            },
+            {
+              "sentence": "During fiscal 2024, the increase in total parts and services revenue was primarily due to increased spending by our customers on system upgrades and repairs of existing systems.",
+              "p": 0.981
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "The year-over-year dollar decrease from 2024 through 2025 was primarily due to decreases in compensation costs, outside services and fees, and facilities expenses.",
+              "p": 0.985
+            },
+            {
+              "sentence": "The decrease in gross profit as a percentage of revenue from 2024 to 2025 was primarily due to restructuring and other expenses for the write down of excess and obsolete inventory.",
+              "p": 0.984
+            },
+            {
+              "sentence": "The year-over-year dollar decrease from 2024 to 2025 was due to certain assets becoming fully amortized, partially offset by Semilab USA amortization of $5.6 million.",
+              "p": 0.9827
+            },
+            {
+              "sentence": "It is possible that we are at risk if interest rates, market liquidity or credit ratings of issuers change in an unfavorable direction.",
+              "p": 0.9748
+            },
+            {
+              "sentence": "The year-over-year dollar decrease from 2023 through 2024 was due to certain assets becoming fully amortized. • Restructuring and Other.",
+              "p": 0.9632
+            }
+          ]
+        },
+        "mdna": {
+          "n": 167,
+          "share_positive": 0.1497005988023952,
+          "share_negative": 0.0658682634730539,
+          "share_neutral": 0.7844311377245509,
+          "net_tone": 0.0838323353293413,
+          "top_positive": [
+            {
+              "sentence": "Total systems and software revenue increased $167.1 million for the year ended December 28, 2024, as compared to the year ended December 30, 2023, primarily due to an increase in units shipped of our inspection product line to customers in support of advanced packaging needs for chips used in AI applications.",
+              "p": 0.9843
+            },
+            {
+              "sentence": "Cash provided by operating activities in fiscal 2024 increased compared to fiscal 2023 primarily due to higher net income and continued improvements in inventory management.",
+              "p": 0.9824
+            },
+            {
+              "sentence": "During fiscal 2024, the increase in total parts and services revenue was primarily due to increased spending by our customers on system upgrades and repairs of existing systems.",
+              "p": 0.981
+            },
+            {
+              "sentence": "During fiscal 2025, the increase in total parts and services revenue was primarily due to increased spending by our customers on system upgrades and repairs of existing systems.",
+              "p": 0.9809
+            },
+            {
+              "sentence": "Cash provided by operating activities in fiscal 2025 increased compared to fiscal 2024 primarily due to improved cash collections and higher accounts payable balances driven by increased contract manufacturing activity, partially offset by higher cash outflows for income taxes resulting from the timing of payments and the settlement of prior period liabilities, as well as a use of cash in accrued and other liabilities.",
+              "p": 0.9797
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "Our cash, cash equivalents and marketable securities balance decreased to $639.6 million at the end of fiscal 2025 from $852.3 million at the end of fiscal 2024.",
+              "p": 0.9889
+            },
+            {
+              "sentence": "The year-over-year dollar decrease from 2024 through 2025 was primarily due to decreases in compensation costs, outside services and fees, and facilities expenses.",
+              "p": 0.985
+            },
+            {
+              "sentence": "The decrease in gross profit as a percentage of revenue from 2024 to 2025 was primarily due to restructuring and other expenses for the write down of excess and obsolete inventory.",
+              "p": 0.984
+            },
+            {
+              "sentence": "The year-over-year dollar decrease from 2024 to 2025 was due to certain assets becoming fully amortized, partially offset by Semilab USA amortization of $5.6 million.",
+              "p": 0.9827
+            },
+            {
+              "sentence": "However, the new export controls have resulted in lower net sales in China for fiscal 2025 compared to the prior fiscal years.",
+              "p": 0.9795
+            }
+          ]
+        }
+      },
+      "warnings": []
+    },
+    "TER": {
+      "company": "TERADYNE, INC",
+      "cik": "0000097210",
+      "form": "10-K",
+      "accession": "0001193125-26-059002",
+      "report_date": "2025-12-31",
+      "filed": "2026-02-19",
+      "document_url": "https://www.sec.gov/Archives/edgar/data/97210/000119312526059002/ter-20251231.htm",
+      "sections": {
+        "risk_factors": {
+          "n": 342,
+          "share_positive": 0.1023391812865497,
+          "share_negative": 0.3567251461988304,
+          "share_neutral": 0.5409356725146199,
+          "net_tone": -0.2543859649122807,
+          "top_positive": [
+            {
+              "sentence": "If this trend continues, it could make us more dependent on fewer customers who may be able to exert increased pressure on our prices and other contract terms and could increase the portion of our total sales concentration for any single customer.",
+              "p": 0.9787
+            },
+            {
+              "sentence": "As a result, we experienced and may experience in the future, increases in our lead times and costs for certain components for certain products.",
+              "p": 0.9784
+            },
+            {
+              "sentence": "On September 4, 2025, September 19, 2025, and October 7, 2025, Teradyne borrowed a combined $250.0 million under the Credit Facility to support the ramp-up in manufacturing capabilities for Semiconductor Test and the strategy to return cash to shareholders through share repurchases, dividends, and inorganic growth opportunities.",
+              "p": 0.9724
+            },
+            {
+              "sentence": "Our competitors may be more successful in their use of AI tools, including by developing superior products or improving their operations with the assistance of AI.",
+              "p": 0.9708
+            },
+            {
+              "sentence": "These threats are constantly evolving and expanding, such as through the increased use of artificial intelligence in our products and expanding remote work opportunities for our employees, thereby increasing the difficulty of defending against them or implementing adequate preventative measures.",
+              "p": 0.9689
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "If any of our suppliers were to cancel contracts or commitments or fail to meet the quality or delivery requirements needed to satisfy customer orders for our products, we could lose time-sensitive customer orders, have significantly decreased revenues and earnings and be subject to contractual penalties, which would have a material adverse effect on our business, results of operations and financial condition.",
+              "p": 0.9879
+            },
+            {
+              "sentence": "The global supply shortage of electrical components, including semiconductor chips, impacted our supply chain in 2023.",
+              "p": 0.9876
+            },
+            {
+              "sentence": "Capital equipment providers in the electronics, semiconductor industries and robotics, such as Teradyne, have, in the past, been negatively impacted by both sudden slowdowns in the global economies and recurring cyclicality within those industries.",
+              "p": 0.9866
+            },
+            {
+              "sentence": "If in the future we are unable to maintain our competitive position, we could experience downward pressure on prices, fewer customer orders, reduced margins, the inability to take advantage of new business opportunities and a loss of market acceptance of our products, any of which could have a material adverse effect on our revenues and results of operations.",
+              "p": 0.9865
+            },
+            {
+              "sentence": "Our business may suffer if we are unable to attract and retain key employees.",
+              "p": 0.9861
+            }
+          ]
+        },
+        "mdna": {
+          "n": 231,
+          "share_positive": 0.12121212121212122,
+          "share_negative": 0.07792207792207792,
+          "share_neutral": 0.8008658008658008,
+          "net_tone": 0.043290043290043295,
+          "top_positive": [
+            {
+              "sentence": "In the Product Test Group, we also achieved revenue growth in 2025, bolstered primarily by strength in defense and aerospace applications.",
+              "p": 0.9853
+            },
+            {
+              "sentence": "In 2025, our Semiconductor Test segment achieved considerable growth driven by robust demand from Artificial Intelligence (“AI”) applications in networking and with vertically integrated producer (“VIP”) compute solutions.",
+              "p": 0.985
+            },
+            {
+              "sentence": "Service revenues gross profit percentage increased by 2.9 points primarily in Semiconductor Test as a result of the sale of the DIS business on May 27, 2024.",
+              "p": 0.983
+            },
+            {
+              "sentence": "Memory test revenue remained stable despite a smaller overall market, supported by share gains in high bandwidth memory (“HBM”) and DRAM final test applications.",
+              "p": 0.9823
+            },
+            {
+              "sentence": "AET adds resources and expertise to our company and strengthens the relationship between us and this key customer.",
+              "p": 0.9821
+            }
+          ],
+          "top_negative": [
+            {
+              "sentence": "The decrease in Robotics revenues of $56.5 million, or 15.5%, was primarily due to lower sales of collaborative robotic arms and autonomous mobile robots.",
+              "p": 0.9899
+            },
+            {
+              "sentence": "Gross Profit 2025 2024 2024-2025 Dollar / Point Change (in millions) Gross profit $ 1,857.3 $ 1,648.9 $ 208.4 Percent of total revenues 58.2 % 58.5 % (0.3 ) Gross profit as a percent of total revenues decreased by 0.3 points, primarily due to product mix.",
+              "p": 0.9869
+            },
+            {
+              "sentence": "The decrease in operating liabilities was primarily due to a $48.2 million decrease in accounts payable.",
+              "p": 0.9856
+            },
+            {
+              "sentence": "Interest and Other 2025 2024 Dollar Change (in millions) Interest income $ (15.7 ) $ (24.8 ) $ 9.1 Interest expense 6.8 3.6 3.2 Other (income) expense, net 5.6 5.9 (0.3 ) Interest income decreased by $9.1 million primarily due to lower interest rates and a reduced cash balance compared to 2024.",
+              "p": 0.9856
+            },
+            {
+              "sentence": "The decrease in income before income taxes and equity in net earnings of affiliate in Robotics was primarily due to lower sales of collaborative robotic arms, partially offset by lower operating expenses.",
+              "p": 0.9853
+            }
+          ]
+        }
+      },
+      "warnings": []
+    }
+  },
+  "skipped": {
+    "CAMT": "CAMT (CAMTEK LTD) has no 10-K in recent filings (foreign filers use 20-F)"
+  }
+}
