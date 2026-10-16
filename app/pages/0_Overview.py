@@ -72,21 +72,20 @@ def tape() -> dict:
     tone = load_snapshot()["companies"]["AEHR"]["sections"]["mdna"]
     return {
         "comps": (ui.fmt_x(summary_rows(rows)[0]["ev_ebitda"]), "median EV / EBITDA"),
-        "variance": (ui.fmt_usd(net["variance_amt"]), f"net income vs budget, {pack.period}"),
-        "lbo": (ui.fmt_pct(lbo.irr), f"base-case IRR, {ui.fmt_x(lbo.moic, 2)} MOIC"),
+        "variance": (ui.fmt_usd(net["variance_amt"]), f"net income vs budget, {pack.period[-2:]}/{pack.period[:4]}"),
+        "lbo": (ui.fmt_pct(lbo.irr), f"base IRR, {ui.fmt_x(lbo.moic, 2)} MOIC"),
         "sourcing": (f"{stages[-1][1]} of {stages[0][1]}", "Form D raises kept"),
         "dashboard": ("NM" if totals["revenue_yoy"] is None else f"{totals['revenue_yoy']:+.0%}",
-                      f"portfolio revenue, YoY to {totals['month']}"),
-        "filing_tone": (f"{tone['net_tone']:+.2f}", f"AEHR MD&A net tone, {tone['n']} sentences"),
+                      f"revenue YoY, {totals['month']}"),
+        "filing_tone": (f"{tone['net_tone']:+.2f}", "AEHR MD&A net tone"),
     }
 
 
 t = tape()
 st.html('<p class="fp-eyebrow" style="margin-top:18px">Headline figures, sample data (filing tone: live 10-K snapshot)</p>')
-with st.container(horizontal=True):
-    for num, key, page, name, _ in TOOLS:
-        value, label = t[key]
-        st.metric(f"{num} · {name}", value, label, delta_color="off", delta_arrow="off", border=True, height="stretch")
+for col, (num, key, page, name, _) in zip(st.columns(len(TOOLS)), TOOLS):  # one row, even at six tools
+    value, label = t[key]
+    col.metric(f"{num} · {name}", value, label, delta_color="off", delta_arrow="off", border=True, height="stretch")
 
 st.space("medium")
 st.subheader("Contents")

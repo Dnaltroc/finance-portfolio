@@ -70,8 +70,14 @@ def tone_bar(section: str, n: int, title: str) -> None:
                       "<br>fiscal year ended %{customdata[2]}<extra></extra>",
     ))
     fig = ui.style(fig, height=60 + 34 * len(tickers), y_title=None)
-    fig.update_xaxes(title="net tone (share positive − share negative)", tickformat="+.2f", zeroline=True,
-                     zerolinecolor=ui.AXIS)
+    # Explicit ticks at 0.05 steps and room beyond the longest bar, so value labels never sit on the axis.
+    lo, hi = min(0.0, min(vals)), max(0.0, max(vals))
+    step = 0.05 if hi - lo <= 0.6 else 0.1
+    ticks = [round(k * step, 2) for k in range(int(lo // step), int(hi // step) + 2)]
+    pad = 0.3 * (hi - lo or 0.1)
+    fig.update_xaxes(title="net tone (share positive − share negative)", range=[lo - pad, hi + pad],
+                     tickmode="array", tickvals=ticks, ticktext=[f"{v:+.2f}" if v else "0" for v in ticks],
+                     zeroline=True, zerolinecolor=ui.AXIS)
     ui.show(fig, key=f"tone_{section}")
     ui.source(f"latest 10-K per company, {'Item 7 (MD&A)' if section == 'mdna' else 'Item 1A (Risk Factors)'}, "
               f"SEC EDGAR; sentences scored by {snap['model']}. AEHR in navy.")
