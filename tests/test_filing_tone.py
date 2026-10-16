@@ -91,3 +91,31 @@ def test_f1_is_zero_not_nan_for_a_class_never_predicted():
     from finlib.nlp.evaluate import confusion_matrix, precision_recall_f1
     _, _, f = precision_recall_f1(confusion_matrix([0, 1, 2], [0, 0, 0]))
     assert f[1] == 0.0 and f[2] == 0.0 and not np.isnan(f).any()
+
+
+# ---------------------------------------------------------------- batches + model ----
+def test_vocab_encoder_pads_to_longest_and_masks():
+    pytest.importorskip("torch")
+    from finlib.nlp.batches import make_collate, vocab_encoder
+    from finlib.nlp.tokenize import RegexTokenizer, Vocab
+    v = Vocab.build(["profit rose sharply", "loss"], RegexTokenizer())
+    collate = make_collate(vocab_encoder(v, max_len=10))
+    b = collate([("profit rose sharply", 2), ("loss", 0)])
+    assert b["input_ids"].shape == (2, 3) and b["attention_mask"].tolist() == [[1, 1, 1], [1, 0, 0]]
+    assert b["input_ids"][1].tolist() == [v.stoi["loss"], 0, 0] and b["labels"].tolist() == [2, 0]
+
+
+def test_vocab_encoder_truncates_to_max_len():
+    pytest.importorskip("torch")
+    from finlib.nlp.batches import vocab_encoder
+    from finlib.nlp.tokenize import RegexTokenizer, Vocab
+    v = Vocab.build(["a b c d e f"], RegexTokenizer())
+    assert vocab_encoder(v, max_len=4)(["a b c d e f"])["input_ids"].shape == (1, 4)
+
+
+def test_textcnn_forward_shape_and_short_inputs():
+    torch = pytest.importorskip("torch")
+    from finlib.nlp.models import TextCNN
+    m = TextCNN(vocab_size=50)
+    ids = torch.randint(2, 50, (4, 2))  # shorter than the widest kernel (5)
+    assert m(ids).shape == (4, 3)
