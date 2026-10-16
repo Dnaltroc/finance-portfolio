@@ -20,7 +20,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-LABELS = ["negative", "neutral", "positive"]  # class id = position in this list (matches the HF dataset)
+LABELS = ["negative", "neutral", "positive"]  # class id = position in this list
 LABEL_TO_ID = {name: i for i, name in enumerate(LABELS)}
 FIXTURE_CSV = Path(__file__).resolve().parents[2] / "tests" / "fixtures" / "filing_tone" / "sentences.csv"
 PHRASEBANK_CACHE = Path("output") / "filing_tone" / "phrasebank"
@@ -39,13 +39,34 @@ def load_fixture(path: Path = FIXTURE_CSV) -> list[Example]:
         return [Example(r["sentence"], LABEL_TO_ID[r["label"]]) for r in csv.DictReader(f)]
 
 
-def load_phrasebank(config: str = "sentences_50agree", cache_dir: Path = PHRASEBANK_CACHE) -> list[Example]:
-    """Financial PhraseBank from the Hugging Face hub (downloaded once, cached under output/).
-    HF label ids are 0 negative, 1 neutral, 2 positive, the same order as LABELS."""
-    from datasets import load_dataset  # imported here so the module works without the ml extra
+PHRASEBANK_FILES = {"sentences_50agree": "Sentences_50Agree.txt", "sentences_66agree": "Sentences_66Agree.txt",
+                    "sentences_75agree": "Sentences_75Agree.txt", "sentences_allagree": "Sentences_AllAgree.txt"}
 
-    ds = load_dataset(PHRASEBANK_ID, config, split="train", cache_dir=str(cache_dir))
-    return [Example(r["sentence"], int(r["label"])) for r in ds]
+
+def parse_phrasebank(raw: str) -> list[Example]:
+    """The original release is one sentence per line, then '@' and the label name."""
+    out = []
+    for line in raw.splitlines():
+        if "@" not in line:
+            continue
+        text, _, label = line.rpartition("@")
+        out.append(Example(text.strip(), LABEL_TO_ID[label.strip()]))
+    return out
+
+
+def load_phrasebank(config: str = "sentences_50agree", cache_dir: Path = PHRASEBANK_CACHE) -> list[Example]:
+    """Financial PhraseBank, read from the original zip on the Hugging Face hub (downloaded once,
+    cached under output/). The hub's loader script is retired, so the zip is parsed directly.
+    `config` picks the annotator-agreement level: 50% (the full set, 4,846 sentences) to 100%."""
+    import zipfile
+
+    from huggingface_hub import hf_hub_download  # a transformers dependency; nothing extra to install
+
+    path = hf_hub_download(PHRASEBANK_ID, "data/FinancialPhraseBank-v1.0.zip", repo_type="dataset",
+                           cache_dir=str(cache_dir))
+    with zipfile.ZipFile(path) as z:
+        raw = z.read(f"FinancialPhraseBank-v1.0/{PHRASEBANK_FILES[config]}").decode("latin-1")
+    return parse_phrasebank(raw)
 
 
 def label_counts(examples) -> dict[str, int]:

@@ -266,3 +266,10 @@ def test_results_table_and_readme_block(tmp_path):
     ft.update_readme_results(readme, table)
     txt = readme.read_text(encoding="utf-8")
     assert "old" not in txt and "| cnn |" in txt and txt.endswith("y")
+
+
+def test_parse_phrasebank_lines_uses_at_separator_and_label_names():
+    from finlib.nlp.data import parse_phrasebank
+    raw = "Profit rose 10 % .@positive\nThe company is based in Espoo .@neutral\nSales fell .@negative\n"
+    ex = parse_phrasebank(raw)
+    assert [e.label for e in ex] == [2, 1, 0] and ex[0].text == "Profit rose 10 % ."

@@ -22,7 +22,7 @@ dev = ["pytest>=8.0", "ruff>=0.5"]
 app = ["streamlit>=1.65", "plotly>=5.20", "yfinance>=0.2"]
 screenshots = ["playwright>=1.44"]
 # Filing Tone (PyTorch). Not in requirements.txt or the Docker image: the app reads a committed snapshot.
-ml = ["torch>=2.3", "transformers>=4.44", "datasets>=2.20", "scikit-learn>=1.4"]
+ml = ["torch>=2.3", "transformers>=4.44", "scikit-learn>=1.4"]
 
 [tool.setuptools.packages.find]
 include = ["finlib*", "projects*"]
