@@ -37,12 +37,14 @@ Six finance tools on one shared library (`finlib/`). The engines in `finlib/mode
 | `finlib/models/lbo.py` | Operating build, senior-first sweep, IRR/MOIC, sensitivity |
 | `finlib/models/sourcing.py` | Fund filter and 0–100 score |
 | `finlib/models/kpi.py` | Margin, burn, runway, calendar-month growth |
+| `finlib/models/tracker.py` | Live tracker moves: day, since memo, to target |
 | `finlib/models/dcf.py` | UFCF DCF, perpetuity / exit-multiple terminal value, reverse DCF (revenue scale, exit multiple) |
 | `finlib/nlp/` | Filing Tone (PyTorch): PhraseBank loader, tokenizer, TextCNN, DistilBERT wrapper, training loop, hand-written metrics, 10-K section/sentence extraction. Torch is an optional `[ml]` extra; never import it under `app/` |
 | `projects/filing_tone/` | CLI (`train`, `snapshot`, `results`), committed `tone_snapshot.json` + `results.json` the page reads, `README.md` results block written by code |
 | `finlib/excel_writer/` | openpyxl writers; LBO workbook is live formulas |
 | `projects/<name>/cli.py` | Typer CLI per tool; `README.md` per tool has the spec and resume line |
-| `projects/pitch/` | Equity pitch: `aehr.yaml` assumptions + committed `aehr_snapshot.json` -> memo PDF in `docs/pitch/` |
+| `finlib/live/` | Live tracker feeds: yfinance prices and bars, Yahoo + Google News RSS headlines, SEC submissions. Not cached; the page sets the refresh. Offline reads `tests/fixtures/live/` (synthetic) |
+| `projects/pitch/` | Equity pitch: `aehr.yaml` assumptions + committed `aehr_snapshot.json` -> memo PDF in `docs/pitch/`; `tracker.py` + app page `7_AEHR_Live.py` follow the stock, news and filings live |
 | `projects/powerbi/` | Power BI export: star-schema CSVs in `data/` (committed) + build guide and DAX in `README.md` |
 | `Dockerfile`, `compose.yaml`, `deploy/k8s/` | Container image and Kubernetes manifests for the same app; `deploy/README.md`. CI deploys to kind on every push |
 | `app/` | Streamlit app: `Home.py`, `pages/`, `fp_ui.py` (formatting, mode switch, chart style). A view only; no math. |

@@ -32,6 +32,9 @@ export-powerbi:
 demo-dashboard:
 	python -m projects.dashboard build
 
+demo-live:
+	FINLIB_OFFLINE=1 python -m projects.pitch live
+
 # Filing Tone (pip install -e ".[ml]"). Demo trains the CNN on the synthetic fixture, offline.
 demo-filing-tone:
 	FINLIB_OFFLINE=1 python -m projects.filing_tone train --model cnn --fixture --epochs 3 --device cpu

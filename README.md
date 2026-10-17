@@ -9,7 +9,7 @@ Six finance automation projects and an equity research pitch, built on one share
 | 3 | [LBO Returns Engine](projects/lbo/README.md) — Python LBO → live-formula Excel with scenarios | **Working** | `make demo-lbo` |
 | 4 | [Deal Sourcing Pipeline](projects/sourcing/README.md) — daily SEC Form D → scored digest | **Working** | `make demo-sourcing` |
 | 5 | [Portfolio KPI Dashboard](projects/dashboard/README.md) — monthly KPIs → hosted page | **Working** | `make demo-dashboard` |
-| 6 | [Equity Pitch: AEHR](projects/pitch/README.md) — DCF, reverse DCF and comps → two-page memo ([PDF](docs/pitch/aehr_memo.pdf)) | **Working** | `python -m projects.pitch build` |
+| 6 | [Equity Pitch: AEHR](projects/pitch/README.md) — DCF, reverse DCF and comps → two-page memo ([PDF](docs/pitch/aehr_memo.pdf)), plus a live tracker page for the stock, news and SEC filings | **Working** | `python -m projects.pitch build` |
 | 7 | [Power BI Data Model](projects/powerbi/README.md) — variance, KPIs and comps exported as a star schema, with the DAX measures and a build guide | **Working** | `make export-powerbi` |
 | 8 | [Filing Tone](projects/filing_tone/README.md) — PyTorch sentiment models (from-scratch CNN, fine-tuned DistilBERT, TF-IDF baseline) on Financial PhraseBank, applied to 10-K risk factors and MD&A; [walkthrough](docs/filing_tone/WALKTHROUGH.md) | **Working** | `make demo-filing-tone` |
 | — | [Docker + Kubernetes](deploy/README.md): the app as a container image, deployed to Kubernetes and tested on a kind cluster in CI | **Working** | `docker compose up --build` |

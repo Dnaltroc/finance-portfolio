@@ -543,3 +543,23 @@ def summary(name: str = typer.Option("aehr")):
         typer.echo(f"  DCF {k:5} {usd(r.per_share)}  TV {pct(r.tv_share, 0)} of EV")
     typer.echo(f"  Relative {usd(c['relative'])}  target {usd(c['target'], 0)} ({pct(c['downside'], 0)})")
     typer.echo(f"  Price implies revenue x{c['rev_scale']:.2f} of base, or {x(c['implied_exit'])} FY36 EBITDA")
+
+
+@app.command()
+def live(name: str = typer.Option("aehr"), news: int = typer.Option(5)):
+    """Today's price, news and SEC filings against the memo (FINLIB_OFFLINE=1 reads a synthetic fixture)."""
+    from projects.pitch.tracker import build_tracker
+
+    t = build_tracker(name, news_limit=news, filings_limit=100)
+    q, m, memo = t["market"]["quote"], t["moves"], t["memo"]
+    tag = lambda sec: "  [sample data (synthetic): " + (sec["error"] or "offline") + "]" if sec["sample"] else ""
+    typer.echo(f"{t['ticker']} {usd(q['price'])}  {pct(m['day_pct'])} today  (last trade {q['as_of']}){tag(t['market'])}")
+    typer.echo(f"  Since memo ({usd(memo['price'])} on {memo['as_of']}): {pct(m['since_memo_pct'])}   "
+               f"to ${memo['target']} target: {pct(m['to_target_pct'])}")
+    typer.echo(f"Headlines{tag(t['news'])}")
+    for n in t["news"]["items"][:news]:
+        typer.echo(f"  {n['published'][:10]}  {n['source'][:18]:18}  {n['title'][:90]}")
+    company = [f for f in t["filings"]["items"] if f["form"].split("/")[0] not in {"3", "4", "5", "144"}]
+    typer.echo(f"Company filings{tag(t['filings'])}")
+    for f in company[:5]:
+        typer.echo(f"  {f['filed']}  {f['description']}")

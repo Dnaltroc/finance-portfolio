@@ -19,6 +19,7 @@ PAGES = [
     st.Page("pages/4_Deal_Sourcing.py", title="Deal sourcing", url_path="sourcing"),
     st.Page("pages/5_KPI_Dashboard.py", title="Portfolio KPIs", url_path="kpis"),
     st.Page("pages/6_Filing_Tone.py", title="Filing tone", url_path="tone"),
+    st.Page("pages/7_AEHR_Live.py", title="AEHR live", url_path="live"),
 ]
 
 st.navigation(PAGES, position="top").run()

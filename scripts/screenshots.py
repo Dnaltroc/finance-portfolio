@@ -13,7 +13,8 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 PAGES = [("", "home"), ("comps", "comps"), ("variance", "variance"),
-         ("lbo", "lbo"), ("sourcing", "sourcing"), ("kpis", "dashboard"), ("tone", "filing_tone")]
+         ("lbo", "lbo"), ("sourcing", "sourcing"), ("kpis", "dashboard"), ("tone", "filing_tone"),
+         ("live", "aehr_live")]
 OUT = Path(__file__).resolve().parents[1] / "docs" / "screenshots"
 
 

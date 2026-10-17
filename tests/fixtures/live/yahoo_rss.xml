@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC FIXTURE shaped like the Yahoo Finance headline RSS feed. Invented items. -->
+<rss version="2.0"><channel><title>Yahoo! Finance: AEHR News</title>
+<item><title>Example Co. receives follow-on production orders</title><link>https://finance.yahoo.com/news/example-orders.html</link><pubDate>Wed, 07 Oct 2026 11:30:00 +0000</pubDate><guid>a1</guid></item>
+<item><title>Implied volatility rises for Example Co. options</title><link>https://finance.yahoo.com/news/example-iv.html</link><pubDate>Tue, 13 Oct 2026 14:48:00 +0000</pubDate><guid>a2</guid></item>
+<item><title></title><link>https://finance.yahoo.com/news/empty.html</link><pubDate>Tue, 13 Oct 2026 14:48:00 +0000</pubDate></item>
+</channel></rss>

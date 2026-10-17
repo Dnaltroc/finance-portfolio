@@ -1,0 +1,8 @@
+{"_note": "SYNTHETIC FIXTURE shaped like data.sec.gov/submissions. Invented filings.",
+ "cik": "1040470", "name": "EXAMPLE CO",
+ "filings": {"recent": {
+   "accessionNumber": ["0001-26-000003", "0001-26-000002", "0001-26-000001"],
+   "filingDate": ["2026-10-13", "2026-10-07", "2026-07-30"],
+   "form": ["4", "8-K", "10-K"],
+   "primaryDocument": ["xslF345X06/primary_01.xml", "ex8k.htm", "ex10k.htm"],
+   "items": ["", "7.01,9.01", ""]}}}

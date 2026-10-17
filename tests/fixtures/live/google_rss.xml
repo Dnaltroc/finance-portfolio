@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC FIXTURE shaped like the Google News search RSS feed. Invented items. -->
+<rss version="2.0"><channel><title>"Example Co" - Google News</title>
+<item><title>Example Co. Receives Follow-On Production Orders - Sample Wire</title><link>https://news.google.com/rss/articles/x1</link><pubDate>Wed, 07 Oct 2026 12:01:00 GMT</pubDate><source url="https://samplewire.example">Sample Wire</source></item>
+<item><title>Example Co. shares fall after downgrade - Sample Daily</title><link>https://news.google.com/rss/articles/x2</link><pubDate>Fri, 16 Oct 2026 07:59:08 GMT</pubDate><source url="https://sampledaily.example">Sample Daily</source></item>
+</channel></rss>

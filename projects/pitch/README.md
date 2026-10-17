@@ -45,8 +45,24 @@ SEC_IDENTITY="Name email" python -m projects.pitch snapshot   # refresh the data
 - **What changed since the first draft.** The first draft had Teradyne as NM because the engine read a $0 borrowing line and an undrawn credit facility as debt it could not sum. Fixed with a test (`tests/test_edgar_live_shapes.py`); the target moved from $35 to $52. The DCF and reverse DCF did not change.
 - **Signals to watch.** Q1 FY27 results on Nov 2; a pilot order from the second AI processor maker (the main risk to the call); share sales under the July 27 automatic shelf; insider selling (about $17M in August, no purchases); timing of the lead hyperscaler's second Sonoma device, now a calendar 2027 ramp.
 
+## Live tracker
+
+The memo is priced on one day. The **AEHR live** page in the app (and `python -m projects.pitch live` in a terminal) follows what has happened since: last price and day move, the move since the memo price and the move still needed to reach the target, intraday and one-year charts with the memo price and target drawn in, the latest headlines, and the SEC filings feed with insider filings (Forms 3, 4, 144) split from company filings. That covers most of the signals to watch above.
+
+| Piece | Where |
+| --- | --- |
+| Feeds | `finlib/live/feeds.py`: Yahoo Finance prices via yfinance, Yahoo Finance and Google News RSS headlines (de-duplicated), SEC EDGAR submissions. Free, no key. |
+| Math | `finlib/models/tracker.py`: day move, move since the memo, move to target. |
+| Builder | `projects/pitch/tracker.py`: fetches each section on its own; a failed feed falls back to the synthetic fixture, labeled, with the error. |
+| Page | `app/pages/7_AEHR_Live.py`: refreshes every 60 seconds. |
+
+```bash
+python -m projects.pitch live                      # live
+FINLIB_OFFLINE=1 python -m projects.pitch live     # synthetic fixture (make demo-live)
+```
+
 ## Tests
 
-`tests/test_pitch.py` checks the WACC against CAPM done by hand and the base case against an independently built DCF. It also confirms that both reverse-DCF answers reproduce the share price, and that the memo prints the computed figures with no unfilled placeholders. `tests/test_dcf.py` checks the engine against hand calculations.
+`tests/test_pitch.py` checks the WACC against CAPM done by hand and the base case against an independently built DCF. It also confirms that both reverse-DCF answers reproduce the share price, and that the memo prints the computed figures with no unfilled placeholders. `tests/test_dcf.py` checks the engine against hand calculations. `tests/test_live.py` checks the feed parsers on fixture RSS and SEC JSON, the tracker math by hand, and that a failed feed falls back to labeled sample data.
 
 Student research, prepared for a portfolio. Not investment advice.

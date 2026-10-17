@@ -287,3 +287,17 @@ def test_filing_tone_page_shows_snapshot_numbers_without_torch():
     assert m["Model macro-F1, test split"] == f"{ft.load_results()['distilbert']['macro_f1']:.3f}"
     assert not any(mod == "torch" or mod.startswith("torch.") for mod in set(sys.modules) - before)
     assert any("Snapshot" in x.value for x in at.markdown)  # provenance badge
+
+
+def test_aehr_live_page_offline_matches_the_tracker_and_is_labeled_sample(monkeypatch):
+    monkeypatch.setenv("FINLIB_OFFLINE", "1")
+    from projects.pitch.tracker import build_tracker
+
+    t = build_tracker("aehr")
+    at = run_page("pages/7_AEHR_Live.py")
+    m = metrics(at)
+    assert m["Last price"] == f"${t['market']['quote']['price']:,.2f}"
+    assert m["Since the memo"] == ui.fmt_pct(t["moves"]["since_memo_pct"])
+    assert m[f"To the ${t['memo']['target']} target"] == ui.fmt_pct(t["moves"]["to_target_pct"])
+    assert sample_labeled(at)
+    assert any("Sample headline" in x.value for x in at.markdown)
